@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key, required this.title});
+class StatisticsPage extends StatefulWidget {
+  const StatisticsPage({super.key, required this.title});
   final String title;
 
   @override
-  State<MainPage> createState() => _MyHomePageState();
+  State<StatisticsPage> createState() => _StatisticsPageState();
 }
 
-class _MyHomePageState extends State<MainPage> {
+class _StatisticsPageState extends State<StatisticsPage> {
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class _MyHomePageState extends State<MainPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Welcome to Sleep Tracker+'),
+            Text('Statistics Page'),
           ],
         ),
       ),
