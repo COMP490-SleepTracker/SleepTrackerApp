@@ -24,6 +24,18 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
+  void onFormSubmit(String username, String password)
+  {          
+    // Validate returns true if the form is valid, or false otherwise.
+    if (usernameController.text == 'admin' && passwordController.text == 'password') {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')));
+    }
+    else
+    {
+      ScaffoldMessenger.of(context).showSnackBar( const SnackBar(content: Text('Invalid username or password')), );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column( children: [ 
@@ -39,6 +51,8 @@ class _LoginFormState extends State<LoginForm> {
       TextField( 
         controller: passwordController,
         obscureText: !_passwordVisible,
+        onSubmitted: (s) { onFormSubmit( usernameController.text, passwordController.text); },
+        textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           icon : const Icon(Icons.lock),
           border: const OutlineInputBorder(),
@@ -52,18 +66,7 @@ class _LoginFormState extends State<LoginForm> {
           })),
         ),
       ElevatedButton(
-        onPressed: () {
-          // Validate returns true if the form is valid, or false otherwise.
-          if (usernameController.text == 'admin' && passwordController.text == 'password') {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')));
-          }
-          else
-          {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Invalid username or password')),
-            );
-          }
-        },
+        onPressed: () { onFormSubmit( usernameController.text, passwordController.text); },
         child: const Text('Submit'),
       )
     ]);
