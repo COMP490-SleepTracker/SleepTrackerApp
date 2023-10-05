@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Pages/Main/MainPage.dart';
+import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,10 +13,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Sleep Tracker+',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
         useMaterial3: true,
       ),
-      home: const MainPage(title: 'Sleep Tracker+'),
+      home: const LoginPage(title: 'Sleep Tracker+'),
     );
   }
 }
