@@ -9,7 +9,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 
 class LineChartWidget extends StatelessWidget {
-  LineChartWidget(this.data, {super.key}) : spots = data.asMap().map((i, value) {return MapEntry(i, FlSpot(i.toDouble(), value));}).values.toList()
+  LineChartWidget(this.data, this.minY, this.maxY, {super.key}) : spots = data.asMap().map((i, value) {return MapEntry(i, FlSpot(i.toDouble(), value));}).values.toList()
   {
     spots = data
         .asMap()
@@ -19,6 +19,9 @@ class LineChartWidget extends StatelessWidget {
         .values
         .toList();
   }
+
+  final double minY;
+  final double maxY;
 
   final List<double> data;
   List<FlSpot> spots;
@@ -102,8 +105,8 @@ class LineChartWidget extends StatelessWidget {
                     dotData: const FlDotData(show: false),
                   ),
                 ],
-                minY: -1.5,
-                maxY: 1.5,
+                minY: minY,
+                maxY: maxY,
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
@@ -251,9 +254,9 @@ class SleepPageState extends State<SleepPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Text('User Accelerometer: ${userAccelerometer ?? 'Not Available'}'),
-            Container(height: 200, width: 600, color: Colors.grey, child: LineChartWidget(accelerometerData)),
+            Container(height: 200, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(accelerometerData, -10, 10)),
             Text('Light: ${_luxValue ?? 'Not Available'}'),
-            Container(height: 200, width: 600, color: Colors.grey, child: LineChartWidget(lightData)),
+            Container(height: 200, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(lightData, 0, 1000)),
           ],
         ),
       ),
