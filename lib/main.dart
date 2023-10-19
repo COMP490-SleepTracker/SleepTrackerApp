@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
+import 'package:sleeptrackerapp/Model/SleepDataManager.dart';
+import 'package:get_it/get_it.dart';
+import 'Model/AuthenticationManager.dart';
 
 void main() {
+  GetIt.instance.registerSingleton<AuthenticationManager>(TestAuthenticationManagerImpl());
+  GetIt.instance.registerSingleton<SleepDataManager>(TestSleepDataManagerImpl());
   runApp(const MyApp());
 }
 

@@ -38,6 +38,7 @@ dependencies:
   sensors_plus: ^3.1.0
   light: ^3.0.1
   fl_chart: ^0.64.0
+  get_it: ^7.6.4
 
 dev_dependencies:
   flutter_test:
