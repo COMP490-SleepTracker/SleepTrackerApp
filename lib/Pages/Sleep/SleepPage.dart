@@ -212,6 +212,8 @@ class SleepPageState extends State<SleepPage> {
 
     super.initState();
     timer = Timer.periodic(const Duration(seconds: 5), (Timer t) => logSleepData());
+    GetIt.instance<SleepDataManager>().addListener(update);
+
     _streamSubscriptions.add(
       userAccelerometerEvents.listen(
         (UserAccelerometerEvent event) {
@@ -259,6 +261,19 @@ class SleepPageState extends State<SleepPage> {
     }
   }
 
+    @override
+  void dispose() {
+    GetIt.instance<SleepDataManager>().removeListener(update);
+    timer?.cancel();
+    super.dispose();
+  }
+
+  void update()
+  {
+    setState(() {
+    }); //update the widget
+  }
+
   void logSleepData()
   {
     // get average accelerometer value
@@ -282,10 +297,6 @@ class SleepPageState extends State<SleepPage> {
 
     // add to sleep data
     GetIt.instance<SleepDataManager>().addSleepRecord(SleepRecord(accelerometerValue, lightValue, DateTime.now().millisecondsSinceEpoch, sleepScore));
-
-    //notify widget
-    setState(() {
-    });
   }
 
   @override
