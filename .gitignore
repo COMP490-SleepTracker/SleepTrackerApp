@@ -46,4 +46,5 @@ app.*.map.json
 
 
 
-
+Authorization.dart
+.vscode

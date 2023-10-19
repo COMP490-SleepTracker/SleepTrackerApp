@@ -10,7 +10,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MainPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,12 +17,12 @@ class _MyHomePageState extends State<MainPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      drawer : const NavigationPanel(),
+      drawer: const NavigationPanel(),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Welcome to Sleep Tracker+'),
+            Text('Welcome to Sleep Tracker -> MyHomePageState'),
           ],
         ),
       ),

@@ -2,20 +2,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sleeptrackerapp/Pages/Main/MainPage.dart';
-import 'package:sleeptrackerapp/Pages/Main/signUp.dart';
+import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 
 
-class LoginForm extends StatefulWidget {
-  const LoginForm({super.key});
+class signUp extends StatefulWidget {
+  const signUp({super.key});
 
   @override
-  State<LoginForm> createState() => _LoginFormState();
+  State<signUp> createState() => _signInState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _signInState extends State<signUp> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
   final usernameController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   final passwordController = TextEditingController();
 
   bool _passwordVisible = false;
@@ -28,17 +29,25 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
-  void onFormSubmit(String username, String password) async {
+  void onFormSubmit(String username, String confirmPassword, String password) async {
+
+    if(confirmPassword != password){
+        ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You entered incorrect password')),
+      );
+      return; 
+    }
     // Validate returns true if the form is valid, or false otherwise.
-    // if (username == 'admin' && password == 'password') {
+    // if (usernameController.text == 'admin' && passwordController.text == 'password') {
     //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')));
     // }
     // else
     // {
     //   ScaffoldMessenger.of(context).showSnackBar( const SnackBar(content: Text('Invalid username or password')), );
     // }
+
     await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: username, password: password)
+        .createUserWithEmailAndPassword(email: username, password: password)
         .then((value) {
       Navigator.pushReplacement(
           context,
@@ -49,12 +58,6 @@ class _LoginFormState extends State<LoginForm> {
         const SnackBar(content: Text('Invalid username or password')),
       );
     });
-  }
-
-
-  void googleSignIn(){
-
-    
   }
 
   @override
@@ -72,7 +75,7 @@ class _LoginFormState extends State<LoginForm> {
         controller: passwordController,
         obscureText: !_passwordVisible,
         onSubmitted: (s) {
-          onFormSubmit(usernameController.text, passwordController.text);
+          onFormSubmit(usernameController.text,confirmPasswordController.text ,passwordController.text);
         },
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
@@ -90,34 +93,56 @@ class _LoginFormState extends State<LoginForm> {
                   });
                 })),
       ),
+      TextField(
+        controller: passwordController,
+        obscureText: !_passwordVisible,
+        onSubmitted: (s) {
+          onFormSubmit(usernameController.text,confirmPasswordController.text , passwordController.text);
+        },
+        textInputAction: TextInputAction.done,
+        decoration: InputDecoration(
+            icon: const Icon(Icons.lock),
+            border: const OutlineInputBorder(),
+            label: const Text('Confirm Password'),
+            // set password field to be obscured
+            suffixIcon: IconButton(
+                icon: Icon(
+                    _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                    color: Theme.of(context).primaryColorLight),
+                onPressed: () {
+                  setState(() {
+                    _passwordVisible = !_passwordVisible;
+                  });
+                })),
+      ),
       ElevatedButton(
         onPressed: () {
-          onFormSubmit(usernameController.text, passwordController.text);
+          onFormSubmit(usernameController.text,confirmPasswordController.text,passwordController.text);
         },
-        child: const Text('Submit'),
+        child: const Text('Sign Up'),
       ),
       ElevatedButton(
         onPressed: () {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => const signUpPage(title: 'Sign Up')));
+                  builder: (context) =>
+                      const LoginPage(title: 'Sleep Tracker+')));
         },
-        child: const Text('Sign Up'),
+        child: const Text('Return'),
       ),
     ]);
   }
 }
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.title});
+class signUpPage extends StatefulWidget {
+  const signUpPage({super.key, required this.title});
   final String title;
-
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<signUpPage> createState() => _signInPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _signInPageState extends State<signUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,11 +155,15 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Welcome to Sleep Tracker-'),
-            LoginForm(),
+            Text('Welcome to Sleep Tracker+'),
+            signUp(),
           ],
         ),
       ),
     );
   }
 }
+
+///make a go back button on top left of app 
+///test google signin with csun email
+///

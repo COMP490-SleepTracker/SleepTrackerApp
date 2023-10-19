@@ -26,7 +26,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
         useMaterial3: true,
       ),
-      home: const LoginPage(title: 'Sleep Tracker+'),
+      home: const LoginPage(title: 'Sleep Tracker++'),
     );
   }
 }
+
+
+//
