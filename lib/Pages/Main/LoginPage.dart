@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_core/firebase_core.dart';
+ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sleeptrackerapp/Pages/Main/MainPage.dart';
 import 'package:sleeptrackerapp/Pages/Main/signUp.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sleeptrackerapp/Pages/Main/Authorization.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -52,9 +53,27 @@ class _LoginFormState extends State<LoginForm> {
   }
 
 
-  void googleSignIn(){
+///Test Google sign in 
+  void googleSignIn() async {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('google button pressed')));
+    final googleSignIn = GoogleSignIn();
 
-    
+  GoogleSignInAccount? user; 
+
+  //Google Login Method 
+    final googleUser = await googleSignIn.signIn(); 
+    if(googleUser == null) return; 
+    user = googleUser; 
+
+    //Fetch the authentification 
+    final googleAuth = await googleUser.authentication; 
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken
+    );
+
+    await FirebaseAuth.instance.signInWithCredential(credential); 
+    //notifyListener();
   }
 
   @override
@@ -95,6 +114,12 @@ class _LoginFormState extends State<LoginForm> {
           onFormSubmit(usernameController.text, passwordController.text);
         },
         child: const Text('Submit'),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          googleSignIn(); 
+        },
+        child: const Text('Sign In With Google'),
       ),
       ElevatedButton(
         onPressed: () {

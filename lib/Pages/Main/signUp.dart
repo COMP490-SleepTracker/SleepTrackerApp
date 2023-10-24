@@ -26,6 +26,7 @@ class _signInState extends State<signUp> {
     // Clean up the controller when the widget is disposed.
     usernameController.dispose();
     passwordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -33,11 +34,12 @@ class _signInState extends State<signUp> {
 
     if(confirmPassword != password){
         ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You entered incorrect password')),
+        const SnackBar(content: Text('Passwords do not match')),
       );
       return; 
     }
-    // Validate returns true if the form is valid, or false otherwise.
+
+    // // Validate returns true if the form is valid, or false otherwise.
     // if (usernameController.text == 'admin' && passwordController.text == 'password') {
     //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')));
     // }
@@ -49,6 +51,7 @@ class _signInState extends State<signUp> {
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: username, password: password)
         .then((value) {
+          print('created new account');
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -57,6 +60,7 @@ class _signInState extends State<signUp> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid username or password')),
       );
+      print(error.toString());
     });
   }
 
@@ -93,8 +97,9 @@ class _signInState extends State<signUp> {
                   });
                 })),
       ),
+      const SizedBox(height: 10),
       TextField(
-        controller: passwordController,
+        controller: confirmPasswordController,
         obscureText: !_passwordVisible,
         onSubmitted: (s) {
           onFormSubmit(usernameController.text,confirmPasswordController.text , passwordController.text);
@@ -123,7 +128,7 @@ class _signInState extends State<signUp> {
       ),
       ElevatedButton(
         onPressed: () {
-          Navigator.pushReplacement(
+          Navigator.pushReplacement(  
               context,
               MaterialPageRoute(
                   builder: (context) =>
