@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sleeptrackerapp/Pages/Main/MainPage.dart';
+import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
+import 'package:get_it/get_it.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -26,14 +28,22 @@ class _LoginFormState extends State<LoginForm> {
 
   void onFormSubmit(String username, String password)
   {          
-    // Validate returns true if the form is valid, or false otherwise.
-    if (usernameController.text == 'admin' && passwordController.text == 'password') {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')));
-    }
-    else
-    {
-      ScaffoldMessenger.of(context).showSnackBar( const SnackBar(content: Text('Invalid username or password')), );
-    }
+    // use the authentication manager to validate the username and password
+
+    GetIt.instance<AuthenticationManager>().authenticate(username, password).then((value) => 
+      {
+        // check if the user is authenticated
+        if(GetIt.instance<AuthenticationManager>().isAuthenticated)
+        {
+          // navigate to the main page
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')))
+        }
+        else
+        {
+          ScaffoldMessenger.of(context).showSnackBar( const SnackBar(content: Text('Invalid username or password')), )
+        }
+      }
+    );
   }
 
   @override
