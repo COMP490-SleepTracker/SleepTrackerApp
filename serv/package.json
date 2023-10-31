@@ -1,0 +1,23 @@
+{
+  "name": "serv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/COMP490-SleepTracker/SleepTrackerApp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/COMP490-SleepTracker/SleepTrackerApp/issues"
+  },
+  "homepage": "https://github.com/COMP490-SleepTracker/SleepTrackerApp#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "realm": "^12.2.1"
+  }
+}

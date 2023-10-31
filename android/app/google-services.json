@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1007943652157",
+    "firebase_url": "https://sleeptrackingapp-2f0d1-default-rtdb.firebaseio.com",
+    "project_id": "sleeptrackingapp-2f0d1",
+    "storage_bucket": "sleeptrackingapp-2f0d1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1007943652157:android:52023982bdb345eff0ab54",
+        "android_client_info": {
+          "package_name": "com.example.sleeptrackerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1007943652157-p3cn4p7ipiqeg8k9gfkmm3rk8hch8le4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sleeptrackerapp",
+            "certificate_hash": "e93c1790f241eb78e9d7fd198831726cbbb2d098"
+          }
+        },
+        {
+          "client_id": "1007943652157-ei1f93jv497eh8j4jesb0l80ntg13ar0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF_iqyk2P8-7ubQxXkwfRWBC0UP9HJrV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1007943652157-ei1f93jv497eh8j4jesb0l80ntg13ar0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1007943652157-1um1qvhsqgbnevhiil39ls03nifnq6cs.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sleeptrackerapp.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

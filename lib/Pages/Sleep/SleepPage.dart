@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:light/light.dart';
@@ -12,8 +11,6 @@ import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:sleeptrackerapp/Model/SleepDataManager.dart';
 import 'package:get_it/get_it.dart';
-
-import 'dart:async';
 
 class LineChartWidget extends StatelessWidget {
   LineChartWidget(this.data, this.minY, this.maxY, {super.key}) : spots = data.asMap().map((i, value) {return MapEntry(i, FlSpot(i.toDouble(), value));}).values.toList()
