@@ -1,10 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
- import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sleeptrackerapp/Pages/Main/MainPage.dart';
 import 'package:sleeptrackerapp/Pages/Main/signUp.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sleeptrackerapp/Pages/Main/Authorization.dart';
+import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
+import 'package:get_it/get_it.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -30,50 +28,59 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void onFormSubmit(String username, String password) async {
-    // Validate returns true if the form is valid, or false otherwise.
-    // if (username == 'admin' && password == 'password') {
-    //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')));
-    // }
-    // else
-    // {
-    //   ScaffoldMessenger.of(context).showSnackBar( const SnackBar(content: Text('Invalid username or password')), );
-    // }
-    await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: username, password: password)
-        .then((value) {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const MainPage(title: 'Sleep Tracker+')));
-    }).onError((error, stackTrace) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid username or password')),
-      );
-    });
+    
+       // use the authentication manager to validate the username and password
+  if(username == 'admin'){
+    GetIt.instance<AuthenticationManager>().authenticate(username, password).then((value) => 
+      {
+        // check if the user is authenticated
+        if(GetIt.instance<AuthenticationManager>().isAuthenticated)
+        {
+          // navigate to the main page
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')))
+        }
+        else
+        {
+          ScaffoldMessenger.of(context).showSnackBar( const SnackBar(content: Text('Invalid username or password')), )
+        }
+      }
+    );
+  }
+
+  GetIt.instance<AuthenticationManager>().loginWithEmailAndPassword(email: username, password: password).then((value) => 
+      {
+        // check if the user is authenticated
+        if(GetIt.instance<AuthenticationManager>().isAuthenticated)
+        {
+          // navigate to the main page
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')))
+        }
+        else
+        {
+          ScaffoldMessenger.of(context).showSnackBar( const SnackBar(content: Text('Invalid username or password')), )
+        }
+      }
+    );
+
   }
 
 
 ///Test Google sign in 
   void googleSignIn() async {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('google button pressed')));
-    final googleSignIn = GoogleSignIn();
-
-  GoogleSignInAccount? user; 
-
-  //Google Login Method 
-    final googleUser = await googleSignIn.signIn(); 
-    if(googleUser == null) return; 
-    user = googleUser; 
-
-    //Fetch the authentification 
-    final googleAuth = await googleUser.authentication; 
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken
+    GetIt.instance<AuthenticationManager>().googleLogin().then((value) => 
+      {
+        // check if the user is authenticated
+        if(GetIt.instance<AuthenticationManager>().isAuthenticated)
+        {
+          // navigate to the main page
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')))
+        }
+        else
+        {
+          ScaffoldMessenger.of(context).showSnackBar( const SnackBar(content: Text('Invalid username or password')), )
+        }
+      }
     );
-
-    await FirebaseAuth.instance.signInWithCredential(credential); 
-    //notifyListener();
   }
 
   @override

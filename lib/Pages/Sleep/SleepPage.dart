@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:light/light.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
+
 
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
+import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
+import 'package:sleeptrackerapp/Model/SleepDataManager.dart';
+import 'package:get_it/get_it.dart';
 
 class LineChartWidget extends StatelessWidget {
   LineChartWidget(this.data, this.minY, this.maxY, {super.key}) : spots = data.asMap().map((i, value) {return MapEntry(i, FlSpot(i.toDouble(), value));}).values.toList()
@@ -57,6 +61,13 @@ class LineChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // check if the user is authenticated
+    if(!GetIt.instance<AuthenticationManager>().isAuthenticated)
+    {
+      // navigate to the main page
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
+    }
+
     return Padding(
       padding: const EdgeInsets.only(
         left: 12,
@@ -177,6 +188,9 @@ class SleepPage extends StatefulWidget {
 
 class SleepPageState extends State<SleepPage> {
 
+  // timer to log sleep data from recent accelerometer and light data
+  Timer? timer;
+
   List<double>? _accelerometerValues; //accelerometer values
   
 
@@ -192,7 +206,11 @@ class SleepPageState extends State<SleepPage> {
 
   @override
   void initState() {
+
     super.initState();
+    timer = Timer.periodic(const Duration(seconds: 5), (Timer t) => logSleepData());
+    GetIt.instance<SleepDataManager>().addListener(update);
+
     _streamSubscriptions.add(
       userAccelerometerEvents.listen(
         (UserAccelerometerEvent event) {
@@ -200,8 +218,8 @@ class SleepPageState extends State<SleepPage> {
             _accelerometerValues = <double>[event.x, event.y, event.z];
             // add to our accelerometer data, average of x, y, z
             accelerometerData.add((_accelerometerValues![0] + _accelerometerValues![1] + _accelerometerValues![2]) / 3);
-            // remove first element if we have more than 10
-            if (accelerometerData.length > 10) {
+            // remove first element if we have more than 20
+            if (accelerometerData.length > 20) {
               accelerometerData.removeAt(0);
             }
           });
@@ -229,8 +247,8 @@ class SleepPageState extends State<SleepPage> {
         _luxValue = luxValue;
         // add to our light data
         lightData.add(_luxValue!.toDouble());
-        // remove first element if we have more than 10
-        if (lightData.length > 10) {
+        // remove first element if we have more than 20
+        if (lightData.length > 20) {
           lightData.removeAt(0);
         }
       });
@@ -240,9 +258,55 @@ class SleepPageState extends State<SleepPage> {
     }
   }
 
+    @override
+  void dispose() {
+    GetIt.instance<SleepDataManager>().removeListener(update);
+    timer?.cancel();
+    super.dispose();
+  }
+
+  void update()
+  {
+    setState(() {
+    }); //update the widget
+  }
+
+  void logSleepData()
+  {
+    // get average accelerometer value
+    double accelerometerValue = 0;
+    for(int i = 0; i < accelerometerData.length; i++)
+    {
+      accelerometerValue += accelerometerData[i];
+    }
+    accelerometerValue /= accelerometerData.length;
+
+    // get average light value
+    double lightValue = 0;
+    for(int i = 0; i < lightData.length; i++)
+    {
+      lightValue += lightData[i];
+    }
+    lightValue /= lightData.length;
+
+    // calculate sleep score
+    double sleepScore = 1000 / (accelerometerValue + lightValue + 1); // tmp
+
+    // add to sleep data
+    GetIt.instance<SleepDataManager>().addSleepRecord(SleepRecord(accelerometerValue, lightValue, DateTime.now().millisecondsSinceEpoch, sleepScore));
+  }
+
   @override
   Widget build(BuildContext context) {
+    SleepRecord? lastSleepRecord = GetIt.instance<SleepDataManager>().sleepRecords.lastOrNull;
     final userAccelerometer = _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
+
+    // get the last 10 sleep vaues from the sleep records
+    List<double> sleepValues = [];
+    for(int i = GetIt.instance<SleepDataManager>().sleepRecords.length - 1; i >= 0 && i >= GetIt.instance<SleepDataManager>().sleepRecords.length - 10; i--)
+    {
+      sleepValues.add(GetIt.instance<SleepDataManager>().sleepRecords[i].sleepScore);
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -254,9 +318,11 @@ class SleepPageState extends State<SleepPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Text('User Accelerometer: ${userAccelerometer ?? 'Not Available'}'),
-            Container(height: 200, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(accelerometerData, -10, 10)),
+            Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(accelerometerData, -10, 10)),
             Text('Light: ${_luxValue ?? 'Not Available'}'),
-            Container(height: 200, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(lightData, 0, 1000)),
+            Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(lightData, 0, 1000)),
+            Text('Sleep Score: ${lastSleepRecord?.sleepScore ?? 'Not Available'}'),
+            Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(sleepValues, 0, 1000))
           ],
         ),
       ),

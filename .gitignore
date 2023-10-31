@@ -47,4 +47,5 @@ app.*.map.json
 
 
 Authorization.dart
+GoogleSignInAuthorization.dart
 .vscode
