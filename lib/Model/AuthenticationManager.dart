@@ -30,8 +30,18 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
   
   @override
   Future<void> loginWithEmailAndPassword({required String email,required String password, }) async {
-    await firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password).then((value) => _isAuthenticated = !_isAuthenticated);
+
+    try
+    {
+      await firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password).then((value) => _isAuthenticated = !_isAuthenticated);
+    }
+    catch(e)
+    {
+      // there were issues with firebase authentication
+      _isAuthenticated = false;
+    }
+    notifyListeners();
   }
 
   @override
@@ -41,6 +51,7 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
   }) async {
     await firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
+    notifyListeners();
   }
 
   @override

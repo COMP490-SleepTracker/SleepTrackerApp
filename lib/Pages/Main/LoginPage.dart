@@ -46,7 +46,8 @@ class _LoginFormState extends State<LoginForm> {
       }
     );
   }
-
+  else
+  {
   GetIt.instance<AuthenticationManager>().loginWithEmailAndPassword(email: username, password: password).then((value) => 
       {
         // check if the user is authenticated
@@ -61,6 +62,7 @@ class _LoginFormState extends State<LoginForm> {
         }
       }
     );
+  }
 
   }
 
