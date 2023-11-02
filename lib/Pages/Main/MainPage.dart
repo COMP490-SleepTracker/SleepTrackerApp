@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
-
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:get_it/get_it.dart';

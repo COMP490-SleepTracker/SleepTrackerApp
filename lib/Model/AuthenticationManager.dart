@@ -6,8 +6,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class AuthenticationManager extends ChangeNotifier {
  bool get isAuthenticated;
+ User? get currentUser;
+ GoogleSignInAccount? get googleUser;  
  Future<void> authenticate(String username, String password);
-  
  Future<void> loginWithEmailAndPassword({required String email,required String password, });
  Future<void> signInWithEmailAndPassword({required String email,required String password, });
  Future<void> googleLogin();
@@ -20,6 +21,9 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
   @override
   bool get isAuthenticated => _isAuthenticated;
   bool _isAuthenticated = false;
+
+  UserCredential? test; 
+  UserCredential? get Current => test; 
 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
@@ -64,8 +68,8 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
     notifyListeners();
   }
 
-
   GoogleSignInAccount? user;
+  @override
   GoogleSignInAccount get googleUser => user!;
   final googleSignIn = GoogleSignIn();
 
@@ -80,12 +84,13 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
     final googleAuth = await googleUser.authentication;
     final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+        print(credential.accessToken);
 
     await FirebaseAuth.instance.signInWithCredential(credential);
     _isAuthenticated = true; 
+    googleSignIn.clientId;
     notifyListeners();
   }
-
 
   @override
   Future<void> signOut() async {

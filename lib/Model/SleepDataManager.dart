@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:get_it/get_it.dart';
+import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
+
 
 class SleepRecord
 {
