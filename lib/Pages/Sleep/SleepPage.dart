@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:light/light.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:alarm/alarm.dart';
+
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 
 
@@ -11,6 +13,65 @@ import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:sleeptrackerapp/Model/SleepDataManager.dart';
 import 'package:get_it/get_it.dart';
+
+class SleepButton extends StatelessWidget {
+  const SleepButton({Key? key, required this.onPressed}) : super(key: key);
+
+  final Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: const Icon(Icons.bedtime, size: 36),
+      style: ElevatedButton.styleFrom(
+        shape: const CircleBorder(),
+        padding: const EdgeInsets.all(24),
+      ),
+    );
+  }
+}
+
+// to select a time to wake up
+class TimePicker extends StatefulWidget {
+  const TimePicker(this.onTimeChanged, {Key? key}) : super(key: key);
+  final Function(TimeOfDay) onTimeChanged;
+
+  @override
+  _TimePickerState createState() => _TimePickerState();
+}
+
+class _TimePickerState extends State<TimePicker> {
+  TimeOfDay _time = TimeOfDay.now();
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? newTime = await showTimePicker(
+      context: context,
+      initialTime: _time,
+    );
+    if (newTime != null) {
+      setState(() {
+        _time = newTime;
+      });
+      widget.onTimeChanged(_time);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        TextButton(
+          onPressed: () => _selectTime(context),
+          child: const Text('Select wake up time'),
+        ),
+        Text(
+          'Alarm set for: ${_time.format(context)}',
+        ),
+      ],
+    );
+  }
+}
 
 class LineChartWidget extends StatelessWidget {
   LineChartWidget(this.data, this.minY, this.maxY, {super.key}) : spots = data.asMap().map((i, value) {return MapEntry(i, FlSpot(i.toDouble(), value));}).values.toList()
@@ -198,7 +259,6 @@ class SleepPageState extends State<SleepPage> {
   Light? _light; //light sensor
   int? _luxValue; //light value
 
-
   // for graph
   List<double> accelerometerData = [];
   List<double> lightData = [];
@@ -286,6 +346,10 @@ class SleepPageState extends State<SleepPage> {
   {
     // since new accelerometer data comes in only when the user moves the phone, we want to add the last accelerometer value to our data
     // add it as the magnitude of the x, y, z values
+    if(_accelerometerValues == null || _accelerometerValues!.isEmpty)
+    {
+      return;
+    }
     accelerometerData.add(sqrt(pow(_accelerometerValues![0], 2) + pow(_accelerometerValues![1], 2) + pow(_accelerometerValues![2], 2)));
     // remove first element if we have more than 20
     if (accelerometerData.length > 60) {
@@ -323,20 +387,38 @@ class SleepPageState extends State<SleepPage> {
     double adjustedAccelerometerValue = (accelerometerValue / 3).clamp(0, 1);
     // adjust the light value to be between 0 and 1, clamp it to 0 and 1
     double adjustedLightValue = (lightValue / 1000).clamp(0, 1);
-
     //weight each value
     adjustedAccelerometerValue *= 0.75;
     adjustedLightValue *= 0.25;
-
     // we want to have our sleep score be deltaed from the last sleep score
     double sleepScoreDelta = 100 / (adjustedAccelerometerValue + (lightDataAvailable ? adjustedLightValue : 0 ) + 1);
-
     // calculate the new sleep score by moving towards the delta
     double sleepScore = lastSleepRecordScore + (sleepScoreDelta - lastSleepRecordScore) / 100; // move 1% towards the delta
-
-
     // add to sleep data
     GetIt.instance<SleepDataManager>().addSleepRecord(SleepRecord(accelerometerValue, lightValue, DateTime.now().millisecondsSinceEpoch, sleepScore));
+  }
+
+  Alarm ?alarm;
+  TimeOfDay ?time;
+
+  void onSleep()
+  {
+    // start sleep tracking
+    // clear the accelerometer and light data
+    accelerometerData.clear();
+    lightData.clear();
+    // clear the sleep data
+    //GetIt.instance<SleepDataManager>().clearSleepRecords();
+    DateTime now = DateTime.now();
+    // set the date time for the alarm
+    DateTime alarmDateTime = DateTime(now.year, now.month, now.day, time!.hour, time!.minute);
+    if(alarmDateTime.isBefore(now))
+    {
+      // add a day if the alarm is before now
+      alarmDateTime = alarmDateTime.add(const Duration(days: 1));
+    }
+
+    //Alarm.set(alarmSettings: AlarmSettings(id: 42, dateTime: alarmDateTime, assetAudioPath: "assets/alarm.mp3"));
   }
 
   @override
@@ -360,10 +442,17 @@ class SleepPageState extends State<SleepPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
+            // select a time to wake up
+            TimePicker((TimeOfDay time) {
+              setState(() {
+                this.time = time;
+              });
+            }),
+            SleepButton(onPressed: onSleep),
             Text('User Accelerometer: ${userAccelerometer ?? 'Not Available'}'),
             Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(accelerometerData, 0, 3)),
-            Text('Light: ${_luxValue ?? 'Not Available'}'),
-            Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(lightData, 0, 1000)),
+            //Text('Light: ${_luxValue ?? 'Not Available'}'),
+            //Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(lightData, 0, 1000)),
             Text('Sleep Score: ${lastSleepRecord?.sleepScore ?? 'Not Available'}'),
             Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(sleepValues, 0, 1000))
           ],
