@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+
+import 'package:firebase_database/firebase_database.dart';
+
+
 abstract class AuthenticationManager extends ChangeNotifier {
  bool get isAuthenticated;
  User? get currentUser;
@@ -12,6 +16,8 @@ abstract class AuthenticationManager extends ChangeNotifier {
  Future<void> loginWithEmailAndPassword({required String email,required String password, });
  Future<void> signInWithEmailAndPassword({required String email,required String password, });
  Future<void> googleLogin();
+ Future<void> changesAuth();
+ Future<void> subscribeChanges(); 
 
   // Future<void> authenticateWithGoogle();
   Future<void> signOut();
@@ -20,10 +26,7 @@ abstract class AuthenticationManager extends ChangeNotifier {
 class TestAuthenticationManagerImpl extends AuthenticationManager {
   @override
   bool get isAuthenticated => _isAuthenticated;
-  bool _isAuthenticated = false;
-
-  UserCredential? test; 
-  UserCredential? get Current => test; 
+  bool _isAuthenticated = false; 
 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
@@ -55,7 +58,7 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
   }) async {
     await firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
-    notifyListeners();
+    notifyListeners();  
   }
 
   @override
@@ -84,13 +87,59 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
     final googleAuth = await googleUser.authentication;
     final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-        print(credential.accessToken);
 
     await FirebaseAuth.instance.signInWithCredential(credential);
+
+
+    print('THis is working---------------------------------------${firebaseAuth.currentUser?.uid}');
+
+    try{
+     DatabaseReference db = FirebaseDatabase.instance.ref("users");
+    final snapshot = await db.child('users/${firebaseAuth.currentUser?.uid}').get();
+    print('AMM HERE');
+    // if (snapshot.exists) {
+    //   print(snapshot.value);
+    // } else {
+    //   print('No data available-----------------------------.');
+    //   await db.set({
+    //     "userEmail": firebaseAuth.currentUser?.email,
+    //     "userID": firebaseAuth.currentUser?.uid,
+    //     "userName": firebaseAuth.currentUser?.displayName
+    //   });
+    // }
+
+    } catch(e){
+      print('What!?!? ================================ ${e}');
+    }
     _isAuthenticated = true; 
-    googleSignIn.clientId;
     notifyListeners();
   }
+
+@override
+Future<void> changesAuth() async{
+FirebaseAuth.instance
+  .authStateChanges()
+  .listen((User? user) {
+    if (user == null) {
+      print('User is currently signed out!');
+    } else {
+      print('User is signed in!');
+    }
+  });
+}
+
+@override
+Future<void> subscribeChanges() async{
+  FirebaseAuth.instance
+  .idTokenChanges()
+  .listen((User? user) {
+    if (user == null) {
+      print('User is currently signed out!');
+    } else {
+      print('User is signed in!');
+    }
+  });
+}
 
   @override
   Future<void> signOut() async {
