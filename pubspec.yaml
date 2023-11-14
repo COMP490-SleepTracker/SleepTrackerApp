@@ -38,8 +38,13 @@ dependencies:
   sensors_plus: ^3.1.0
   light: ^3.0.1
   fl_chart: ^0.64.0
+  firebase_core: ^2.17.0
+  firebase_auth: ^4.10.1
+  health: ^8.0.0
+  google_sign_in: ^6.1.5
   get_it: ^7.6.4
   path_provider: ^2.1.1
+  alarm: ^2.1.1
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +67,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/alarm.mp3
 
   # To add assets to your application, add an assets section, like this:
   # assets:

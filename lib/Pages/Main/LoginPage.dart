@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sleeptrackerapp/Pages/Main/MainPage.dart';
+import 'package:sleeptrackerapp/Pages/Main/signUp.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:get_it/get_it.dart';
 
@@ -26,11 +27,49 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
-  void onFormSubmit(String username, String password)
-  {          
-    // use the authentication manager to validate the username and password
-
+  void onFormSubmit(String username, String password) async {
+    
+       // use the authentication manager to validate the username and password
+  if(username == 'admin'){
     GetIt.instance<AuthenticationManager>().authenticate(username, password).then((value) => 
+      {
+        // check if the user is authenticated
+        if(GetIt.instance<AuthenticationManager>().isAuthenticated)
+        {
+          // navigate to the main page
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')))
+        }
+        else
+        {
+          ScaffoldMessenger.of(context).showSnackBar( const SnackBar(content: Text('Invalid username or password')), )
+        }
+      }
+    );
+  }
+  else
+  {
+  GetIt.instance<AuthenticationManager>().loginWithEmailAndPassword(email: username, password: password).then((value) => 
+      {
+        // check if the user is authenticated
+        if(GetIt.instance<AuthenticationManager>().isAuthenticated)
+        {
+          // navigate to the main page
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')))
+        }
+        else
+        {
+          ScaffoldMessenger.of(context).showSnackBar( const SnackBar(content: Text('Invalid username or password')), )
+        }
+      }
+    );
+  }
+
+  }
+
+
+///Test Google sign in 
+  void googleSignIn() async {
+    GetIt.instance<AuthenticationManager>().googleLogin().then((value) => 
       {
         // check if the user is authenticated
         if(GetIt.instance<AuthenticationManager>().isAuthenticated)
@@ -48,37 +87,58 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Column( children: [ 
+    return Column(children: [
       TextField(
-      controller: usernameController,
-      decoration: const InputDecoration(
-        icon : Icon(Icons.person),
-        border: OutlineInputBorder(),
-        label: Text('Username')
-      )),
+          controller: usernameController,
+          decoration: const InputDecoration(
+              icon: Icon(Icons.person),
+              border: OutlineInputBorder(),
+              label: Text('Username'))),
       // add padding between username and password
       const SizedBox(height: 10),
-      TextField( 
+      TextField(
         controller: passwordController,
         obscureText: !_passwordVisible,
-        onSubmitted: (s) { onFormSubmit( usernameController.text, passwordController.text); },
+        onSubmitted: (s) {
+          onFormSubmit(usernameController.text, passwordController.text);
+        },
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
-          icon : const Icon(Icons.lock),
-          border: const OutlineInputBorder(),
-          label: const Text('Password'),
-          // set password field to be obscured
-          suffixIcon: IconButton( icon : Icon(_passwordVisible ? Icons.visibility : Icons.visibility_off, color: Theme.of(context).primaryColorLight),
-          onPressed: () {
-            setState(() {
-              _passwordVisible = !_passwordVisible;
-            });
-          })),
-        ),
+            icon: const Icon(Icons.lock),
+            border: const OutlineInputBorder(),
+            label: const Text('Password'),
+            // set password field to be obscured
+            suffixIcon: IconButton(
+                icon: Icon(
+                    _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                    color: Theme.of(context).primaryColorLight),
+                onPressed: () {
+                  setState(() {
+                    _passwordVisible = !_passwordVisible;
+                  });
+                })),
+      ),
       ElevatedButton(
-        onPressed: () { onFormSubmit( usernameController.text, passwordController.text); },
+        onPressed: () {
+          onFormSubmit(usernameController.text, passwordController.text);
+        },
         child: const Text('Submit'),
-      )
+      ),
+      ElevatedButton(
+        onPressed: () {
+          googleSignIn(); 
+        },
+        child: const Text('Sign In With Google'),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const signUpPage(title: 'Sign Up')));
+        },
+        child: const Text('Sign Up'),
+      ),
     ]);
   }
 }
@@ -92,7 +152,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Welcome to Sleep Tracker+'),
+            Text('Welcome to Sleep Tracker-'),
             LoginForm(),
           ],
         ),
