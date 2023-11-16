@@ -136,7 +136,7 @@ class _LoginFormState extends State<LoginForm> {
               context,
               MaterialPageRoute(
                   builder: (context) => const signUpPage(title: 'Sign Up')));
-        },
+        }, 
         child: const Text('Sign Up'),
       ),
     ]);

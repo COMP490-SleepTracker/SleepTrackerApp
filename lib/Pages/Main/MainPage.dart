@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:firebase_database/firebase_database.dart';
 
 
 class MainPage extends StatefulWidget {
@@ -20,33 +20,33 @@ class MainPage extends StatefulWidget {
 
 class _MyHomePageState extends State<MainPage> {
 
-    void testDB() async{
-if (FirebaseAuth.instance.currentUser != null) {
-      print('-------------------------------------------${FirebaseAuth.instance.currentUser?.displayName}');
-      print('-------------------------------------------${FirebaseAuth.instance.currentUser?.email}');
+//     void testDB() async{
+// if (FirebaseAuth.instance.currentUser != null) {
+//       print('-------------------------------------------${FirebaseAuth.instance.currentUser?.displayName}');
+//       print('-------------------------------------------${FirebaseAuth.instance.currentUser?.email}');
       
-    print('THis is working---------------------------------------${FirebaseAuth.instance.currentUser?.uid}');
+//     print('THis is working---------------------------------------${FirebaseAuth.instance.currentUser?.uid}');
 
-    try{
-     DatabaseReference db = FirebaseDatabase.instance.ref("users");
-    final snapshot = await db.child('users/${FirebaseAuth.instance.currentUser?.uid}').get();
-    print('AMM HERE');
-    // if (snapshot.exists) {
-    //   print(snapshot.value);
-    // } else {
-    //   print('No data available-----------------------------.');
-    //   await db.set({
-    //     "userEmail": firebaseAuth.currentUser?.email,
-    //     "userID": firebaseAuth.currentUser?.uid,
-    //     "userName": firebaseAuth.currentUser?.displayName
-    //   });
-    // }
+//     try{
+//      DatabaseReference db = FirebaseDatabase.instance.ref("users");
+//     final snapshot = await db.child('users/userID/${FirebaseAuth.instance.currentUser?.uid}').get();
+//     print('AMM HERE');
+//     if (snapshot.exists) {
+//       print(snapshot.value);
+//     } else {
+//       print('No data available-----------------------------.');
+//       await db.set({
+//         "userEmail": FirebaseAuth.instance.currentUser?.email,
+//         "userID": FirebaseAuth.instance.currentUser?.uid,
+//         "userName": FirebaseAuth.instance.currentUser?.displayName
+//       });
+//     }
 
-    } catch(e){
-      print('What!?!? ================================ ${e}'); //[firebase_database/permission-denied] Client doesn't have permission to access the desired data.q
-    }
-    }
-    }
+//     } catch(e){
+//       print('What!?!? ================================ ${e}'); //[firebase_database/permission-denied] Client doesn't have permission to access the desired data.q
+//     }
+//     }
+//     }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ if (FirebaseAuth.instance.currentUser != null) {
       // navigate to the main page
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
     } else {
-      testDB();
+      //testDB();
     }
     
     return Scaffold(
@@ -65,11 +65,18 @@ if (FirebaseAuth.instance.currentUser != null) {
         title: Text(widget.title),
       ),
       drawer: const NavigationPanel(),
-      body: const Center(
+      body:  Center(  //const was here 
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('Welcome to Sleep Tracker -> '),
+            ElevatedButton(
+            onPressed: () {
+           GetIt.instance<AuthenticationManager>().signOut();
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
+            }, 
+            child: const Text('Sign out of google/firebase'),
+      ),
           ],  
         ), 
       ),

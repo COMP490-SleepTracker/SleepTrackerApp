@@ -20,6 +20,7 @@ abstract class SleepDataManager extends ChangeNotifier {
 
   Future<void> addSleepRecord(SleepRecord sleepRecord);
   Future<void> deleteSleepRecord(SleepRecord sleepRecord);
+  Future<void> LoginDataInFirebase(String? email, String? name, String? userID);
 }
 
 ////////////////////////////////////
@@ -43,19 +44,71 @@ class TestSleepDataManagerImpl extends SleepDataManager {
 
 
 ////Firebase DB
-  Future<void> LoginDataInFirebase(String email, String name, String userID) async {
-    DatabaseReference db = FirebaseDatabase.instance.ref("users");
+  @override
+  Future<void> LoginDataInFirebase(String? email, String? name, String? userID) async {
+    try{
+    final DB = FirebaseDatabase.instance.ref();
+    final userDB = DB.child('users/userID');
 
-    final snapshot = await db.child('users/${userID}').get();
-    if (snapshot.exists) {
-      print(snapshot.value);
-    } else {
-      print('No data available.');
-      await db.set({
-        "userEmail": email,
-        "userID": userID,
-        "userName": name
+    //make the query to check if snapshot exists-->Then you push.set the user data into firebase DB 
+
+    //This will push userdata into RT database located in 'users/userID';  
+    await userDB.push().set({
+        "userEmail":  FirebaseAuth.instance.currentUser?.email,
+        "ID":  FirebaseAuth.instance.currentUser?.uid,
+        "userName":  FirebaseAuth.instance.currentUser?.displayName
       });
-    }
+  } catch (e){
+    print(e);
   }
+  }
+
+
+  Future<void> userDateFirebase(int w) async{
+   try{
+    final DB = FirebaseDatabase.instance.ref();
+    final userDB = DB.child('users/userID');
+
+    //This will push userdata into RT database located in 'users/userID';  
+    await userDB.push().set({
+        "ID":  FirebaseAuth.instance.currentUser?.uid,
+        "Date": w,
+      });
+  } catch (e){
+    print(e);
+  }
+  }
+
+
+  
+//var database = FirebaseDatabase.instance.ref();  ///subcription 
+var userDBSubscription = FirebaseDatabase.instance.ref().child('users/userID').onChildAdded.listen((event){
+
+  print("THIS SuBSCRIBTION IS FULLY WORKING for on Child added" );
+
+  
+});
+
+var userDBRemoved = FirebaseDatabase.instance.ref().child('users/userID').onChildChanged.listen((event){
+
+  print("THIS SuBSCRIBTION IS FULLY WORKING for on child changed ");
+});
+
+
+
+Future<void> TESTDB(int w) async{
+
+//every user must have an email
+DatabaseEvent e = await FirebaseDatabase.instance.ref().child('users/userID').orderByChild("ID").equalTo(FirebaseAuth.instance.currentUser?.uid)
+.once();
+
+if(e.snapshot.exists){
+  print("HELLO I EXIST");
+
+} else {
+  print("HELLO I Do NOT EXIST");
+}
+  }
+
+
 }
