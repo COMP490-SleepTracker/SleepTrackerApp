@@ -19,7 +19,10 @@ await Firebase.initializeApp(
  );
   GetIt.instance.registerSingleton<AuthenticationManager>(TestAuthenticationManagerImpl());
   GetIt.instance.registerSingleton<SleepDataManager>(TestSleepDataManagerImpl());
+  
   GetIt.instance.registerSingleton<SettingsManager>(SettingsManager());
+  // init settings
+  await GetIt.instance.get<SettingsManager>().init();
   // init alarm
   await Alarm.init();
   runApp(const MyApp());

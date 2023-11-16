@@ -11,4 +11,11 @@ class SettingsManager extends LocalStore<String>
   {
     return getApplicationDocumentsDirectory().then((Directory directory) => '${directory.path}/settings.json');
   }
+
+  Future<String> tryGetValue(String key, String defaultValue) async
+  {
+    if(containsKey(key))
+      return getValue(key) as String;
+    return defaultValue;
+  }
 }
