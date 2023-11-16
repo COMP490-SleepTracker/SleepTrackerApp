@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'Model/AuthenticationManager.dart';
 import 'Model/SettingsManager.dart';
 import 'package:sleeptrackerapp/firebase_options.dart';
+import 'package:sleeptrackerapp/Model/UserDataManager.dart';
 
 import 'package:alarm/alarm.dart';
 // void main() {
@@ -23,6 +24,9 @@ await Firebase.initializeApp(
   GetIt.instance.registerSingleton<fitBitManager>(TestfitBit());
 
   GetIt.instance.registerSingleton<SettingsManager>(SettingsManager());
+  GetIt.instance.registerSingleton<UserDataManager>(UserDataManager());
+
+  
   // init alarm
   await Alarm.init();
   runApp(const MyApp());
