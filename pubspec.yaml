@@ -44,6 +44,8 @@ dependencies:
   google_sign_in: ^6.1.5
   get_it: ^7.6.4
   calendar_timeline: ^1.1.2
+  path_provider: ^2.1.1
+  alarm: ^2.1.1
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +68,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/alarm.mp3
 
   # To add assets to your application, add an assets section, like this:
   # assets:

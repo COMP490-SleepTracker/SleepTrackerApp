@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import '../NavigationPanel.dart';
+import 'package:sleeptrackerapp/Widgets/SettingsButton.dart';
+import 'SleepSchedulePage.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.title});
@@ -18,11 +20,20 @@ class _SettingsPageState extends State<SettingsPage> {
         title: const Text('Settings'),
       ),
       drawer : const NavigationPanel(),
-      body: const Center(
-        child: Text(
-          'Settings',
-        ),
-      ),
-    );
+      body: Column(
+          children: [
+            // button to forward to the sleep schedule page, full width
+            SettingsButton(
+              child: const Text('Sleep Schedule'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SleepSchedulePage(title: 'Sleep Schedule')),
+                );
+              },
+            )
+          ],
+        )
+      );
   }
 }

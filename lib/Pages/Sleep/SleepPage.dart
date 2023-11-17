@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:light/light.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:alarm/alarm.dart';
+
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 
 
@@ -11,173 +12,66 @@ import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:sleeptrackerapp/Model/SleepDataManager.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sleeptrackerapp/Widgets/Graphing.dart';
 
-class LineChartWidget extends StatelessWidget {
-  LineChartWidget(this.data, this.minY, this.maxY, {super.key}) : spots = data.asMap().map((i, value) {return MapEntry(i, FlSpot(i.toDouble(), value));}).values.toList()
-  {
-    spots = data
-        .asMap()
-        .map((i, value) {
-          return MapEntry(i, FlSpot(i.toDouble(), value));
-        })
-        .values
-        .toList();
-  }
+class SleepButton extends StatelessWidget {
+  const SleepButton({Key? key, required this.onPressed}) : super(key: key);
 
-  final double minY;
-  final double maxY;
-
-  final List<double> data;
-  List<FlSpot> spots;
-
-  Widget bottomTitleWidgets(double value, TitleMeta meta, double chartWidth) {
-    if (value % 1 != 0) {
-      return Container();
-    }
-    final style = TextStyle(
-      color: Colors.blueGrey,
-      fontWeight: FontWeight.bold,
-      fontSize: min(18, 18 * chartWidth / 300),
-    );
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 16,
-      child: Text(meta.formattedValue, style: style),
-    );
-  }
-
-  Widget leftTitleWidgets(double value, TitleMeta meta, double chartWidth) {
-    final style = TextStyle(
-      color: Colors.blue,
-      fontWeight: FontWeight.bold,
-      fontSize: min(18, 18 * chartWidth / 300),
-    );
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 16,
-      child: Text(meta.formattedValue, style: style),
-    );
-  }
+  final Function() onPressed;
 
   @override
   Widget build(BuildContext context) {
-    // check if the user is authenticated
-    if(!GetIt.instance<AuthenticationManager>().isAuthenticated)
-    {
-      // navigate to the main page
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 12,
-        bottom: 12,
-        right: 20,
-        top: 20,
-      ),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return LineChart(
-              LineChartData(
-                lineTouchData: LineTouchData(
-                  touchTooltipData: LineTouchTooltipData(
-                    maxContentWidth: 100,
-                    tooltipBgColor: Colors.black,
-                    getTooltipItems: (touchedSpots) {
-                      return touchedSpots.map((LineBarSpot touchedSpot) {
-                        final textStyle = TextStyle(
-                          color: touchedSpot.bar.gradient?.colors[0] ??
-                              touchedSpot.bar.color,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        );
-                        return LineTooltipItem(
-                          '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
-                          textStyle,
-                        );
-                      }).toList();
-                    },
-                  ),
-                  handleBuiltInTouches: true,
-                  getTouchLineStart: (data, index) => 0,
-                ),
-                lineBarsData: [
-                  LineChartBarData(
-                    color: Colors.white,
-                    spots: spots,
-                    isCurved: true,
-                    isStrokeCapRound: true,
-                    barWidth: 3,
-                    belowBarData: BarAreaData(
-                      show: false,
-                    ),
-                    dotData: const FlDotData(show: false),
-                  ),
-                ],
-                minY: minY,
-                maxY: maxY,
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) =>
-                          leftTitleWidgets(value, meta, constraints.maxWidth),
-                      reservedSize: 56,
-                    ),
-                    drawBelowEverything: true,
-                  ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) =>
-                          bottomTitleWidgets(value, meta, constraints.maxWidth),
-                      reservedSize: 36,
-                      interval: 1,
-                    ),
-                    drawBelowEverything: true,
-                  ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                ),
-                gridData: FlGridData(
-                  show: true,
-                  drawHorizontalLine: true,
-                  drawVerticalLine: true,
-                  horizontalInterval: 1.5,
-                  verticalInterval: 5,
-                  checkToShowHorizontalLine: (value) {
-                    return value.toInt() == 0;
-                  },
-                  getDrawingHorizontalLine: (_) => FlLine(
-                    color: Colors.blueGrey.withOpacity(0.5),
-                    dashArray: [8, 2],
-                    strokeWidth: 0.8,
-                  ),
-                  getDrawingVerticalLine: (_) => FlLine(
-                    color: Colors.blueGrey.withOpacity(0.5),
-                    dashArray: [8, 2],
-                    strokeWidth: 0.8,
-                  ),
-                  checkToShowVerticalLine: (value) {
-                    return value.toInt() == 0;
-                  },
-                ),
-                borderData: FlBorderData(show: false),
-              ),
-            );
-          },
-        ),
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: const Icon(Icons.bedtime, size: 36),
+      style: ElevatedButton.styleFrom(
+        shape: const CircleBorder(),
+        padding: const EdgeInsets.all(24),
       ),
     );
   }
 }
 
+// to select a time to wake up
+class TimePicker extends StatefulWidget {
+  const TimePicker(this.onTimeChanged, {Key? key}) : super(key: key);
+  final Function(TimeOfDay) onTimeChanged;
+
+  @override
+  _TimePickerState createState() => _TimePickerState();
+}
+
+class _TimePickerState extends State<TimePicker> {
+  TimeOfDay _time = TimeOfDay.now();
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? newTime = await showTimePicker(
+      context: context,
+      initialTime: _time,
+    );
+    if (newTime != null) {
+      setState(() {
+        _time = newTime;
+      });
+      widget.onTimeChanged(_time);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        TextButton(
+          onPressed: () => _selectTime(context),
+          child: const Text('Select wake up time'),
+        ),
+        Text(
+          'Alarm set for: ${_time.format(context)}',
+        ),
+      ],
+    );
+  }
+}
 class SleepPage extends StatefulWidget {
   const SleepPage({super.key, required this.title});
   final String title;
@@ -198,7 +92,6 @@ class SleepPageState extends State<SleepPage> {
   Light? _light; //light sensor
   int? _luxValue; //light value
 
-
   // for graph
   List<double> accelerometerData = [];
   List<double> lightData = [];
@@ -210,6 +103,7 @@ class SleepPageState extends State<SleepPage> {
 
     super.initState();
     timer = Timer.periodic(const Duration(seconds: 5), (Timer t) => logSleepData());
+    time = TimeOfDay.now();
     accelerometerTimer = Timer.periodic(const Duration(milliseconds: 250), (Timer t) => updateAccelerometerData());
     GetIt.instance<SleepDataManager>().addListener(update);
 
@@ -286,6 +180,10 @@ class SleepPageState extends State<SleepPage> {
   {
     // since new accelerometer data comes in only when the user moves the phone, we want to add the last accelerometer value to our data
     // add it as the magnitude of the x, y, z values
+    if(_accelerometerValues == null || _accelerometerValues!.isEmpty)
+    {
+      return;
+    }
     accelerometerData.add(sqrt(pow(_accelerometerValues![0], 2) + pow(_accelerometerValues![1], 2) + pow(_accelerometerValues![2], 2)));
     // remove first element if we have more than 20
     if (accelerometerData.length > 60) {
@@ -323,24 +221,61 @@ class SleepPageState extends State<SleepPage> {
     double adjustedAccelerometerValue = (accelerometerValue / 3).clamp(0, 1);
     // adjust the light value to be between 0 and 1, clamp it to 0 and 1
     double adjustedLightValue = (lightValue / 1000).clamp(0, 1);
-
     //weight each value
     adjustedAccelerometerValue *= 0.75;
     adjustedLightValue *= 0.25;
-
     // we want to have our sleep score be deltaed from the last sleep score
     double sleepScoreDelta = 100 / (adjustedAccelerometerValue + (lightDataAvailable ? adjustedLightValue : 0 ) + 1);
-
     // calculate the new sleep score by moving towards the delta
     double sleepScore = lastSleepRecordScore + (sleepScoreDelta - lastSleepRecordScore) / 100; // move 1% towards the delta
-
-
     // add to sleep data
     GetIt.instance<SleepDataManager>().addSleepRecord(SleepRecord(accelerometerValue, lightValue, DateTime.now().millisecondsSinceEpoch, sleepScore));
   }
 
+  Alarm ?alarm;
+  TimeOfDay time = TimeOfDay.now();
+
+  void _selectTime()
+  {
+    showTimePicker(context: context, initialTime: time).then((value) => {
+      if(value != null)
+      {
+        setState(() {
+          time = value;
+        })
+      }
+    });
+  }
+
+  void onSleep() async
+  {
+    // start sleep tracking
+    // clear the accelerometer and light data
+    accelerometerData.clear();
+    lightData.clear();
+    // clear the sleep data
+    //GetIt.instance<SleepDataManager>().clearSleepRecords();
+    DateTime now = DateTime.now();
+    // set the date time for the alarm
+    DateTime alarmDateTime = DateTime(now.year, now.month, now.day, time!.hour, time!.minute);
+    if(alarmDateTime.isBefore(now))
+    {
+      // add a day if the alarm is before now
+      alarmDateTime = alarmDateTime.add(const Duration(days: 1));
+    }
+    AlarmSettings alarmSettings = AlarmSettings(id: 42, dateTime: alarmDateTime, assetAudioPath: "assets/alarm.mp3",   loopAudio: true, vibrate: true, notificationTitle: 'Sleep Tracker +', notificationBody: 'Time to wake up!', volumeMax: true, fadeDuration: 3.0, stopOnNotificationOpen: true);
+    await Alarm.set(alarmSettings: alarmSettings);
+  }
+
   @override
   Widget build(BuildContext context) {
+    // check if the user is authenticated
+    if(!GetIt.instance<AuthenticationManager>().isAuthenticated)
+    {
+      // navigate to the main page
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
+    }
+
     SleepRecord? lastSleepRecord = GetIt.instance<SleepDataManager>().sleepRecords.lastOrNull;
     final userAccelerometer = _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
 
@@ -360,10 +295,24 @@ class SleepPageState extends State<SleepPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
+            // select a time to wake up
+            Column(
+              children: <Widget>[
+                TextButton(
+                  onPressed: () => _selectTime(),
+                  child: const Text('Select wake up time'),
+                ),
+                Text(
+                  'Alarm set for: ${time.format(context)}',
+                ),
+              ],
+            ),
+            
+            SleepButton(onPressed: onSleep),
             Text('User Accelerometer: ${userAccelerometer ?? 'Not Available'}'),
             Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(accelerometerData, 0, 3)),
-            Text('Light: ${_luxValue ?? 'Not Available'}'),
-            Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(lightData, 0, 1000)),
+            //Text('Light: ${_luxValue ?? 'Not Available'}'),
+            //Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(lightData, 0, 1000)),
             Text('Sleep Score: ${lastSleepRecord?.sleepScore ?? 'Not Available'}'),
             Container(height: 150, width: 600, color: Theme.of(context).colorScheme.background, child: LineChartWidget(sleepValues, 0, 1000))
           ],
