@@ -109,15 +109,21 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
     // call getDataByQuery
     List<UserDataEntry> userEntry = await userDB.getDataByQuery(userQuery);
 
+    String? uid = firebaseAuth.currentUser?.uid;
+    if(uid == null)
+    {
+      return;
+    }
+
+
     // if the user is not in the database, add them
     if (userEntry.isEmpty) {
       UserDataEntry userData = UserDataEntry(
-        ID: firebaseAuth.currentUser?.uid ?? '',
         userEmail: firebaseAuth.currentUser?.email ?? '',
         userName: firebaseAuth.currentUser?.displayName ?? '',
       );
-      await userDB.addData(userData, key: userData.ID);
-      log('user added ${userData.ID} ${userData.userEmail} ${userData.userName}');
+      await userDB.addData(userData, key: uid);
+      log('user added $uid ${userData.userEmail} ${userData.userName}');
     }
     else
     {
@@ -125,8 +131,8 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
       UserDataEntry userData = userEntry.first;
       userData.userEmail = firebaseAuth.currentUser?.email ?? '';
       userData.userName = firebaseAuth.currentUser?.displayName ?? '';
-      await userDB.updateData(userData.ID, userData);
-      log('user updated ${userData.ID} ${userData.userEmail} ${userData.userName}');
+      await userDB.updateData(uid, userData);
+      log('user updated ${userData.userEmail} ${userData.userName}');
     }
 
     notifyListeners();
