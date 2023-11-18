@@ -24,6 +24,7 @@ class fitbitFootSteps {
 
 abstract class fitBitManager extends ChangeNotifier {
   Future<void> fitBitTest(); 
+  Future<void> authorize();
 
 }
 
@@ -51,27 +52,26 @@ class TestfitBit extends fitBitManager {
   // define the types to get
   static final types = [
     HealthDataType.STEPS,
-    HealthDataType.BLOOD_GLUCOSE,
+    //HealthDataType.BLOOD_GLUCOSE,
    // HealthDataType.SLEEP_SESSION,
-    HealthDataType.SLEEP_ASLEEP,
-    HealthDataType.SLEEP_IN_BED,
-    HealthDataType.SLEEP_AWAKE,
-    //HealthDataType.SLEEP_REM,
+    //HealthDataType.SLEEP_ASLEEP,
+    //HealthDataType.SLEEP_IN_BED,
+   // HealthDataType.SLEEP_AWAKE,
+   // HealthDataType.SLEEP_REM,
   ];
 
 
 
   final permissions = types.map((e) => HealthDataAccess.READ_WRITE).toList();
 
-  
-  Future authorize() async {
+  @override
+  Future<void> authorize() async {
     // If we are trying to read Step Count, Workout, Sleep or other data that requires
     // the ACTIVITY_RECOGNITION permission, we need to request the permission first.
     // This requires a special request authorization call.
     //
     // The location permission is requested for Workouts using the Distance information.
     await Permission.activityRecognition.request();
-    await Permission.location.request();
 
     // Check if we have permission
     bool? hasPermissions =
@@ -93,6 +93,9 @@ class TestfitBit extends fitBitManager {
     }
 
    _state = (authorized) ? AppState.AUTHORIZED : AppState.AUTH_NOT_GRANTED;
+   print("THiS TESTS IF PERMISSIONS IS AUTHORIZED $_state");
+
+   fitBitTest();
   }
 
 
@@ -106,9 +109,15 @@ class TestfitBit extends fitBitManager {
 // requesting access to the data types before reading them
   bool requested = await health.requestAuthorization(types);
 
+  print("this is testing the requested data for health ----------> $requested");
+
   // get data within the last 24 hours
-    final now = DateTime.now();
-    final yesterday = now.subtract(Duration(hours: 24));
+    final now = DateTime.now().subtract(Duration(days: 1));
+    final yesterday = now.subtract(Duration(days: 2));
+
+  print("DATE NOW $now");
+  print("YESTERDAY $yesterday");
+  print("PERMISSIONS $permissions");
 
     // Clear old data points
     _healthDataList.clear();
@@ -116,7 +125,10 @@ class TestfitBit extends fitBitManager {
   try {
       // fetch health data
       List<HealthDataPoint> healthData =
-          await health.getHealthDataFromTypes(now, yesterday, types);
+          await health.getHealthDataFromTypes(yesterday,now, types);
+
+
+          print("====================================================================S");
       // save all the new data points (only the first 100)
       _healthDataList.addAll(
           (healthData.length < 100) ? healthData : healthData.sublist(0, 100));
@@ -124,10 +136,12 @@ class TestfitBit extends fitBitManager {
       print("The list ===========================================================================================================================");
       _healthDataList.forEach((element) {print("test this --> $element");});
     } catch (error) {
-      print("-------------------------------------------Exception in getHealthDataFromTypes: $error");
+      print("------------------Exception in getHealthDataFromTypes: $error");
     }
 
     _state = _healthDataList.isEmpty ? AppState.NO_DATA : AppState.DATA_READY;
+
+    print("===================================================================================  $_state");
 
   }
 

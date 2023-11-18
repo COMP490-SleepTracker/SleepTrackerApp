@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sleeptrackerapp/Model/fitBit.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
@@ -76,6 +77,12 @@ class _MyHomePageState extends State<MainPage> {
            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
             }, 
             child: const Text('Sign out of google/firebase'),
+      ),
+      ElevatedButton(
+            onPressed: () {
+              GetIt.instance<fitBitManager>().authorize();
+            }, 
+            child: const Text('Test for fitbit'),
       ),
           ],  
         ), 
