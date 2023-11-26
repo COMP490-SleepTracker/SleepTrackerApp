@@ -1,8 +1,7 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
+import 'package:sleeptrackerapp/Model/SecureStorage.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:calendar_timeline/calendar_timeline.dart';
@@ -17,37 +16,43 @@ class JournalPage extends StatefulWidget {
 
 class _JournalPageState extends State<JournalPage> {
   late DateTime _selectedDate;
+  DateTime firstDate = DateTime.now();
   TextEditingController textcontroller = TextEditingController();
-  Map<DateTime, String> entries = HashMap();
   double textBoxHeight = 350;
 
   @override
   void initState() {
+    setFirstDate();
     super.initState();
     _resetSelectedDate();
   }
+///Reads first date from storage. If empty, sets first date as today's date and writes into storage
+  void setFirstDate() async {
+    String first = await SecureStorage().readSecureData('FirstDate');
+    if(first == ''){
+      firstDate = firstDate.subtract(Duration(hours: firstDate.hour, minutes: firstDate.minute, seconds: firstDate.second, milliseconds: firstDate.millisecond, microseconds: firstDate.microsecond));
+      SecureStorage().writeSecureData('FirstDate', '$firstDate');
+    }
+    else{
+      firstDate = DateTime.parse(first);
+    }
+  }
 
+///Sets calendar to today's date
   void _resetSelectedDate() {
     DateTime today = DateTime.now();
     today = today.subtract(Duration(hours: today.hour, minutes: today.minute, seconds: today.second, milliseconds: today.millisecond, microseconds: today.microsecond));
     _selectedDate = today;
     setJournalEntry(_selectedDate);
   }
-
-  void setJournalEntry(DateTime date) {
-    if (entries.containsKey(date)) {
-      textcontroller.text = entries[date].toString();
-    } else {
-      textcontroller.text = '';
-    }
+///Reads journal entry from storage using selected date as key
+  void setJournalEntry(DateTime date) async {
+    textcontroller.text = await SecureStorage().readSecureData('Journal-$date');
   }
-
+///Closes keyboard, writes journal into storage, and expands text field
   void submitAndExpandText(BuildContext context) {
     FocusScope.of(context).unfocus();
-    if (textcontroller.text.isNotEmpty &&
-        entries[_selectedDate] != textcontroller.text) {
-      entries.addAll({_selectedDate: textcontroller.text});
-    }
+    SecureStorage().writeSecureData('Journal-$_selectedDate', textcontroller.text);
     if (MediaQuery.of(context).viewInsets.bottom != 0) {
       Future.delayed(const Duration(milliseconds: 200), () {
         textBoxHeight = 350;
@@ -81,8 +86,8 @@ class _JournalPageState extends State<JournalPage> {
               CalendarTimeline(
                 showYears: true,
                 initialDate: _selectedDate,
-                firstDate: DateTime.now(),
-                lastDate: DateTime.now().add(const Duration(days: 365 * 4)),
+                firstDate: firstDate,
+                lastDate: DateTime.now(),
                 onDateSelected: (date) => setState(() {
                   setJournalEntry(date);
                   _selectedDate = (date);
