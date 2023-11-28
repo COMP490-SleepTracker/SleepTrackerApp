@@ -9,7 +9,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sleeptrackerapp/Model/SleepDataManager.dart';
 import 'package:sleeptrackerapp/Model/UserDataManager.dart';
-import 'package:sleeptrackerapp/Model/fitBit.dart';
 
 import 'dart:developer';
 
@@ -98,6 +97,8 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
 
     _isAuthenticated = true; 
 
+    // print("THIS IS THE FIREBASE UID ${FirebaseAuth.instance.currentUser?.uid}");
+
     // get the user data
     final userDB = GetIt.instance.get<UserDataManager>();
 
@@ -134,7 +135,6 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
       await userDB.updateData(uid, userData);
       log('user updated ${userData.userEmail} ${userData.userName}');
     }
-
     notifyListeners();
   }
 

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:sleeptrackerapp/Model/fitBit.dart';
+import 'package:sleeptrackerapp/Model/HealthDataManager.dart';
+import 'package:sleeptrackerapp/Model/healthConnect.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Model/SleepDataManager.dart';
 import 'package:get_it/get_it.dart';
@@ -21,7 +22,9 @@ await Firebase.initializeApp(
  );
   GetIt.instance.registerSingleton<AuthenticationManager>(TestAuthenticationManagerImpl());
   GetIt.instance.registerSingleton<SleepDataManager>(TestSleepDataManagerImpl());
-  GetIt.instance.registerSingleton<fitBitManager>(TestfitBit());
+
+  GetIt.instance.registerSingleton<HealthConnect>(HealthConnectStore());
+  GetIt.instance.registerSingleton<HealthConnectDataManager>(HealthConnectDataManager());
 
   GetIt.instance.registerSingleton<SettingsManager>(SettingsManager());
   GetIt.instance.registerSingleton<UserDataManager>(UserDataManager());

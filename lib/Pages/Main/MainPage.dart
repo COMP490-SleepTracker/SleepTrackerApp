@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sleeptrackerapp/Model/fitBit.dart';
+import 'package:sleeptrackerapp/Model/healthConnect.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
@@ -22,32 +22,6 @@ class MainPage extends StatefulWidget {
 class _MyHomePageState extends State<MainPage> {
 
 //     void testDB() async{
-// if (FirebaseAuth.instance.currentUser != null) {
-//       print('-------------------------------------------${FirebaseAuth.instance.currentUser?.displayName}');
-//       print('-------------------------------------------${FirebaseAuth.instance.currentUser?.email}');
-      
-//     print('THis is working---------------------------------------${FirebaseAuth.instance.currentUser?.uid}');
-
-//     try{
-//      DatabaseReference db = FirebaseDatabase.instance.ref("users");
-//     final snapshot = await db.child('users/userID/${FirebaseAuth.instance.currentUser?.uid}').get();
-//     print('AMM HERE');
-//     if (snapshot.exists) {
-//       print(snapshot.value);
-//     } else {
-//       print('No data available-----------------------------.');
-//       await db.set({
-//         "userEmail": FirebaseAuth.instance.currentUser?.email,
-//         "userID": FirebaseAuth.instance.currentUser?.uid,
-//         "userName": FirebaseAuth.instance.currentUser?.displayName
-//       });
-//     }
-
-//     } catch(e){
-//       print('What!?!? ================================ ${e}'); //[firebase_database/permission-denied] Client doesn't have permission to access the desired data.q
-//     }
-//     }
-//     }
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +54,17 @@ class _MyHomePageState extends State<MainPage> {
       ),
       ElevatedButton(
             onPressed: () {
-              GetIt.instance<fitBitManager>().authorize();
+              final now = DateTime.now();
+              final midnight = DateTime(now.year, now.month, now.day);  
+            // GetIt.instance<HealthConnect>().writeTestData();  
+             
+            HealthConnect e = GetIt.instance<HealthConnect>();  
+             var test = e.ReadData(null,midnight, now);
+             print("========================================================================================================");
+             
+             // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HealthApp()));
             }, 
-            child: const Text('Test for fitbit'),
+            child: const Text('Test for Health Connect'),
       ),
           ],  
         ), 
@@ -90,6 +72,8 @@ class _MyHomePageState extends State<MainPage> {
     );
   }
 }
+
+
 
 
 // class AuthData extends _MyHomePageState{

@@ -20,7 +20,7 @@ abstract class SleepDataManager extends ChangeNotifier {
 
   Future<void> addSleepRecord(SleepRecord sleepRecord);
   Future<void> deleteSleepRecord(SleepRecord sleepRecord);
-  Future<void> LoginDataInFirebase(String? email, String? name, String? userID);
+  // Future<void> LoginDataInFirebase(String? email, String? name, String? userID);
 }
 
 ////////////////////////////////////
@@ -45,40 +45,40 @@ class TestSleepDataManagerImpl extends SleepDataManager {
 
 /////////////
 ////////////////Firebase DB
-  @override
-  Future<void> LoginDataInFirebase(String? email, String? name, String? userID) async {
-    try{
-    final DB = FirebaseDatabase.instance.ref();
-    final userDB = DB.child('users/userID');
+  // @override
+  // Future<void> LoginDataInFirebase(String? email, String? name, String? userID) async {
+  //   try{
+  //   final DB = FirebaseDatabase.instance.ref();
+  //   final userDB = DB.child('users/userID');
 
-    //make the query to check if snapshot exists-->Then you push.set the user data into firebase DB 
+  //   //make the query to check if snapshot exists-->Then you push.set the user data into firebase DB 
 
-    //This will push userdata into RT database located in 'users/userID';  
-    await userDB.push().set({
-        "userEmail":  FirebaseAuth.instance.currentUser?.email,
-        "ID":  FirebaseAuth.instance.currentUser?.uid,
-        "userName":  FirebaseAuth.instance.currentUser?.displayName
-      });
-  } catch (e){
-    print(e);
-  }
-  }
+  //   //This will push userdata into RT database located in 'users/userID';  
+  //   await userDB.push().set({
+  //       "userEmail":  FirebaseAuth.instance.currentUser?.email,
+  //       "ID":  FirebaseAuth.instance.currentUser?.uid,
+  //       "userName":  FirebaseAuth.instance.currentUser?.displayName
+  //     });
+  // } catch (e){
+  //   print(e);
+  // }
+  // }
 
 
-  Future<void> userDateFirebase(int w) async{
-   try{
-    final DB = FirebaseDatabase.instance.ref();
-    final userDB = DB.child('users/userID');
+  // Future<void> userDateFirebase(int w) async{
+  //  try{
+  //   final DB = FirebaseDatabase.instance.ref();
+  //   final userDB = DB.child('users/userID');
 
-    //This will push userdata into RT database located in 'users/userID';  
-    await userDB.push().set({
-        "ID":  FirebaseAuth.instance.currentUser?.uid,
-        "Date": w,
-      });
-  } catch (e){
-    print(e);
-  }
-  }
+  //   //This will push userdata into RT database located in 'users/userID';  
+  //   await userDB.push().set({
+  //       "ID":  FirebaseAuth.instance.currentUser?.uid,
+  //       "Date": w,
+  //     });
+  // } catch (e){
+  //   print(e);
+  // }
+  // }
 
 
   
@@ -97,19 +97,19 @@ var userDBRemoved = FirebaseDatabase.instance.ref().child('users/userID').onChil
 
 
 
-Future<void> TESTDB(int w) async{
+// Future<void> TESTDB(int w) async{
 
-//every user must have an email
-DatabaseEvent e = await FirebaseDatabase.instance.ref().child('users/userID').orderByChild("ID").equalTo(FirebaseAuth.instance.currentUser?.uid)
-.once();
+// //every user must have an email
+// DatabaseEvent e = await FirebaseDatabase.instance.ref().child('users/userID').orderByChild("ID").equalTo(FirebaseAuth.instance.currentUser?.uid)
+// .once();
 
-if(e.snapshot.exists){
-  print("HELLO I EXIST");
+// if(e.snapshot.exists){
+//   print("HELLO I EXIST");
 
-} else {
-  print("HELLO I Do NOT EXIST");
-}
-  }
+// } else {
+//   print("HELLO I Do NOT EXIST");
+// }
+//   }
 
 
 }

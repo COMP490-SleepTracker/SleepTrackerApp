@@ -26,7 +26,7 @@ abstract class DatabaseStore<T extends IRecord>
   /// Creates a new record of type [T].
   T createRecord();
 
-  /// Adds the given data to the database.
+  /// Adds the given data to the database.   ////Set keys to be userID, if null it will generate a random key 
   Future<void> addData(T data, { String? key }) async
   {
     if (key == null)
@@ -104,6 +104,7 @@ abstract class DatabaseStore<T extends IRecord>
       return records;
     }
   }
+  
 
   
 }
