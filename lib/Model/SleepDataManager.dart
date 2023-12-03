@@ -83,17 +83,17 @@ class TestSleepDataManagerImpl extends SleepDataManager {
 
   
 //var database = FirebaseDatabase.instance.ref();  ///subcription 
-var userDBSubscription = FirebaseDatabase.instance.ref().child('users/userID').onChildAdded.listen((event){
+// var userDBSubscription = FirebaseDatabase.instance.ref().child('users/userID').onChildAdded.listen((event){
 
-  print("THIS SuBSCRIBTION IS FULLY WORKING for on Child added" );
+//   print("THIS SuBSCRIBTION IS FULLY WORKING for on Child added" );
 
   
-});
+// });
 
-var userDBRemoved = FirebaseDatabase.instance.ref().child('users/userID').onChildChanged.listen((event){
+// var userDBRemoved = FirebaseDatabase.instance.ref().child('users/userID').onChildChanged.listen((event){
 
-  print("THIS SuBSCRIBTION IS FULLY WORKING for on child changed ");
-});
+//   print("THIS SuBSCRIBTION IS FULLY WORKING for on child changed ");
+// });
 
 
 

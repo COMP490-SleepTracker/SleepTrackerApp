@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health/health.dart';
 import 'package:sleeptrackerapp/Model/healthConnect.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
@@ -6,6 +7,9 @@ import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+
+
+
 
 
 // import 'package:firebase_database/firebase_database.dart';
@@ -21,11 +25,28 @@ class MainPage extends StatefulWidget {
 
 class _MyHomePageState extends State<MainPage> {
 
-//     void testDB() async{
-
   @override
   Widget build(BuildContext context) {
-     final user = FirebaseAuth.instance.currentUser; 
+    testThis() async {
+              final now = DateTime.now();
+              final midnight = DateTime(now.year, now.month, now.day);
+              final yesterday = now.subtract(Duration(hours: 24));
+       HealthConnect e = GetIt.instance<HealthConnect>();  
+        List<HealthDataPoint>? test = await e.ReadRawData([HealthDataType.STEPS],midnight, now);
+        print("========================================================================================================");
+
+
+        String totalSteps = await e.returnTotal(HealthDataType.STEPS,midnight,now);
+        print("TOTAL STEPS $totalSteps");
+
+        String avgHeart = await e.returnTotal(HealthDataType.HEART_RATE,midnight,now);
+        print("avgHeartRate $avgHeart");
+
+        // String totalDeep = await e.returnTotal(HealthDataType.SLEEP_REM,yesterday,now);
+        // print("DEEP $totalDeep");
+  }
+
+    final user = FirebaseAuth.instance.currentUser; 
     if(!GetIt.instance<AuthenticationManager>().isAuthenticated)
     {
       // navigate to the main page
@@ -52,20 +73,12 @@ class _MyHomePageState extends State<MainPage> {
             }, 
             child: const Text('Sign out of google/firebase'),
       ),
-      ElevatedButton(
-            onPressed: () {
-              final now = DateTime.now();
-              final midnight = DateTime(now.year, now.month, now.day);  
-            // GetIt.instance<HealthConnect>().writeTestData();  
-             
-            HealthConnect e = GetIt.instance<HealthConnect>();  
-             var test = e.ReadData(null,midnight, now);
-             print("========================================================================================================");
-             
-             // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HealthApp()));
-            }, 
-            child: const Text('Test for Health Connect'),
-      ),
+      // ElevatedButton(
+      //       onPressed: () {
+      //         testThis();
+      //       }, 
+      //       child: const Text('Test for Health Connect'),
+      // ),
           ],  
         ), 
       ),
@@ -74,18 +87,3 @@ class _MyHomePageState extends State<MainPage> {
 }
 
 
-
-
-// class AuthData extends _MyHomePageState{
-
-
-//   @override
-//   Widget build(BuildContext context){
-
-//   }
-
-
-  // child: StreamBuilder(stream: FirebaseAuth.instance.authStateChanges(),
-  //     builder: (context,snapshot) {
-  //       return LoginPage(title: "Login"); 
-  //     } ) ,  
