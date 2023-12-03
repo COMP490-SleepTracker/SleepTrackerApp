@@ -45,8 +45,9 @@ dependencies:
   get_it: ^7.6.4
   calendar_timeline: ^1.1.2
   path_provider: ^2.1.1
-  alarm: ^2.1.1
   flutter_secure_storage: ^9.0.0
+  alarm: ^2.1.1
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:

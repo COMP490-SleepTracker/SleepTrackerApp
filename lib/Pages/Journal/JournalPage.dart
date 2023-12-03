@@ -17,12 +17,14 @@ class JournalPage extends StatefulWidget {
 class _JournalPageState extends State<JournalPage> {
   late DateTime _selectedDate;
   late final Future firstDate = getFirstDate();
+  late final lastDate;
   TextEditingController textcontroller = TextEditingController();
   double textBoxHeight = 350;
   
 
   @override
   void initState() {
+    setlastDate();
     _resetSelectedDate();
     super.initState();
   }
@@ -43,6 +45,11 @@ class _JournalPageState extends State<JournalPage> {
          SecureStorage().writeSecureData('FirstDate', today.toString());
          return today.toString();
       }
+  }
+  void setlastDate(){
+    DateTime today = DateTime.now();
+    today = today.subtract(Duration(hours: today.hour, minutes: today.minute, seconds: today.second, milliseconds: today.millisecond, microseconds: today.microsecond));
+    lastDate = today.add(const Duration(days: 1));
   }
 
 ///Sets calendar to today's date
@@ -85,75 +92,72 @@ class _JournalPageState extends State<JournalPage> {
         body: FutureBuilder(
           builder: (context, snapshot){
             //If future is retrieved from storage, load page
-            if(snapshot.connectionState == ConnectionState.done){
-              if(snapshot.hasData){
-                final data = snapshot.data as String;
-                final firstDate = DateTime.parse(data);
-                return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(5),
-            ),
-            CalendarTimeline(
-              showYears: true,
-              initialDate: _selectedDate,
-              firstDate: firstDate,
-              lastDate: _selectedDate,
-              onDateSelected: (date) => setState(() {
-                setJournalEntry(date);
-                _selectedDate = (date);
-              }),
-              leftMargin: 10,
-              monthColor: Colors.white70,
-              dayColor: Colors.white70,
-              dayNameColor: const Color(0xFF333A47),
-              activeDayColor: Colors.white,
-              activeBackgroundDayColor: Colors.purple[200],
-              dotsColor: const Color(0xFF333A47),
-              selectableDayPredicate: null,
-              locale: 'en',
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: TextButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.white),
-                ),
-                child: const Text(
-                  'Today',
-                  style: TextStyle(color: Color(0xFF333A47)),
-                ),
-                onPressed: () => setState(() => _resetSelectedDate()),
+            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+              final data = snapshot.data as String;
+              final firstDate = DateTime.parse(data);
+              return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Padding(
+            padding: EdgeInsets.all(5),
+          ),
+          CalendarTimeline(
+            showYears: true,
+            initialDate: _selectedDate,
+            firstDate: firstDate,
+            lastDate: lastDate,
+            onDateSelected: (date) => setState(() {
+              setJournalEntry(date);
+              _selectedDate = (date);
+            }),
+            leftMargin: 10,
+            monthColor: Colors.white70,
+            dayColor: Colors.white70,
+            dayNameColor: const Color(0xFF333A47),
+            activeDayColor: Colors.white,
+            activeBackgroundDayColor: Colors.purple[200],
+            dotsColor: const Color(0xFF333A47),
+            selectableDayPredicate:(day) {
+              return day == lastDate ? false : true;
+            },
+            locale: 'en',
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24)))),
+              child: const Text(
+                'Today',
               ),
+              onPressed: () => setState(() => _resetSelectedDate()),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              constraints: BoxConstraints(
-                maxHeight: textBoxHeight,
-              ),
-              child: Scrollbar(
-                thumbVisibility: true,
-                child: SingleChildScrollView(
-                  child: TextField(
-                    onSubmitted: (value) => submitAndExpandText(context),
-                    textInputAction: TextInputAction.done,
-                    onTapOutside: (event) => submitAndExpandText(context),
-                    onTap: () => setState(() => textBoxHeight = 85),
-                    controller: textcontroller,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                        hintText:
-                            'Log notes on your quality of sleep or dreams'),
-                    style: const TextStyle(color: Colors.white),
-                  ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            constraints: BoxConstraints(
+              maxHeight: textBoxHeight,
+            ),
+            child: Scrollbar(
+              thumbVisibility: true,
+              child: SingleChildScrollView(
+                child: TextField(
+                  onSubmitted: (value) => submitAndExpandText(context),
+                  textInputAction: TextInputAction.done,
+                  onTapOutside: (event) => submitAndExpandText(context),
+                  onTap: () => setState(() => textBoxHeight = 85),
+                  controller: textcontroller,
+                  maxLines: null,
+                  decoration: const InputDecoration(
+                      hintText:
+                          'Log notes on your quality of sleep or dreams'),
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
-            )
-          ],
-        );
-              }
+            ),
+          )
+        ],
+      );
             }
             return const Center(
               child: CircularProgressIndicator(),
