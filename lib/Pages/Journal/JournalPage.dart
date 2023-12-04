@@ -17,7 +17,7 @@ class JournalPage extends StatefulWidget {
 class _JournalPageState extends State<JournalPage> {
   late DateTime _selectedDate;
   late final Future firstDate = getFirstDate();
-  late final lastDate;
+  late final DateTime lastDate;
   TextEditingController textcontroller = TextEditingController();
   double textBoxHeight = 350;
   
