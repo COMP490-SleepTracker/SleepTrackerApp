@@ -15,20 +15,22 @@ class StatisticsPage extends StatefulWidget {
 }
 
 class _StatisticsPageState extends State<StatisticsPage> {
+  TextEditingController date = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-      List<String> t = [];   
-         
-        final types = [
-        HealthDataType.STEPS,
-        HealthDataType.HEART_RATE,
-        HealthDataType.SLEEP_SESSION,
-        HealthDataType.SLEEP_ASLEEP,
-        HealthDataType.SLEEP_AWAKE,
-        HealthDataType.SLEEP_REM,
-        HealthDataType.SLEEP_DEEP,
-        HealthDataType.SLEEP_LIGHT
-      ];
+    List<String> t = [];
+
+    final types = [
+      HealthDataType.STEPS,
+      HealthDataType.HEART_RATE,
+      HealthDataType.SLEEP_SESSION,
+      HealthDataType.SLEEP_ASLEEP,
+      HealthDataType.SLEEP_AWAKE,
+      HealthDataType.SLEEP_REM,
+      HealthDataType.SLEEP_DEEP,
+      HealthDataType.SLEEP_LIGHT
+    ];
 
     if (!GetIt.instance<AuthenticationManager>().isAuthenticated) {
       // navigate to the main page
@@ -38,61 +40,85 @@ class _StatisticsPageState extends State<StatisticsPage> {
               builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
     }
 
-    Future<List<String>> returnAllTotal(List<HealthDataType> type) async {  
-        final now = DateTime.now();
-        final midnight = DateTime(now.year, now.month, now.day);
-        final yesterday = now.subtract(Duration(hours: 24));
-        final midnightYesterday = DateTime(yesterday.year, yesterday.month, yesterday.day);
+    if (date.text == '') {
+      date.text = DateTime.now().toString().split(' ')[0];
+    }
 
-        HealthConnect e = GetIt.instance<HealthConnect>();  
-            for(var data in type){
-              t.add(await e.returnTotal(data,midnight,now));
-            }
-            return t; 
-     }
+    Future<List<String>> returnAllTotal(List<HealthDataType> type) async {
+      final now = DateTime.now();
+      String selectedDate = '${date.text} ${now.toString().split(' ')[1]}';
+      final DateTime selected = DateTime.parse(selectedDate);
+      final DateTime midnightSelected =
+          DateTime(selected.year, selected.month, selected.day);
+      HealthConnect e = GetIt.instance<HealthConnect>();
+      for (var data in type) {
+        t.add(await e.returnTotal(data, midnightSelected, selected));
+      }
+      return t;
+    }
 
+    Future<void> calendar() async {
+      DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(20000));
+
+      if (picked != null) {
+        setState(() {
+          date.text = picked.toString().split(' ')[0];
+        });
+      } else {}
+    }
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('${widget.title} : FitBit analytics'),
       ),
-      drawer : const NavigationPanel(),
-       body:
-       
-            FutureBuilder(
-            future: returnAllTotal(types),
-            builder: (context,AsyncSnapshot<List<String>> snapshot) {
-              if(snapshot.hasData){
-                final date = DateTime.now();
-                print(snapshot.data);
-                List<String>? data = snapshot.data;
-                return Container(
-                  child: Column(
-                  children: [
-                    GestureDetector(
-                        onTap: () {}, child: Text("Data as of ${date.month}/${date.day}/${date.year}")),
-                    Expanded(
-                      child: 
-                      ListView.builder(
-                      itemCount: data?.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(data![index]),
-                        );
-                      }
-                    ),
-                    ),
-                  ],
-                ),
-                );
-          
-              } else {
-                return const Center(child: CircularProgressIndicator(color: Colors.white));
-              }
-            }
-           )
-  );
-    
-  }  
-}    
+      drawer: const NavigationPanel(),
+      body: Column(
+        children: [
+          Center(
+              child: Padding(
+            padding: EdgeInsets.all(30),
+            child: TextField(
+              controller: date,
+              decoration: const InputDecoration(
+                labelText: 'Date',
+                filled: true,
+                prefixIcon: Icon(Icons.calendar_today),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue)),
+              ),
+              readOnly: true,
+              onTap: () => calendar(),
+            ),
+          )),
+          FutureBuilder(
+              future: returnAllTotal(types),
+              builder: (context, AsyncSnapshot<List<String>> snapshot) {
+                if (snapshot.hasData) {
+                  //final date2 = DateTime.now();
+                  print(snapshot.data);
+                  List<String>? data = snapshot.data;
+                  return Expanded(
+                    child: ListView.builder(
+                        itemCount: data?.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(data![index]),
+                          );
+                        }),
+                  );
+                } else {
+                  return const Center(
+                      child: CircularProgressIndicator(color: Colors.white));
+                }
+              }) 
+        ], //children
+      ),
+    );
+  }
+}
