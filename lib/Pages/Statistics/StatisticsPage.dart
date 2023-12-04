@@ -17,6 +17,8 @@ class StatisticsPage extends StatefulWidget {
 class _StatisticsPageState extends State<StatisticsPage> {
   @override
   Widget build(BuildContext context) {
+      List<String> t = [];   
+         
         final types = [
         HealthDataType.STEPS,
         HealthDataType.HEART_RATE,
@@ -37,17 +39,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
 
     Future<List<String>> returnAllTotal(List<HealthDataType> type) async {  
-        List<String> t = [];      
         final now = DateTime.now();
         final midnight = DateTime(now.year, now.month, now.day);
         final yesterday = now.subtract(Duration(hours: 24));
-
+        final midnightYesterday = DateTime(yesterday.year, yesterday.month, yesterday.day);
 
         HealthConnect e = GetIt.instance<HealthConnect>();  
-        for(var data in type){
-        t.add(await e.returnTotal(data,midnight,now));
-        }
-        return t; 
+            for(var data in type){
+              t.add(await e.returnTotal(data,midnight,now));
+            }
+            return t; 
      }
 
 
@@ -58,28 +59,39 @@ class _StatisticsPageState extends State<StatisticsPage> {
       ),
       drawer : const NavigationPanel(),
        body:
-             
-         FutureBuilder(
+       
+            FutureBuilder(
             future: returnAllTotal(types),
             builder: (context,AsyncSnapshot<List<String>> snapshot) {
               if(snapshot.hasData){
+                final date = DateTime.now();
                 print(snapshot.data);
-                  List<String>? data = snapshot.data;
-                return ListView.builder(
-                  itemCount: data?.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(data![index]),
-                    );
-                  }
+                List<String>? data = snapshot.data;
+                return Container(
+                  child: Column(
+                  children: [
+                    GestureDetector(
+                        onTap: () {}, child: Text("Data as of ${date.month}/${date.day}/${date.year}")),
+                    Expanded(
+                      child: 
+                      ListView.builder(
+                      itemCount: data?.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(data![index]),
+                        );
+                      }
+                    ),
+                    ),
+                  ],
+                ),
                 );
           
               } else {
-                return Center(child: CircularProgressIndicator(color: Colors.white));
+                return const Center(child: CircularProgressIndicator(color: Colors.white));
               }
             }
-      
-    ),
+           )
   );
     
   }  

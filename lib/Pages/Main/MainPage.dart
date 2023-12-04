@@ -31,16 +31,21 @@ class _MyHomePageState extends State<MainPage> {
               final now = DateTime.now();
               final midnight = DateTime(now.year, now.month, now.day);
               final yesterday = now.subtract(Duration(hours: 24));
+              final midnight2 = DateTime(yesterday.year, yesterday.month, yesterday.day);
+
        HealthConnect e = GetIt.instance<HealthConnect>();  
         List<HealthDataPoint>? test = await e.ReadRawData([HealthDataType.STEPS],midnight, now);
         print("========================================================================================================");
+        print('now $now');
+        print(' yesterday $yesterday');
+        print('midnight $midnight');
 
 
-        String totalSteps = await e.returnTotal(HealthDataType.STEPS,midnight,now);
+        String totalSteps = await e.returnTotal(HealthDataType.STEPS,yesterday,midnight);
         print("TOTAL STEPS $totalSteps");
 
-        String avgHeart = await e.returnTotal(HealthDataType.HEART_RATE,midnight,now);
-        print("avgHeartRate $avgHeart");
+        // String avgHeart = await e.returnTotal(HealthDataType.HEART_RATE,midnight,now);
+        // print("avgHeartRate $avgHeart");
 
         // String totalDeep = await e.returnTotal(HealthDataType.SLEEP_REM,yesterday,now);
         // print("DEEP $totalDeep");
@@ -75,7 +80,12 @@ class _MyHomePageState extends State<MainPage> {
       ),
       // ElevatedButton(
       //       onPressed: () {
+      //          final now = DateTime.now();
+      //         final midnight = DateTime(now.year, now.month, now.day);
+      //         final yesterday = now.subtract(Duration(hours: 24));
       //         testThis();
+      //        print('$now');
+      //        print('$midnight');
       //       }, 
       //       child: const Text('Test for Health Connect'),
       // ),

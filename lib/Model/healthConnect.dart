@@ -68,7 +68,6 @@ class HealthConnectStore extends HealthConnect {
   @override
   Future<List<HealthDataPoint>?> ReadRawData(List<HealthDataType>? T, DateTime setTime, DateTime now) async {
     T ??= types;
-    print("==========================TYPES = $T");
     final permissions = T.map((e) => HealthDataAccess.READ_WRITE).toList();
 
     healthDataList.clear();
@@ -82,18 +81,17 @@ class HealthConnectStore extends HealthConnect {
       // }
       print(healthData.length);
       healthDataList.addAll(
-          (healthData.length < 500) ? healthData : healthData.sublist(0, 500));
+          (healthData.length < 300) ? healthData : healthData.sublist(0, 300));
       healthDataList = HealthFactory.removeDuplicates(healthDataList);
 
       //print(healthDataList);
-      print("============HeaalthDATA=======================================");
+      // print("============HeaalthDATA=======================================");
 
-      for (var dataType in healthDataList) {
-        if (dataType.sourceName == "com.fitbit.FitbitMobile") {
-          print(
-              'dataType: ${dataType.typeString} , value: ${dataType.value.toString()} ,unit: ${dataType.unitString},dateFrom: ${dataType.dateFrom.toString()} ,dateTo: ${dataType.dateTo.toString()}, source: ${dataType.sourceName}');
-        }
-      }
+      // for (var dataType in healthDataList) {
+      //   if (dataType.sourceName == "com.fitbit.FitbitMobile") {
+      //     print('dataType: ${dataType.typeString} , value: ${dataType.value.toString()} ,unit: ${dataType.unitString},dateFrom: ${dataType.dateFrom.toString()} ,dateTo: ${dataType.dateTo.toString()}, source: ${dataType.sourceName}');
+      //   }
+      // }
       return healthDataList;
     } else {
       print("You do not have permission and Authorization to access data");
@@ -101,18 +99,23 @@ class HealthConnectStore extends HealthConnect {
     }
   }
 
+  String durationToString(int minutes) {
+    var d = Duration(minutes:minutes);
+    List<String> parts = d.toString().split(':');
+    return '${parts[0].padLeft(2, '0')} hr ${parts[1].padLeft(2, '0')} min';
+    }
+
   @override
   Future<String> returnTotal(HealthDataType type, DateTime time, DateTime now) async {
     int total = 0;
 
-    String returnString = '${type.name} : ${total}';
+    String returnString = '${type.name} : No Data';
  
     if (type == HealthDataType.STEPS) {
       total = (await health.getTotalStepsInInterval(time, now))!.toInt();
-      returnString = 'Total STEPS : $total STEPS';
+      returnString = 'Total STEPS : $total steps';
     } else {
         await ReadRawData([type], time, now);
-        print("====");
           for (var dataType in healthDataList) {
             if (dataType.sourceName == "com.fitbit.FitbitMobile") {
               if (dataType.type == type) {
@@ -123,9 +126,18 @@ class HealthConnectStore extends HealthConnect {
 
         if(healthDataList.isNotEmpty){
           if(type == HealthDataType.HEART_RATE){
-            total = total ~/ healthDataList.length; 
+            total = total ~/ healthDataList.length;
+            returnString = '${healthDataList[0].typeString} : $total Beats per Minute';
+          } else {
+             if(healthDataList[0].unitString == 'MINUTE'){
+              if(total > 60){
+                String hours = durationToString(total);
+                returnString = '${healthDataList[0].typeString} : $hours';
+              } else {
+                returnString = '${healthDataList[0].typeString} : $total min';
+              } 
+              } 
           }
-          returnString = '${healthDataList[0].typeString} : $total ${healthDataList[0].unitString}';
         } 
     }
     return returnString;
