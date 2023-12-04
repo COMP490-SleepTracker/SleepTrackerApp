@@ -66,18 +66,18 @@ class _MyHomePageState extends State<MainPage> {
         title: Text(widget.title),
       ),
       drawer: const NavigationPanel(),
-      body:  Center(  //const was here 
+      body:  const Center(  //const was here 
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('Welcome to Sleep Tracker -> '),
-            ElevatedButton(
-            onPressed: () {
-           GetIt.instance<AuthenticationManager>().signOut();
-           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
-            }, 
-            child: const Text('Sign out of google/firebase'),
-      ),
+      //       ElevatedButton(
+      //       onPressed: () {
+      //      GetIt.instance<AuthenticationManager>().signOut();
+      //      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
+      //       }, 
+      //       child: const Text('Sign out of google/firebase'),
+      // ),
       // ElevatedButton(
       //       onPressed: () {
       //          final now = DateTime.now();
