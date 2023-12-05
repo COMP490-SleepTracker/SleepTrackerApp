@@ -32,47 +32,7 @@ class SleepButton extends StatelessWidget {
   }
 }
 
-// to select a time to wake up
-class TimePicker extends StatefulWidget {
-  const TimePicker(this.onTimeChanged, {Key? key}) : super(key: key);
-  final Function(TimeOfDay) onTimeChanged;
-
-  @override
-  _TimePickerState createState() => _TimePickerState();
-}
-
-class _TimePickerState extends State<TimePicker> {
-  TimeOfDay _time = TimeOfDay.now();
-
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? newTime = await showTimePicker(
-      context: context,
-      initialTime: _time,
-    );
-    if (newTime != null) {
-      setState(() {
-        _time = newTime;
-      });
-      widget.onTimeChanged(_time);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        TextButton(
-          onPressed: () => _selectTime(context),
-          child: const Text('Select wake up time'),
-        ),
-        Text(
-          'Alarm set for: ${_time.format(context)}',
-        ),
-      ],
-    );
-  }
-}
-class SleepPage extends StatefulWidget {
+ class SleepPage extends StatefulWidget {
   const SleepPage({super.key, required this.title});
   final String title;
 
