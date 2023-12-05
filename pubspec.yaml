@@ -44,9 +44,11 @@ dependencies:
   google_sign_in: ^6.1.5
   get_it: ^7.6.4
   firebase_database: ^10.3.3
+  permission_handler: ^11.0.1
+  calendar_timeline: ^1.1.2
   path_provider: ^2.1.1
   alarm: ^2.1.1
-  permission_handler: ^11.0.1
+  flutter_secure_storage: ^9.0.0
 
 dev_dependencies:
   flutter_test:
