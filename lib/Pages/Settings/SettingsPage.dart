@@ -1,8 +1,12 @@
 
 import 'package:flutter/material.dart';
+import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
+import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import '../NavigationPanel.dart';
 import 'package:sleeptrackerapp/Widgets/SettingsButton.dart';
 import 'SleepSchedulePage.dart';
+import 'package:get_it/get_it.dart';
+
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.title});
@@ -31,7 +35,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   MaterialPageRoute(builder: (context) => const SleepSchedulePage(title: 'Sleep Schedule')),
                 );
               },
-            )
+            ), 
+            SettingsButton(
+              onPressed: () {
+              GetIt.instance<AuthenticationManager>().signOut();
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
+            }, 
+            child: const Text('Sign out of google/firebase'),
+          ),
+            
           ],
         )
       );

@@ -53,7 +53,8 @@ class _SleepScheduleEntryState extends State<SleepScheduleEntry>
     Widget startTimePicker = SettingsButton(
       indent: 20,
         onPressed: () {
-          showTimePicker(
+          print(TimeOfDay.now());
+          showTimePicker(   ///Returns date now 
             context: context,
             initialTime: TimeOfDay.now(),
           );
