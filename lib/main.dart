@@ -1,14 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:sleeptrackerapp/Model/HealthDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/HealthDataManager.dart';
 import 'package:sleeptrackerapp/Model/healthConnect.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
-import 'package:sleeptrackerapp/Model/SleepDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/SleepDataManager.dart';
 import 'package:get_it/get_it.dart';
 import 'Model/AuthenticationManager.dart';
-import 'Model/SettingsManager.dart';
+import 'Model/DataManager/SettingsManager.dart';
 import 'package:sleeptrackerapp/firebase_options.dart';
-import 'package:sleeptrackerapp/Model/UserDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/UserDataManager.dart';
 
 import 'package:alarm/alarm.dart';
 // void main() {
@@ -52,5 +52,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-//

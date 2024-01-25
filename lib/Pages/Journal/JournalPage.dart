@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
-import 'package:sleeptrackerapp/Model/SecureStorage.dart';
+import 'package:sleeptrackerapp/Model/DataManager/SecureStorage.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:calendar_timeline/calendar_timeline.dart';
@@ -95,7 +95,7 @@ class _JournalPageState extends State<JournalPage> {
             if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
               final data = snapshot.data as String;
               final firstDate = DateTime.parse(data);
-              return Column(
+              return SafeArea ( child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           const Padding(
@@ -157,7 +157,7 @@ class _JournalPageState extends State<JournalPage> {
             ),
           )
         ],
-      );
+      ) );
             }
             return const Center(
               child: CircularProgressIndicator(),

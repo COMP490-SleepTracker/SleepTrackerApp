@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sleeptrackerapp/Model/HealthDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/HealthDataManager.dart';
 
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -95,7 +95,7 @@ class HealthConnectStore extends HealthConnect {
       return healthDataList;
     } else {
       print("You do not have permission and Authorization to access data");
-      return null;
+      return healthDataList;
     }
   }
 
@@ -110,10 +110,13 @@ class HealthConnectStore extends HealthConnect {
     int total = 0;
 
     String returnString = '${type.name} : No Data';
- 
+
     if (type == HealthDataType.STEPS) {
-      total = (await health.getTotalStepsInInterval(time, now))!.toInt();
-      returnString = 'Total STEPS : $total steps';
+         final permissions = HealthDataAccess.READ_WRITE;
+         if(await Validate([type],[permissions])){
+            total = (await health.getTotalStepsInInterval(time, now))!.toInt();
+            returnString = 'Total STEPS : $total steps';
+        }
     } else {
         await ReadRawData([type], time, now);
           for (var dataType in healthDataList) {
