@@ -126,6 +126,11 @@ class SleepPageState extends State<SleepPage> {
     @override
   void dispose() {
     GetIt.instance<SleepDataManager>().removeListener(update);
+    
+    for (final subscription in _streamSubscriptions) {
+      subscription.cancel();
+    }
+    
     timer?.cancel();
     super.dispose();
   }

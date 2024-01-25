@@ -84,7 +84,7 @@ class HealthConnectStore extends HealthConnect {
           (healthData.length < 300) ? healthData : healthData.sublist(0, 300));
       healthDataList = HealthFactory.removeDuplicates(healthDataList);
 
-      //print(healthDataList);
+      print(healthDataList);
       // print("============HeaalthDATA=======================================");
 
       // for (var dataType in healthDataList) {

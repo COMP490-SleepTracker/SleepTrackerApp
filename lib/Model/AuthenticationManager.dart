@@ -97,7 +97,7 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
 
     _isAuthenticated = true; 
 
-    print("THIS IS THE FIREBASE UID ${FirebaseAuth.instance.currentUser?.uid} and path ID/${firebaseAuth.currentUser?.uid}");
+    //print("THIS IS THE FIREBASE UID ${FirebaseAuth.instance.currentUser?.uid} and path ID/${firebaseAuth.currentUser?.uid}");
 
     // get the user data
     final userDB = GetIt.instance.get<UserDataManager>();
