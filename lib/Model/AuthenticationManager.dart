@@ -101,9 +101,8 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
 
     // get the user data
     final userDB = GetIt.instance.get<UserDataManager>();
-    DatabaseReference ref = FirebaseDatabase.instance.ref("users/userID/${FirebaseAuth.instance.currentUser?.uid}");
     
-    Query userQuery = ref
+    Query userQuery = userDB.database
     .equalTo(firebaseAuth.currentUser?.uid) 
     .limitToFirst(1);
 
