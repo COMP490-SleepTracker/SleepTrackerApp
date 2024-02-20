@@ -51,3 +51,5 @@ GoogleSignInAuthorization.dart
 .vscode
 fitBit.dart
 fitBitManager.dart
+
+TestFitPage.dart
