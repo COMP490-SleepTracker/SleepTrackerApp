@@ -103,7 +103,6 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
     final userDB = GetIt.instance.get<UserDataManager>();
 
     Query userQuery = userDB.database
-    .orderByChild("ID")
     .equalTo(firebaseAuth.currentUser?.uid) 
     .limitToFirst(1);
 
