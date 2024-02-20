@@ -16,7 +16,6 @@ import 'package:alarm/alarm.dart';
 // }
 
 Future<void> main() async{
-  Paint.enableDithering = true;
 WidgetsFlutterBinding.ensureInitialized();
 await Firebase.initializeApp(
    options: DefaultFirebaseOptions.currentPlatform,
