@@ -10,9 +10,15 @@ import 'package:flutter/material.dart';
 
 class BarChartSample1 extends StatefulWidget {
   final List<HealthDataPoint>? data;
+  final double rem; 
+  final double light; 
+  final double deep; 
+  final double asleep; 
+  final double awake; 
+  final double session; 
 
-  BarChartSample1(this.data, {super.key});
-
+  BarChartSample1(this.rem, this.light, this.deep, this.asleep, this.awake, this.session, {super.key, this.data});
+ 
   List<Color> get availableColors => const <Color>[
         Colors.black
       ];
@@ -28,60 +34,21 @@ class BarChartSample1 extends StatefulWidget {
 
 class BarChartSample1State extends State<BarChartSample1> {
   final Duration animDuration = const Duration(milliseconds: 250);
-    double rem = 0;
-    double light = 0;
-    double awake = 0;
-    double deep = 0; 
-    double asleep = 0; 
-    double session = 0; 
-
 
   int touchedIndex = -1;
 
-  bool isPlaying = false;
+  bool isPlaying = false; 
 
-  String durationToString(int minutes) {
+    String durationToString(int minutes) {
     var d = Duration(minutes: minutes);
     List<String> parts = d.toString().split(':');
     return '${parts[0].padLeft(2, '0')} hr ${parts[1].padLeft(2, '0')} min';
   }
 
-  //List<String>?
-  void returnTotal(){
-     List<HealthDataPoint>? e = widget.data; 
-    print('DATTTAA SUCCESSFULLY PASSED');
-    for(var type in e! ){
-      print(type.typeString + " e, ");
-      switch(type.typeString){
-        case "SLEEP_AWAKE":
-        awake += double.parse(type.value.toString()).toInt(); 
-        break;
-        case "SLEEP_LIGHT":
-        light += double.parse(type.value.toString()).toInt();
-        break;
-        case "SLEEP_REM":
-        rem += double.parse(type.value.toString()).toInt();
-        break; 
-        case "SLEEP_DEEP":
-        deep += double.parse(type.value.toString()).toInt();
-        break;
-        case "SLEEP_ASLEEP":
-        asleep += double.parse(type.value.toString()).toInt();
-        break;
-        case "SLEEP_SESSION":
-        session += double.parse(type.value.toString()).toInt();
-      }
-
-    }
-    
-    print('AWAKE ${durationToString(awake.toInt())} Light ${durationToString(light.toInt())} rem ${durationToString(rem.toInt())} deep ${durationToString(deep.toInt())} asleep ${durationToString(asleep.toInt())} session ${durationToString(session.toInt())}');
-
-  }
-  
   @override
   Widget build(BuildContext context) {
-    returnTotal();
-    return AspectRatio(
+    return 
+    AspectRatio(
       aspectRatio: 1,
       child: Stack(
         children: <Widget>[
@@ -91,7 +58,7 @@ class BarChartSample1State extends State<BarChartSample1> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                  Text(
-                  'test',
+                  durationToString(widget.session.toInt()),
                   style: TextStyle(
                     color: Colors.green,
                     fontSize: 24,
@@ -186,19 +153,15 @@ class BarChartSample1State extends State<BarChartSample1> {
   List<BarChartGroupData> showingGroups() => List.generate(4, (i) {
         switch (i) {
           case 0:
-            return makeGroupData(0, rem, isTouched: i == rem);
+            return makeGroupData(0, widget.rem, isTouched: i == touchedIndex);
           case 1:
-            return makeGroupData(1, light, isTouched: i == touchedIndex);
+            return makeGroupData(1, widget.light, isTouched: i == touchedIndex);
           case 2:
-            return makeGroupData(2, awake, isTouched: i == touchedIndex);
+            return makeGroupData(2, widget.awake, isTouched: i == touchedIndex);
           case 3:
-            return makeGroupData(3, deep, isTouched: i == touchedIndex);
+            return makeGroupData(3, widget.deep, isTouched: i == touchedIndex);
           case 4:
-            return makeGroupData(4, asleep, isTouched: i == touchedIndex);
-          // case 5:
-          //   return makeGroupData(5, 11.5, isTouched: i == touchedIndex);
-          // case 6:
-          //   return makeGroupData(6, 6.5, isTouched: i == touchedIndex);
+            return makeGroupData(4, widget.asleep, isTouched: i == touchedIndex);
           default:
             return throw Error();
         }
@@ -234,13 +197,13 @@ class BarChartSample1State extends State<BarChartSample1> {
             return BarTooltipItem(
               '$weekDay\n',
               const TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
               children: <TextSpan>[
                 TextSpan(
-                  text: (rod.toY - 1).toString(),
+                  text: durationToString((rod.toY - 1).toInt()),
                   style: TextStyle(
                     color: widget.touchedBarColor,
                     fontSize: 16,
@@ -315,12 +278,6 @@ class BarChartSample1State extends State<BarChartSample1> {
       case 4:
         text = const Text('Asleep', style: style);
         break;
-      // case 5:
-      //   text = const Text('S', style: style);
-      //   break;
-      // case 6:
-      //   text = const Text('S', style: style);
-      //   break;
       default:
         text = const Text('', style: style);
         break;
@@ -331,98 +288,6 @@ class BarChartSample1State extends State<BarChartSample1> {
       child: text,
     );
   }
-
-  // BarChartData randomData() {
-  //   return BarChartData(
-  //     barTouchData: BarTouchData(
-  //       enabled: false,
-  //     ),
-  //     titlesData: FlTitlesData(
-  //       show: true,
-  //       bottomTitles: AxisTitles(
-  //         sideTitles: SideTitles(
-  //           showTitles: true,
-  //           getTitlesWidget: getTitles,
-  //           reservedSize: 38,
-  //         ),
-  //       ),
-  //       leftTitles: const AxisTitles(
-  //         sideTitles: SideTitles(
-  //           showTitles: false,
-  //         ),
-  //       ),
-  //       topTitles: const AxisTitles(
-  //         sideTitles: SideTitles(
-  //           showTitles: false,
-  //         ),
-  //       ),
-  //       rightTitles: const AxisTitles(
-  //         sideTitles: SideTitles(
-  //           showTitles: false,
-  //         ),
-  //       ),
-  //     ),
-  //     borderData: FlBorderData(
-  //       show: false,
-  //     ),
-  //     barGroups: List.generate(7, (i) {
-  //       switch (i) {
-  //         case 0:
-  //           return makeGroupData(
-  //             0,
-  //             Random().nextInt(15).toDouble() + 6,
-  //             barColor: widget.availableColors[
-  //                 Random().nextInt(widget.availableColors.length)],
-  //           );
-  //         case 1:
-  //           return makeGroupData(
-  //             1,
-  //             1000,
-  //             barColor: widget.availableColors[
-  //                 Random().nextInt(widget.availableColors.length)],
-  //           );
-  //         case 2:
-  //           return makeGroupData(
-  //             2,
-  //             Random().nextInt(15).toDouble() + 6,
-  //             barColor: widget.availableColors[
-  //                 Random().nextInt(widget.availableColors.length)],
-  //           );
-  //         case 3:
-  //           return makeGroupData(
-  //             3,
-  //             Random().nextInt(15).toDouble() + 6,
-  //             barColor: widget.availableColors[
-  //                 Random().nextInt(widget.availableColors.length)],
-  //           );
-  //         case 4:
-  //           return makeGroupData(
-  //             4,
-  //             Random().nextInt(15).toDouble() + 6,
-  //             barColor: widget.availableColors[
-  //                 Random().nextInt(widget.availableColors.length)],
-  //           );
-  //         case 5:
-  //           return makeGroupData(
-  //             5,
-  //             Random().nextInt(15).toDouble() + 6,
-  //             barColor: widget.availableColors[
-  //                 Random().nextInt(widget.availableColors.length)],
-  //           );
-  //         case 6:
-  //           return makeGroupData(
-  //             6,
-  //             Random().nextInt(15).toDouble() + 6,
-  //             barColor: widget.availableColors[
-  //                 Random().nextInt(widget.availableColors.length)],
-  //           );
-  //         default:
-  //           return throw Error();
-  //       }
-  //     }),
-  //     gridData: const FlGridData(show: false),
-  //   );
-  // }
 
   Future<dynamic> refreshState() async {
     setState(() {});
