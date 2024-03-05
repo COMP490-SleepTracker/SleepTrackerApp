@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sleeptrackerapp/Model/HealthDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/HealthDataManager.dart';
 
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -23,7 +23,8 @@ abstract class HealthConnect extends ChangeNotifier {
   Future<void> writeData(
       double data, HealthDataType T, DateTime setTime, DateTime now);
   Future<void> writeTestData();
-  Future<List<HealthDataPoint>?> ReadRawData(List<HealthDataType>? T, DateTime setTime, DateTime now);
+  Future<List<HealthDataPoint>?> ReadRawData(
+      List<HealthDataType>? T, DateTime setTime, DateTime now);
   Future<String> returnTotal(HealthDataType type, DateTime time, DateTime now);
 }
 
@@ -43,7 +44,8 @@ class HealthConnectStore extends HealthConnect {
     HealthDataType.SLEEP_LIGHT
   ];
 
-  Future<bool> Validate(List<HealthDataType> T, List<HealthDataAccess>? permissions) async {
+  Future<bool> Validate(
+      List<HealthDataType> T, List<HealthDataAccess>? permissions) async {
     final isGranted = await Permission.activityRecognition.isGranted;
     final isGranted2 = await Permission.location.isGranted;
     print(
@@ -66,7 +68,8 @@ class HealthConnectStore extends HealthConnect {
   }
 
   @override
-  Future<List<HealthDataPoint>?> ReadRawData(List<HealthDataType>? T, DateTime setTime, DateTime now) async {
+  Future<List<HealthDataPoint>?> ReadRawData(
+      List<HealthDataType>? T, DateTime setTime, DateTime now) async {
     T ??= types;
     final permissions = T.map((e) => HealthDataAccess.READ_WRITE).toList();
 
@@ -84,7 +87,7 @@ class HealthConnectStore extends HealthConnect {
           (healthData.length < 300) ? healthData : healthData.sublist(0, 300));
       healthDataList = HealthFactory.removeDuplicates(healthDataList);
 
-      //print(healthDataList);
+      print(healthDataList);
       // print("============HeaalthDATA=======================================");
 
       // for (var dataType in healthDataList) {
@@ -95,54 +98,58 @@ class HealthConnectStore extends HealthConnect {
       return healthDataList;
     } else {
       print("You do not have permission and Authorization to access data");
-      return null;
+      return healthDataList;
     }
   }
 
   String durationToString(int minutes) {
-    var d = Duration(minutes:minutes);
+    var d = Duration(minutes: minutes);
     List<String> parts = d.toString().split(':');
     return '${parts[0].padLeft(2, '0')} hr ${parts[1].padLeft(2, '0')} min';
-    }
+  }
 
   @override
-  Future<String> returnTotal(HealthDataType type, DateTime time, DateTime now) async {
+  Future<String> returnTotal(
+      HealthDataType type, DateTime time, DateTime now) async {
     int total = 0;
 
     String returnString = '${type.name} : No Data';
- 
+
     if (type == HealthDataType.STEPS) {
-      total = (await health.getTotalStepsInInterval(time, now))!.toInt();
-      returnString = 'Total STEPS : $total steps';
+      final permissions = HealthDataAccess.READ_WRITE;
+      if (await Validate([type], [permissions])) {
+        total = (await health.getTotalStepsInInterval(time, now))!.toInt();
+        returnString = 'Total STEPS : $total steps';
+      }
     } else {
-        await ReadRawData([type], time, now);
-          for (var dataType in healthDataList) {
-            if (dataType.sourceName == "com.fitbit.FitbitMobile") {
-              if (dataType.type == type) {
-                total += double.parse(dataType.value.toString()).toInt();
-              }
+      await ReadRawData([type], time, now);
+      for (var dataType in healthDataList) {
+        if (dataType.sourceName == "com.fitbit.FitbitMobile") {
+          if (dataType.type == type) {
+            total += double.parse(dataType.value.toString()).toInt();
+          }
+        }
+      }
+
+      if (healthDataList.isNotEmpty) {
+        if (type == HealthDataType.HEART_RATE) {
+          total = total ~/ healthDataList.length;
+          returnString =
+              '${healthDataList[0].typeString} : $total Beats per Minute';
+        } else {
+          if (healthDataList[0].unitString == 'MINUTE') {
+            if (total > 60) {
+              String hours = durationToString(total);
+              returnString = '${healthDataList[0].typeString} : $hours';
+            } else {
+              returnString = '${healthDataList[0].typeString} : $total min';
             }
           }
-
-        if(healthDataList.isNotEmpty){
-          if(type == HealthDataType.HEART_RATE){
-            total = total ~/ healthDataList.length;
-            returnString = '${healthDataList[0].typeString} : $total Beats per Minute';
-          } else {
-             if(healthDataList[0].unitString == 'MINUTE'){
-              if(total > 60){
-                String hours = durationToString(total);
-                returnString = '${healthDataList[0].typeString} : $hours';
-              } else {
-                returnString = '${healthDataList[0].typeString} : $total min';
-              } 
-              } 
-          }
-        } 
+        }
+      }
     }
     return returnString;
   }
-
 
   @override
   Future<void> writeData(

@@ -10,7 +10,7 @@ import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
-import 'package:sleeptrackerapp/Model/SleepDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/SleepDataManager.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sleeptrackerapp/Widgets/Graphing.dart';
 
@@ -130,6 +130,7 @@ class SleepPageState extends State<SleepPage> {
     for (final subscription in _streamSubscriptions) {
       subscription.cancel();
     }
+    
 
 
     timer?.cancel();

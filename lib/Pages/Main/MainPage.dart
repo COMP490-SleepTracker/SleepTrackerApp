@@ -55,7 +55,6 @@ class _MyHomePageState extends State<MainPage> {
         // print("DEEP $totalDeep");
   }
 
-    final user = FirebaseAuth.instance.currentUser; 
     if(!GetIt.instance<AuthenticationManager>().isAuthenticated)
     {
       // navigate to the main page

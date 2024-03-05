@@ -7,8 +7,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get_it/get_it.dart';
-import 'package:sleeptrackerapp/Model/SleepDataManager.dart';
-import 'package:sleeptrackerapp/Model/UserDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/SleepDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/UserDataManager.dart';
 
 import 'dart:developer';
 
@@ -97,11 +97,11 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
 
     _isAuthenticated = true; 
 
-    // print("THIS IS THE FIREBASE UID ${FirebaseAuth.instance.currentUser?.uid}");
+    //print("THIS IS THE FIREBASE UID ${FirebaseAuth.instance.currentUser?.uid} and path ID/${firebaseAuth.currentUser?.uid}");
 
     // get the user data
     final userDB = GetIt.instance.get<UserDataManager>();
-
+    
     Query userQuery = userDB.database
     .equalTo(firebaseAuth.currentUser?.uid) 
     .limitToFirst(1);

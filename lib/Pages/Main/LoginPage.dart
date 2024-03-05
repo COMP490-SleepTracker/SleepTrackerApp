@@ -3,6 +3,7 @@ import 'package:sleeptrackerapp/Pages/Main/MainPage.dart';
 import 'package:sleeptrackerapp/Pages/Main/signUp.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -85,6 +86,11 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
+    Future<String> loadAsset() async {
+      return await rootBundle.loadString('assets/config.json');
+    }
+
+
   @override
   Widget build(BuildContext context) {
     return Column(children: [
@@ -118,27 +124,93 @@ class _LoginFormState extends State<LoginForm> {
                   });
                 })),
       ),
-      ElevatedButton(
-        onPressed: () {
-          onFormSubmit(usernameController.text, passwordController.text);
-        },
-        child: const Text('Submit'),
-      ),
-      ElevatedButton(
-        onPressed: () {
-          googleSignIn(); 
-        },
-        child: const Text('Sign In With Google'),
-      ),
-      ElevatedButton(
-        onPressed: () {
-          Navigator.pushReplacement(
+
+      const SizedBox(height: 10),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          InkWell (
+           child: Text('Sign Up', 
+           style: TextStyle(color: Colors.grey[600]),
+           ),
+           onTap: (){
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                   builder: (context) => const signUpPage(title: 'Sign Up')));
-        }, 
-        child: const Text('Sign Up'),
+           }
+          )
+        ], )
       ),
+
+      const SizedBox(height: 26),
+
+      ElevatedButton(
+        style:ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 20),
+          backgroundColor: Colors.purple[100],
+          shadowColor: Colors.white60,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+        onPressed: () {
+          onFormSubmit(usernameController.text, passwordController.text);
+        },
+        child: const Text('Sign In', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20,)),
+      ),
+
+
+      const SizedBox(height: 30),
+
+      Row(children: [
+        Expanded(
+        child:  Divider(
+        thickness: 0.5, 
+        color: Colors.grey[300]
+      ), 
+      ),
+      const Text(' or continue with '),
+      Expanded(
+        child:  Divider(
+        thickness: 0.5, 
+        color: Colors.grey[300]
+      ), 
+      ),
+      ],),
+    
+    const SizedBox(height: 30),
+
+    // const Row(
+    //   mainAxisAlignment: MainAxisAlignment.center,
+    //   children: [
+    //     Image(image: AssetImage('assets/download.png'), height: 50,),
+    //     Text('this is just a test'),
+
+    //   ],
+    // ),
+
+      ElevatedButton(
+        style:ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 50),
+
+          ),
+
+        onPressed: () {
+          googleSignIn(); 
+        },
+        child:  const Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image(image: AssetImage('assets/download.png'), height: 40,),
+        Text('     Sign In With Google', style: TextStyle(color: Colors.black))
+      ],
+    ),
+  
+        //const Text('Sign In With Google', style: TextStyle(color: Colors.black)),
+      ),
+      
     ]);
   }
 }
@@ -154,13 +226,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+    return const Scaffold(
+      // appBar: AppBar(
+      //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      //   title: Text(widget.title),
+      // ),
       // drawer : const NavigationPanel(), disabled for login page
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
