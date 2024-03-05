@@ -6,7 +6,6 @@ import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Model/healthConnect.dart';
-import 'package:sleeptrackerapp/Widgets/HealthConnectGraph.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:sleeptrackerapp/Widgets/HealthConnectBarGraph.dart';
@@ -225,7 +224,6 @@ class _TestFitPageState extends State<TestFitPage> {
                   List<HealthDataPoint>? data = snapshot.data;
                   return Expanded(
                     child: Column(children: <Widget>[
-                     // LineChartSample2(data),
                      Expanded(child: SleepGraph(data,max,min)), 
                    //  Expanded(child: BarChartSample1(rem,light,deep,asleep,awake,session)),                       
                       ])

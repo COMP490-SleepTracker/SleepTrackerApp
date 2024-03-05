@@ -32,7 +32,7 @@ class UserDataManager extends DatabaseStore<UserDataEntry>
 { 
 
   @override
-  String get databasePath => 'users/userID/${FirebaseAuth.instance.currentUser?.uid}';
+  String get databasePath => 'users/userID/${FirebaseAuth.instance.currentUser!.uid}';
 
   @override
   UserDataEntry createRecord() => UserDataEntry(userEmail: '', userName: '');
