@@ -16,9 +16,9 @@ class NavigationPanel extends Drawer
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> pages = [const MainPage(title: 'Sleep Tracker+'), const SleepPage(title: 'Sleep'), const TestFitPage(title: 'Statistics'), const JournalPage(title: 'Journal'), const SettingsPage(title: 'Settings')];
-    List<String> titles = ['Sleep Tracker+', 'Sleep', 'Statistics', 'Journal', 'Settings'];
-    List<Icon> icons = [const Icon(Icons.home), const Icon(Icons.bedtime), const Icon(Icons.bar_chart), const Icon(Icons.book), const Icon(Icons.settings)];
+    List<Widget> pages = [const MainPage(title: 'Sleep Tracker+'), const SleepPage(title: 'Sleep'), const TestFitPage(title: 'Statistics'), const JournalPage(title: 'Journal'), const SettingsPage(title: 'Settings'), const TipsPage(title:'Tips'), const testRetrieve(title: 'Test')];
+    List<String> titles = ['Sleep Tracker+', 'Sleep', 'Statistics', 'Journal', 'Settings', 'Tips','Test'];
+    List<Icon> icons = [const Icon(Icons.home), const Icon(Icons.bedtime), const Icon(Icons.bar_chart), const Icon(Icons.book), const Icon(Icons.settings), const Icon(Icons.lightbulb), const Icon(Icons.phone_android)];
     List<Widget> navigationTiles = [];
     for (int i = 0; i < pages.length; i++)
     {
