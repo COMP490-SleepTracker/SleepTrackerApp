@@ -82,7 +82,7 @@ class BarChartSample1State extends State<BarChartSample1> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 3), //8
                     child: BarChart(
                       mainBarData(),
                       swapAnimationDuration: animDuration,
@@ -125,7 +125,7 @@ class BarChartSample1State extends State<BarChartSample1> {
     double y, {
     bool isTouched = false,
     Color? barColor,
-    double width = 22,
+    double width = 50,
     List<int> showTooltips = const [],
   }) {
     barColor ??= widget.barColor;

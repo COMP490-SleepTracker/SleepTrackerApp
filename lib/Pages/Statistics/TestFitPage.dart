@@ -7,10 +7,12 @@ import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Model/healthConnect.dart';
 import 'package:sleeptrackerapp/Widgets/HealthConnectGraph.dart';
-import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:sleeptrackerapp/Widgets/HealthConnectBarGraph.dart';
+
+import 'package:sleeptrackerapp/Widgets/StepGraph.dart';
+
 
 
 class TestFitPage extends StatefulWidget {
@@ -38,6 +40,9 @@ class _TestFitPageState extends State<TestFitPage> {
     double deep = 0; 
     double asleep = 0; 
     double session = 0;
+
+    double min = 0; 
+    double max = 0; 
 
 
     final types = [
@@ -96,7 +101,7 @@ class _TestFitPageState extends State<TestFitPage> {
     }
   }
 
-  Future<List<HealthDataPoint>> ReadRawData(List<HealthDataType> T) async {
+  Future<List<HealthDataPoint>> ReadRawData(List<HealthDataType> T) async { 
     final permissions = T.map((e) => HealthDataAccess.READ_WRITE).toList();
 
       final now = DateTime.now();
@@ -122,6 +127,7 @@ class _TestFitPageState extends State<TestFitPage> {
       healthDataList.sort((a, b) => a.dateFrom.compareTo(b.dateFrom));
 
        for(var type in healthDataList ){
+       // print('${type.dateFrom.minute} to -> ${type.dateTo.minute} and value ${type.value.toString()}'); 
       switch(type.typeString){
         case "SLEEP_AWAKE":
         awake += double.parse(type.value.toString()).toInt(); 
@@ -139,7 +145,11 @@ class _TestFitPageState extends State<TestFitPage> {
         asleep += double.parse(type.value.toString()).toInt();
         break;
         case "SLEEP_SESSION":
+        print('Sleep Session ----> ${type.value} ==> ( ${type.dateFrom} - ${type.dateTo} )');
+
         session += double.parse(type.value.toString()).toInt();
+        min = type.dateFrom.millisecondsSinceEpoch.toDouble();
+        max = type.dateTo.millisecondsSinceEpoch.toDouble();
       }
 
     }    
@@ -149,7 +159,6 @@ class _TestFitPageState extends State<TestFitPage> {
       return healthDataList;
     }
   }
-
 
     Future<List<String>> returnAllTotal(List<HealthDataType> type) async {
       final now = DateTime.now();
@@ -208,20 +217,28 @@ class _TestFitPageState extends State<TestFitPage> {
           )),
           //Focus on sleep 
           FutureBuilder(
-              future: ReadRawData(sleep), //returnAllTotal(types), //ReadRawData(sleep),
+              future: ReadRawData(sleep), 
               builder: (context, AsyncSnapshot<List<HealthDataPoint>> snapshot) {
                 if (snapshot.hasData) {
                   //final date2 = DateTime.now();
                   //print(snapshot.data);
                   List<HealthDataPoint>? data = snapshot.data;
                   return Expanded(
-                    child: Column(children: <Widget>[LineChartSample2(), Expanded(child: BarChartSample1(rem,light,deep,asleep,awake,session)), ],)
+                    child: Column(children: <Widget>[
+                     // LineChartSample2(data),
+                     Expanded(child: SleepGraph(data,max,min)), 
+                   //  Expanded(child: BarChartSample1(rem,light,deep,asleep,awake,session)),                       
+                      ])
                   );
-                } else {
+                } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}'); 
+                }else {
                   return const Center(
                       child: CircularProgressIndicator(color: Colors.white));
                 }
-              }) 
+
+              }
+              ) 
         ], //children --> add more future bulder's such as steps, blood pressure and so on 
       ),
     );

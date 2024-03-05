@@ -1,26 +1,46 @@
-// class HealthConnectGraph {
- 
-// }
-
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:health/health.dart';
 
-class LineChartSample2 extends StatefulWidget {
-  const LineChartSample2({super.key});
 
-  @override
-  State<LineChartSample2> createState() => _LineChartSample2State();
-}
+class LineChartSample2 extends StatelessWidget {
 
-class _LineChartSample2State extends State<LineChartSample2> {
+  ///the data we got must return [total sleep] [from] [to] and [type] 
+  final  List<HealthDataPoint>? data;
+  //List<FlSpot> spots;
+  //List<doubleFitData> e; 
+  //late List<doubleFitData> edd;
+
+  // final List<String> e = data!.asMap().map((i,value)) {
+  //   return MapEntry()
+  // }
+
+  LineChartSample2(this.data, {super.key});
+
+  ///e.add(this.data, {super.key});
+
+
+  //List<makeData> e = data?.asMap() as List<makeData>;
+
+  // LineChartSample2(this.data, {super.key}) : spots = data!.asMap().map((i, value) {return MapEntry(i, FlSpot(i.toDouble(), value.dateTo as double));}).values.toList()
+  // {
+  //   spots = data!
+  //       .asMap()
+  //       .map((i, value) {
+  //         return MapEntry(i, FlSpot(i.toDouble(), value.dateTo as double));
+  //       })
+  //       .values
+  //       .toList();
+  // }
+
+
+
   List<Color> gradientColors = [
     Colors.red,
     Colors.blue,
   ];
 
   bool showAvg = false;
-
 
 //setup for chart 
   @override
@@ -49,7 +69,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
 
   ///X - AXIS 
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+  Widget bottomTitleWidgets(double value, TitleMeta meta) { 
     const style = TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 16,
@@ -137,7 +157,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
         ),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: true,
+            showTitles: false,
             reservedSize: 30, //30 
             interval: 1,
             getTitlesWidget: bottomTitleWidgets,
@@ -163,22 +183,18 @@ class _LineChartSample2State extends State<LineChartSample2> {
       maxY: 6,  //6
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            // FlSpot(0, 3),
-            // FlSpot(3, 6),
-            // FlSpot(6, 9),
-            // FlSpot(9,14),
-            // FlSpot(14, 16),
-            // FlSpot(16, 19),
-            // FlSpot(19, 24),
-           // FlSpot((DateTime.now()).toDouble, 3.44),
+          spots: 
+          //spots
+          const [
+          
             FlSpot(2.6, 3.44),
             FlSpot(4.9, 0.44),
             FlSpot(6.8, 2.44),
             FlSpot(8, 0.44),
             FlSpot(9.5, 3.44),
             FlSpot(11, 1.44),
-          ],
+          ]
+           ,
           isStepLineChart: true,
           isCurved: true,
           gradient: LinearGradient(
@@ -204,5 +220,29 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
 
   //THis is the line chart of average data 
+
+}
+
+
+class doubleFitData {
+  //final  List<HealthDataPoint>? data;
+  //final  List<double>? converted;
+  late double from;
+  late double to; 
+  late double session; 
+
+
+  doubleFitData(List<HealthDataPoint>? data){
+    for(var type in data!){
+      from = type.dateFrom as double; 
+      to = type.dateTo as double; 
+      if (type.typeString == "SLEEP_SESSION"){
+        session = type.value as double;
+      }
+    }
+  }
+
+
+
 
 }
