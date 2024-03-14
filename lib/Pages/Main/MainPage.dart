@@ -1,6 +1,8 @@
 import 'package:alarm/alarm.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
+import 'package:sleeptrackerapp/Model/UserDataManager.dart';
 import 'package:sleeptrackerapp/Model/healthConnect.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Widgets/ScrollableTimePicker.dart';
@@ -27,7 +29,52 @@ class MainPage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MainPage> {
-  late DateTime alarmTime;
+
+
+
+  DateTime alarmTime = DateTime.now();
+
+  DateTime getDefaulTime() 
+  {
+    UserDataEntry? user = GetIt.instance<UserDataManager>().currentUser;
+    if(user != null)
+    {
+      print('user wake times ${user.wakeTimes}');
+
+      // first we need to get the day of the week
+      int day = DateTime.now().weekday - 1;
+
+      // get the wake up time for the day
+      String todayWakeTime = user.wakeTimes[day];
+      TimeOfDay todayWakeTimeOfDay = TimeOfDay(hour: int.parse(todayWakeTime.split(':')[0]), minute: int.parse(todayWakeTime.split(':')[1]));
+
+      TimeOfDay now = TimeOfDay.now();
+      print('todayWakeTimeOfDay $todayWakeTimeOfDay');
+
+      // check if the current time is past the wake up time, if it is, we want to set the wake up time to the next day
+      if(now.hour > todayWakeTimeOfDay.hour || (now.hour == todayWakeTimeOfDay.hour && now.minute > todayWakeTimeOfDay.minute))
+      {
+        print('setting wake up time to next day');
+        // this means we want to set the wake up time to the next day
+        int nextDay = (day + 1) % 7;
+        String nextDayWakeTime = user.wakeTimes[nextDay];
+        TimeOfDay nextDayWakeTimeOfDay = TimeOfDay(hour: int.parse(nextDayWakeTime.split(':')[0]), minute: int.parse(nextDayWakeTime.split(':')[1]));
+
+        // we need to return the next day wake time, so tomorrow's wake time
+        return DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1, nextDayWakeTimeOfDay.hour, nextDayWakeTimeOfDay.minute);
+      }
+      // this means we want to set the wake up time to today
+      return DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, todayWakeTimeOfDay.hour, todayWakeTimeOfDay.minute);
+    }
+    return DateTime.now();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    alarmTime = getDefaulTime();
+    print('alarmTime $alarmTime');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +105,12 @@ class _MyHomePageState extends State<MainPage> {
     final user = FirebaseAuth.instance.currentUser; 
     if(!GetIt.instance<AuthenticationManager>().isAuthenticated)
     {
-      // navigate to the main page
+      // navigate to the login 
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
-    } else {
-      //testDB();
     }
+
+    // now we need to get the next alarm time
+
 
     return Scaffold(
       appBar: AppBar(
@@ -81,6 +129,7 @@ class _MyHomePageState extends State<MainPage> {
               ScrollableTimePicker(
                 borderColor: Colors.deepPurple, 
                 onTimeChange:(time) => alarmTime = time,
+                defaultTime: alarmTime,
                 ),
                 const SizedBox(height: 100),
                 ElevatedButton(
@@ -110,6 +159,9 @@ class _MyHomePageState extends State<MainPage> {
       volumeMax: true, 
       fadeDuration: 3.0, 
       stopOnNotificationOpen: true);
+
+      // show a notification that the alarm has been set
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Alarm has been set')));
     await Alarm.set(alarmSettings: alarmSettings);
   }
 }

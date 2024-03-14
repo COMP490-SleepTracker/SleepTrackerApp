@@ -102,25 +102,23 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
     // get the user data
     final userDB = GetIt.instance.get<UserDataManager>();
 
-    Query userQuery = userDB.database
-    .equalTo(firebaseAuth.currentUser?.uid) 
-    .limitToFirst(1);
-
-    // call getDataByQuery
-    List<UserDataEntry> userEntry = await userDB.getDataByQuery(userQuery);
-
+    // firebase path is /users/userID/$uid, users/userID is the path to the database
     String? uid = firebaseAuth.currentUser?.uid;
     if(uid == null)
     {
       return;
     }
+    final userEntry = await userDB.getData(firebaseAuth.currentUser?.uid ?? '');
+
 
 
     // if the user is not in the database, add them
-    if (userEntry.isEmpty) {
+    if (userEntry == null) {
       UserDataEntry userData = UserDataEntry(
         userEmail: firebaseAuth.currentUser?.email ?? '',
         userName: firebaseAuth.currentUser?.displayName ?? '',
+        wakeTimes: [ '00:00' , '00:00' , '00:00' , '00:00' , '00:00' , '00:00' , '00:00' ],
+        sleepTimes: [ '00:00', '00:00', '00:00', '00:00', '00:00', '00:00', '00:00' ],
       );
       await userDB.addData(userData, key: uid);
       log('user added $uid ${userData.userEmail} ${userData.userName}');
@@ -128,12 +126,15 @@ class TestAuthenticationManagerImpl extends AuthenticationManager {
     else
     {
       // if the user is in the database, update their name and email
-      UserDataEntry userData = userEntry.first;
-      userData.userEmail = firebaseAuth.currentUser?.email ?? '';
-      userData.userName = firebaseAuth.currentUser?.displayName ?? '';
-      await userDB.updateData(uid, userData);
-      log('user updated ${userData.userEmail} ${userData.userName}');
+      userEntry.userEmail = firebaseAuth.currentUser?.email ?? '';
+      userEntry.userName = firebaseAuth.currentUser?.displayName ?? '';
+      await userDB.updateData(uid, userEntry);
+      log('user updated ${userEntry.userEmail} ${userEntry.userName}');
     }
+    
+    // set the current user
+    userDB.currentUser = userEntry;
+
     notifyListeners();
   }
 

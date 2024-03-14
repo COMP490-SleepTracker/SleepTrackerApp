@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:sleeptrackerapp/Model/UserDataManager.dart';
 import 'package:sleeptrackerapp/Widgets/SettingsButton.dart';
 import '../NavigationPanel.dart';
 
@@ -49,21 +51,45 @@ class _SleepScheduleEntryState extends State<SleepScheduleEntry>
       ),
     );
 
-    // open a time picker for the start time
+    // get the UserDataManager
+    UserDataManager userDataManager = GetIt.instance<UserDataManager>();
+
+    String wakeTime = userDataManager.currentUser!.wakeTimes[widget.weekday.index];
+    String sleepTime = userDataManager.currentUser!.sleepTimes[widget.weekday.index];
+
+    
+
+
+    // get the wake and sleep times (HH:MM, no AM/PM)
+    TimeOfDay wakeTimeOfDay = TimeOfDay(hour: int.parse(wakeTime.split(':')[0]), minute: int.parse(wakeTime.split(':')[1]));
+    TimeOfDay sleepTimeOfDay = TimeOfDay(hour: int.parse(sleepTime.split(':')[0]), minute: int.parse(sleepTime.split(':')[1]));
+
     Widget startTimePicker = SettingsButton(
       indent: 20,
         onPressed: () {
-          print(TimeOfDay.now());
-          showTimePicker(   ///Returns date now 
+          showTimePicker(
             context: context,
-            initialTime: TimeOfDay.now(),
+            initialTime: wakeTimeOfDay,
+          ).then((value) => 
+            {
+              if(value != null)
+              {
+                // update the wake time
+                wakeTimeOfDay = value,
+                // update the user data, write as HH:MM  (NO AM/PM), can't use format() because it adds AM/PM
+                userDataManager.currentUser!.wakeTimes[widget.weekday.index] = '${wakeTimeOfDay.hour}:${wakeTimeOfDay.minute}',
+                userDataManager.updateCurrentUser(userDataManager.currentUser!),
+                // now update the widget
+                setState(() {})
+              }
+            }
           );
         },
-        child: const Row(
+        child: Row(
           children: [
-            Text('Wake Time'),
-            Spacer(),
-            Icon(Icons.timer),
+            Text('Wake Time: ${wakeTimeOfDay.format(context)}' ),
+            const Spacer(),
+            const Icon(Icons.timer),
           ],
     ));
 
@@ -73,14 +99,27 @@ class _SleepScheduleEntryState extends State<SleepScheduleEntry>
         onPressed: () {
           showTimePicker(
             context: context,
-            initialTime: TimeOfDay.now(),
+            initialTime: sleepTimeOfDay,
+          ).then((value) => 
+            {
+              if(value != null)
+              {
+                // update the wake time
+                wakeTimeOfDay = value,
+                // update the user data
+                userDataManager.currentUser!.wakeTimes[widget.weekday.index] = '${wakeTimeOfDay.hour}:${wakeTimeOfDay.minute}',
+                userDataManager.updateCurrentUser(userDataManager.currentUser!),
+                // now update the widget
+                setState(() {})
+              }
+            }
           );
         },
-        child: const Row(
+        child: Row(
           children: [
-            Text('Sleep Time'),
-            Spacer(),
-            Icon(Icons.timer),
+            Text('Sleep Time: ${sleepTimeOfDay.format(context)}'),
+            const Spacer(),
+            const Icon(Icons.timer),
           ],
     ));
 

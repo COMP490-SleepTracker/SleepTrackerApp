@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:light/light.dart';
 import 'package:alarm/alarm.dart';
+import 'package:sleeptrackerapp/Model/UserDataManager.dart';
 
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 
@@ -63,9 +64,39 @@ class SleepPageState extends State<SleepPage> {
 
     super.initState();
     timer = Timer.periodic(const Duration(seconds: 5), (Timer t) => logSleepData());
-    time = TimeOfDay.now();
+
+    UserDataEntry? user = GetIt.instance<UserDataManager>().currentUser;
+    if(user != null)
+    {
+      // first we need to get the day of the week
+      int day = DateTime.now().weekday - 1;
+
+      // get the wake up time for the day
+      String todayWakeTime = user.wakeTimes[day];
+      TimeOfDay todayWakeTimeOfDay = TimeOfDay(hour: int.parse(todayWakeTime.split(':')[0]), minute: int.parse(todayWakeTime.split(':')[1]));
+
+      TimeOfDay now = TimeOfDay.now();
+
+      // check if the current time is past the wake up time, if it is, we want to set the wake up time to the next day
+      if(now.hour > todayWakeTimeOfDay.hour || (now.hour == todayWakeTimeOfDay.hour && now.minute > todayWakeTimeOfDay.minute))
+      {
+        // this means we want to set the wake up time to the next day
+        int nextDay = (day + 1) % 7;
+        String nextDayWakeTime = user.wakeTimes[nextDay];
+        TimeOfDay nextDayWakeTimeOfDay = TimeOfDay(hour: int.parse(nextDayWakeTime.split(':')[0]), minute: int.parse(nextDayWakeTime.split(':')[1]));
+        time = nextDayWakeTimeOfDay;
+      }
+      else
+      {
+        time = todayWakeTimeOfDay;
+      }
+
+    }
+
+
     accelerometerTimer = Timer.periodic(const Duration(milliseconds: 250), (Timer t) => updateAccelerometerData());
     GetIt.instance<SleepDataManager>().addListener(update);
+
 
     _streamSubscriptions.add(
       userAccelerometerEvents.listen(
@@ -199,11 +230,12 @@ class SleepPageState extends State<SleepPage> {
   }
 
   Alarm ?alarm;
-  TimeOfDay time = TimeOfDay.now();
+  TimeOfDay ?time;
+  // we want to set the wake up time to the next user selected wake up time
 
   void _selectTime()
   {
-    showTimePicker(context: context, initialTime: time).then((value) => {
+    showTimePicker(context: context, initialTime: time ?? TimeOfDay.now()).then((value) => {
       if(value != null)
       {
         setState(() {
@@ -269,7 +301,7 @@ class SleepPageState extends State<SleepPage> {
                   child: const Text('Select wake up time'),
                 ),
                 Text(
-                  'Alarm set for: ${time.format(context)}',
+                  'Alarm set for: ${time!.format(context)}',
                 ),
               ],
             ),
