@@ -14,6 +14,10 @@ import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 
 
@@ -101,6 +105,7 @@ class _MyHomePageState extends State<MainPage> {
         // String totalDeep = await e.returnTotal(HealthDataType.SLEEP_REM,yesterday,now);
         // print("DEEP $totalDeep");
   }
+  setNotification();
 
     final user = FirebaseAuth.instance.currentUser; 
     if(!GetIt.instance<AuthenticationManager>().isAuthenticated)
@@ -110,7 +115,6 @@ class _MyHomePageState extends State<MainPage> {
     }
 
     // now we need to get the next alarm time
-
 
     return Scaffold(
       appBar: AppBar(
@@ -144,6 +148,34 @@ class _MyHomePageState extends State<MainPage> {
         )
       )
     );
+  }
+
+  void setNotification() async {
+
+    NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: AndroidNotificationDetails('alarm_notif', 'alarm_notif' , channelDescription: 'channel for alarm notifications', importance: Importance.max, priority: Priority.high),
+      iOS: DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true),
+    );
+
+
+
+    DateTime sleepTime = DateTime.now();
+    UserDataEntry? user = GetIt.instance<UserDataManager>().currentUser;
+    if(user != null)
+    {
+      int day = DateTime.now().weekday - 1;
+      String todaySleepTime = user.sleepTimes[day];
+      sleepTime = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, int.parse(todaySleepTime.split(':')[0]), int.parse(todaySleepTime.split(':')[1]));
+    }
+
+
+    tz.TZDateTime scheduledTime = tz.TZDateTime(tz.local, sleepTime.year, sleepTime.month, sleepTime.day, sleepTime.hour, sleepTime.minute);
+    if(scheduledTime.isBefore(tz.TZDateTime.now(tz.local)))
+    {
+      scheduledTime = tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)); // if the time is in the past, set it to 5 seconds from now
+    }
+
+    await FlutterLocalNotificationsPlugin().zonedSchedule(42, 'Sleep Tracker +', 'Time to sleep!', scheduledTime, platformChannelSpecifics, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle);
   }
 
   void setAlarm() async {
