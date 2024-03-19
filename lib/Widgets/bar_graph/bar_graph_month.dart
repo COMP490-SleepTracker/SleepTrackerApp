@@ -38,16 +38,17 @@ class BarGraphMonth extends StatelessWidget {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter
                     ),
-                  width: 58,
+                  width: 52,
                   borderRadius: BorderRadius.circular(4),
                 )
               ]))
           .toList(),
       barTouchData: BarTouchData(
           touchTooltipData: BarTouchTooltipData(
-        tooltipPadding: const EdgeInsets.all(1),
-        tooltipMargin: 0,
-        tooltipBgColor: Colors.transparent,
+            tooltipRoundedRadius: 20,
+        tooltipPadding: const EdgeInsets.only(right: 5, left: 5, top: 4),
+        tooltipMargin: 20,
+        tooltipBgColor: const Color.fromARGB(255, 71, 61, 94),
         getTooltipItem: (group, groupIndex, rod, rodIndex) {
           return BarTooltipItem(
               tooltipText(myBarData.barData[groupIndex].y),
@@ -73,7 +74,7 @@ class BarGraphMonth extends StatelessWidget {
   }
 
   Widget getBottomTitles(double value, TitleMeta meta) {
-    DateTime today = setSunday(DateTime.now());
+    DateTime today = setSunday(DateTime.now().toUtc());
     DateFormat df = DateFormat.Md();
 
     const style = TextStyle(

@@ -12,6 +12,10 @@ class SecureStorage {
     return value;
   }
 
+  Future<Future<Map<String, String>>> readAll() async {
+    return storage.readAll();
+  }
+
   deleteSecureData(String key) async {
     await storage.delete(key: key);
   }
