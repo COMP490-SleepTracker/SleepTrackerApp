@@ -1,6 +1,8 @@
 import 'dart:collection';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:health/health.dart';
 import 'package:intl/intl.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
@@ -17,9 +19,10 @@ class BarGraphPage extends StatefulWidget{
 }
 
 class BarGraphPageState extends State<BarGraphPage>{
+  late DateTime today = setSunday(DateTime.now().toUtc());
   late DateTime selectedDay = setSunday(DateTime.now().toUtc());
   DateFormat df = DateFormat.Md();
-  String weekLabel = "1/1 - 1/7";
+  late String weekLabel = "${df.format(selectedDay)} - ${df.format(selectedDay.add(const Duration(days: 6)))}";
 
   List<HealthDataType> datatypes = [HealthDataType.SLEEP_SESSION];
   List<double> weeklyHours = [0,0,0,0,0,0,0];
@@ -130,7 +133,7 @@ class BarGraphPageState extends State<BarGraphPage>{
          int.parse(healthdata[0].value.toString()) > 90){ //Only trims out sleep longer than 90mins to prevent trimming sunday naps
         healthdata.removeAt(0);
       }
-      
+      if (healthdata.isEmpty) return healthdata;
       if(healthdata.last.dateFrom.day != sunday.day && //last entry is not this sunday
       healthdata.last.dateFrom.weekday == 7 && //last entry was on next sunday
       healthdata.last.dateFrom.day != healthdata.last.dateTo.day){ // started on sunday, ended on monday
@@ -199,12 +202,12 @@ class BarGraphPageState extends State<BarGraphPage>{
               children: [
               weekEnabled ? IconButton(onPressed: leftArrow, icon: const Icon(Icons.chevron_left)) : const SizedBox(height: 48,),
               Text(weekEnabled ? weekLabel : "Weekly Sleep Average", style: const TextStyle(fontSize: 24),),
-              weekEnabled ? IconButton(onPressed: rightArrow, icon: const Icon(Icons.chevron_right)) : const SizedBox()
+              weekEnabled ? IconButton(onPressed: selectedDay != today ? rightArrow : null, icon: const Icon(Icons.chevron_right)) : const SizedBox()
           ],),
             Text("Average: ${tooltipText(avgSlept)}"),
             displayBars(),
             const Divider(),
-            SizedBox( width: 300,height: 80, 
+            SizedBox( width: 300,height: 100, 
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -228,7 +231,7 @@ class BarGraphPageState extends State<BarGraphPage>{
                 ),
             ],),
             ),
-            const Divider()
+            // const Divider()
         ],),
         ),
       ),
@@ -373,6 +376,5 @@ class BarGraphPageState extends State<BarGraphPage>{
     }
     if(total == 0) return 0;
     return (daysRecorded*8) - (total/60);
-  }
-  
+  } 
 }
