@@ -12,7 +12,7 @@ class SecureStorage {
     return value;
   }
 
-  Future<Future<Map<String, String>>> readAll() async {
+  Future<Map<String, String>> readAll() async {
     return storage.readAll();
   }
 

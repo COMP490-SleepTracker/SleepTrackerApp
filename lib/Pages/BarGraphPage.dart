@@ -39,6 +39,7 @@ class BarGraphPageState extends State<BarGraphPage>{
   void initState(){
     setSleepDebt();
     setChartWeek();
+    deleteExtraWeeks();
     super.initState();
   }
 
@@ -68,12 +69,13 @@ class BarGraphPageState extends State<BarGraphPage>{
 
   ///Writes [weeklyHours] into storage using [sunday] of a specific week as the key
   void writeToStorage(DateTime sunday) {
-    if(setSunday(DateTime.now().toUtc()).isAfter(sunday)) { //save week into storage if not current week
+    if(today.isAfter(sunday) && sunday.isAfter(today.subtract(const Duration(days: 36)))) { //save week into storage if not current week AND is within the last 5 weeks
       SecureStorage().writeSecureData("Week - $sunday", "$weeklyHours");
     }
   }
 
-  ///Returns the average hours slept for a given week and writes avg into memory 
+  ///Returns the average hours slept for a given week and writes avg into memory.
+  ///Only writes week into memory if it is within last 5 weeks
   double avgHoursWeek(DateTime selectedDay) {
     double totalSlept=0.0;
     double daysRecorded=0.0;
@@ -85,17 +87,17 @@ class BarGraphPageState extends State<BarGraphPage>{
     }
     if(totalSlept == 0.0) {
       mapAvgs.putIfAbsent(selectedDay, () => 0.0);
-      if(setSunday(DateTime.now().toUtc()).isAfter(selectedDay)) {
+      if(today.isAfter(selectedDay) && selectedDay.isAfter(today.subtract(const Duration(days: 36)))) {
         SecureStorage().writeSecureData("Avg - $selectedDay", "0.0");
       }
       return 0.0;
       }
     double avg = totalSlept/daysRecorded/60;
     sleepDebt += (daysRecorded * 8) - (totalSlept/60);
-    SecureStorage().writeSecureData("SleepDebt", "$sleepDebt");
     mapAvgs.putIfAbsent(selectedDay, () => avg);  
-    if (setSunday(DateTime.now().toUtc()) != selectedDay) {
-  SecureStorage().writeSecureData("Avg - $selectedDay", "$avg");
+    if (today.isAfter(selectedDay) && selectedDay.isAfter(today.subtract(const Duration(days: 36)))) {
+      SecureStorage().writeSecureData("Avg - $selectedDay", "$avg");
+      SecureStorage().writeSecureData("SleepDebt", "$sleepDebt");
     }
     return mapAvgs[selectedDay];
   }
@@ -213,14 +215,14 @@ class BarGraphPageState extends State<BarGraphPage>{
                 children: [
                 const Text("Sleep Debt", style: TextStyle(fontSize: 24)),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     const Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                      Text("Total: ",style: TextStyle(fontSize: 20),),
-                      Text("This Week: ",style: TextStyle(fontSize: 20),),
+                      Text("Total:",style: TextStyle(fontSize: 20),),
+                      Text("This Week:",style: TextStyle(fontSize: 20),),
                       ],),
+                      const SizedBox(width: 100,),
                       Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -231,7 +233,7 @@ class BarGraphPageState extends State<BarGraphPage>{
                 ),
             ],),
             ),
-            // const Divider()
+            const Divider()
         ],),
         ),
       ),
@@ -376,5 +378,20 @@ class BarGraphPageState extends State<BarGraphPage>{
     }
     if(total == 0) return 0;
     return (daysRecorded*8) - (total/60);
+  }
+  
+  void deleteExtraWeeks() async{
+    DateTime earliest = today.subtract(const Duration(days: 35));
+    Map storageMap = await SecureStorage().readAll();
+
+    for(dynamic key in storageMap.keys){
+      if(key.contains('Week') || key.contains("Avg")){
+        String temp = key.substring(key.indexOf('2'));
+        if(DateTime.parse(temp).isBefore(earliest)){
+          SecureStorage().deleteSecureData(key);
+        }
+        print(key);
+      }
+    }
   } 
 }
