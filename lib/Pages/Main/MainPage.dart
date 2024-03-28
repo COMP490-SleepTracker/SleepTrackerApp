@@ -172,7 +172,12 @@ class _MyHomePageState extends State<MainPage> {
     tz.TZDateTime scheduledTime = tz.TZDateTime(tz.local, sleepTime.year, sleepTime.month, sleepTime.day, sleepTime.hour, sleepTime.minute);
     if(scheduledTime.isBefore(tz.TZDateTime.now(tz.local)))
     {
-      scheduledTime = tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)); // if the time is in the past, set it to 5 seconds from now
+      // if the time is in the past, get the next day's sleep time instead
+      int day = (DateTime.now().weekday - 1 + 1) % 7;
+      String nextDaySleepTime = user!.sleepTimes[day];
+      sleepTime = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1, int.parse(nextDaySleepTime.split(':')[0]), int.parse(nextDaySleepTime.split(':')[1]));
+
+      scheduledTime = tz.TZDateTime(tz.local, sleepTime.year, sleepTime.month, sleepTime.day, sleepTime.hour, sleepTime.minute);
     }
 
     await FlutterLocalNotificationsPlugin().zonedSchedule(42, 'Sleep Tracker +', 'Time to sleep!', scheduledTime, platformChannelSpecifics, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle);

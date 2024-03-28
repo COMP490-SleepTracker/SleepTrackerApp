@@ -105,9 +105,9 @@ class _SleepScheduleEntryState extends State<SleepScheduleEntry>
               if(value != null)
               {
                 // update the wake time
-                wakeTimeOfDay = value,
+                sleepTimeOfDay = value,
                 // update the user data
-                userDataManager.currentUser!.wakeTimes[widget.weekday.index] = '${wakeTimeOfDay.hour}:${wakeTimeOfDay.minute}',
+                userDataManager.currentUser!.sleepTimes[widget.weekday.index] = '${sleepTimeOfDay.hour}:${sleepTimeOfDay.minute}',
                 userDataManager.updateCurrentUser(userDataManager.currentUser!),
                 // now update the widget
                 setState(() {})
