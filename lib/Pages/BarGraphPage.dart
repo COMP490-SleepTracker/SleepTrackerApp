@@ -31,6 +31,7 @@ class BarGraphPageState extends State<BarGraphPage>{
   HashMap mapAvgs = HashMap<DateTime,double>();
   double avgSlept = 0.0;
   double sleepDebt = 0.0;
+  double sleepDebtTemp = 0.0;
 
   bool weekEnabled = true;
   bool monthEnabled = false; 
@@ -91,11 +92,12 @@ class BarGraphPageState extends State<BarGraphPage>{
         SecureStorage().writeSecureData("Avg - $selectedDay", "0.0");
       }
       return 0.0;
-      }
+    }
     double avg = totalSlept/daysRecorded/60;
-    sleepDebt += (daysRecorded * 8) - (totalSlept/60);
-    mapAvgs.putIfAbsent(selectedDay, () => avg);  
+    mapAvgs.putIfAbsent(selectedDay, () => avg);
+    sleepDebtTemp += (daysRecorded * 8) - (totalSlept/60);
     if (today.isAfter(selectedDay) && selectedDay.isAfter(today.subtract(const Duration(days: 36)))) {
+      sleepDebt += (daysRecorded * 8) - (totalSlept/60);
       SecureStorage().writeSecureData("Avg - $selectedDay", "$avg");
       SecureStorage().writeSecureData("SleepDebt", "$sleepDebt");
     }
@@ -226,7 +228,7 @@ class BarGraphPageState extends State<BarGraphPage>{
                       Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                      Text(tooltipText(sleepDebt),style: const TextStyle(fontSize: 20),),
+                      Text(tooltipText(sleepDebtTemp),style: const TextStyle(fontSize: 20),),
                       Text(tooltipText(setWeekDebt()),style: const TextStyle(fontSize: 20),),
                       ],),
                   ],
@@ -281,7 +283,7 @@ class BarGraphPageState extends State<BarGraphPage>{
         avgSlept = await hoursSleptWeek(selectedDay);
       }
       weekLabel = "${df.format(selectedDay)} - ${df.format(selectedDay.add(const Duration(days: 6)))}";
-      setState(() {setSleepDebt();});
+      setState(() {});
   }
 
   ///Retrieves Health Connect data for last 5 weeks if they are not already in storage
@@ -292,6 +294,9 @@ class BarGraphPageState extends State<BarGraphPage>{
       String value = await SecureStorage().readSecureData("Avg - $curr");
       if(value != ''){
         monthlySummary[i] = double.parse(value);
+      }
+      else if(mapAvgs.containsKey(curr)){
+        monthlySummary[i] = mapAvgs[curr];
       }
       else{
         monthlySummary[i] = await hoursSleptWeek(curr);
@@ -363,6 +368,7 @@ class BarGraphPageState extends State<BarGraphPage>{
     String value = await SecureStorage().readSecureData("SleepDebt");
     if(value != '') {
       sleepDebt = double.parse(value);
+      sleepDebtTemp = sleepDebt;
     }
   }
 
@@ -390,7 +396,6 @@ class BarGraphPageState extends State<BarGraphPage>{
         if(DateTime.parse(temp).isBefore(earliest)){
           SecureStorage().deleteSecureData(key);
         }
-        print(key);
       }
     }
   } 
