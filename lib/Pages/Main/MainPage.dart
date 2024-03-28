@@ -43,7 +43,6 @@ class _MyHomePageState extends State<MainPage> {
     UserDataEntry? user = GetIt.instance<UserDataManager>().currentUser;
     if(user != null)
     {
-      print('user wake times ${user.wakeTimes}');
 
       // first we need to get the day of the week
       int day = DateTime.now().weekday - 1;
@@ -53,12 +52,10 @@ class _MyHomePageState extends State<MainPage> {
       TimeOfDay todayWakeTimeOfDay = TimeOfDay(hour: int.parse(todayWakeTime.split(':')[0]), minute: int.parse(todayWakeTime.split(':')[1]));
 
       TimeOfDay now = TimeOfDay.now();
-      print('todayWakeTimeOfDay $todayWakeTimeOfDay');
 
       // check if the current time is past the wake up time, if it is, we want to set the wake up time to the next day
       if(now.hour > todayWakeTimeOfDay.hour || (now.hour == todayWakeTimeOfDay.hour && now.minute > todayWakeTimeOfDay.minute))
       {
-        print('setting wake up time to next day');
         // this means we want to set the wake up time to the next day
         int nextDay = (day + 1) % 7;
         String nextDayWakeTime = user.wakeTimes[nextDay];
@@ -77,7 +74,6 @@ class _MyHomePageState extends State<MainPage> {
   void initState() {
     super.initState();
     alarmTime = getDefaulTime();
-    print('alarmTime $alarmTime');
   }
 
   @override
