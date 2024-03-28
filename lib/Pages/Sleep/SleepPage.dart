@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -261,7 +262,7 @@ class SleepPageState extends State<SleepPage> {
       // add a day if the alarm is before now
       alarmDateTime = alarmDateTime.add(const Duration(days: 1));
     }
-    AlarmSettings alarmSettings = AlarmSettings(id: 42, dateTime: alarmDateTime, assetAudioPath: "assets/alarm.mp3",   loopAudio: true, vibrate: true, notificationTitle: 'Sleep Tracker +', notificationBody: 'Time to wake up!', volumeMax: true, fadeDuration: 3.0, stopOnNotificationOpen: true);
+    AlarmSettings alarmSettings = AlarmSettings(id: 42, dateTime: alarmDateTime, assetAudioPath: "assets/alarm.mp3",   loopAudio: true, vibrate: true, notificationTitle: 'Sleep Tracker +', notificationBody: 'Time to wake up!',fadeDuration: 3.0, );
     await Alarm.set(alarmSettings: alarmSettings);
   }
 

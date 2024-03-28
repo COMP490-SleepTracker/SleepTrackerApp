@@ -1,4 +1,5 @@
 import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
@@ -188,10 +189,8 @@ class _MyHomePageState extends State<MainPage> {
       loopAudio: true, 
       vibrate: true, 
       notificationTitle: 'Sleep Tracker +', 
-      notificationBody: 'Time to wake up!', 
-      volumeMax: true, 
-      fadeDuration: 3.0, 
-      stopOnNotificationOpen: true);
+      notificationBody: 'Time to wake up!',  
+      fadeDuration: 3.0);
 
       // show a notification that the alarm has been set
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Alarm has been set')));
