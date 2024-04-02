@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:health/health.dart';
@@ -7,10 +8,12 @@ class SleepGraph extends StatelessWidget {
   final List<HealthDataPoint>? sleepData;
   final double maxX;
   final double minX;
+  final bool asleepSession; 
 
-  SleepGraph(this.sleepData, this.maxX, this.minX);
+  SleepGraph(this.sleepData, this.maxX, this.minX, this.asleepSession);
 
   final double padding = 10.0;
+  final List<FlSpot> dataPoints = [];
 
   int SleepTypeToInt(String type) {
     switch (type) {
@@ -22,8 +25,8 @@ class SleepGraph extends StatelessWidget {
         return 4;
       case "SLEEP_DEEP":
         return 2;
-      // case "SLEEP_ASLEEP":
-      //   return 1;
+      case "SLEEP_ASLEEP":
+        return 2;
       default:
         return -1;
     }
@@ -32,17 +35,15 @@ class SleepGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return
-        //main();
-
         Stack(
       children: <Widget>[
         AspectRatio(
           aspectRatio: 1.30,
           child: Padding(
             padding: const EdgeInsets.only(
-              right: 25,
-              left: 6, //12
-              top: 10, //24
+             right: 24,//25
+              left: 6, //12 6
+              top: 10, //24  10
               bottom: 12, //12
             ),
             child: main(),
@@ -53,19 +54,7 @@ class SleepGraph extends StatelessWidget {
   }
 
   List<FlSpot> _generateDataPoints() {
-    List<FlSpot> dataPoints = [];
-
-    print('=============== min X ${minX}==and  maxX ${maxX}======================================');
-        print('====MINX====${DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(minX.toInt()))}}');
-                 final middle =  (minX + maxX) / 2;
-                print('====MaxX====${DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(maxX.toInt()))}}');
-         
-
-  print('-----Middle---- ${middle} CONVERTED ===> ${DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(middle.toInt()))}');
-
     for (var sleepSession in sleepData!) {
-      //print('${sleepSession.dateFrom.minute} & ${sleepSession.typeString}');
-      //print('type ${sleepSession.typeString} and ${SleepTypeToInt(sleepSession.typeString).toDouble()} ');
       if (sleepSession.typeString != "SLEEP_SESSION") {
         dataPoints.add(FlSpot(
             sleepSession.dateFrom.millisecondsSinceEpoch.toDouble(),
@@ -73,10 +62,9 @@ class SleepGraph extends StatelessWidget {
         dataPoints.add(FlSpot(
             sleepSession.dateTo.millisecondsSinceEpoch.toDouble(),
             SleepTypeToInt(sleepSession.typeString).toDouble()));
-        print(
-            '${sleepSession.dateFrom.millisecondsSinceEpoch.toDouble()} and ${SleepTypeToInt(sleepSession.typeString).toDouble()}');
       } else {
-        print('Sleep Session ----> ${sleepSession.value} ==> ( ${sleepSession.dateFrom} - ${sleepSession.dateTo} ))'); 
+        print(
+            'Sleep Session ----> ${sleepSession.value} ==> ( ${sleepSession.dateFrom} - ${sleepSession.dateTo} ))');
       }
     }
     return dataPoints;
@@ -85,7 +73,7 @@ class SleepGraph extends StatelessWidget {
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 6,
+      fontSize: 10, //6
     );
     String text;
     switch (value.toInt()) {
@@ -100,8 +88,6 @@ class SleepGraph extends StatelessWidget {
         break;
       case 2:
         text = 'Deep';
-        // case 1:
-        //   text = 'Asleep';
         break;
 
       default:
@@ -111,26 +97,25 @@ class SleepGraph extends StatelessWidget {
     return Text(text, style: style, textAlign: TextAlign.left);
   }
 
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
-     final style = TextStyle(
-      color: Colors.blueGrey,
+  Widget leftTitleAsleep(double value, TitleMeta meta) {
+    const style = TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 6,
+      fontSize: 10, //6
     );
-    final start = DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(minX.toInt())); 
-    final end = DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(maxX.toInt())); 
-    // final middle =  (start + end) / 2; 
+    String text;
+    switch (value.toInt()) {
+      case 5:
+        text = 'Awake';
+        break;
+      case 2:
+        text = 'Asleep';
+        break;
 
-    if (value == minX){
-      print('yess works');
-      return Text('${start}',style: style,);
-    } else if(value == maxX){
-      return Text('${end}',style: style,);
+      default:
+        return Container();
     }
-    else return Container();
 
-    // print('${value} --> ${DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(value.toInt() * 1000))} ');
-    // return Text(DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(value.toInt() * 1000)),style: style,);
+    return Text(text, style: style, textAlign: TextAlign.left);
   }
 
   LineChart main() {
@@ -138,12 +123,25 @@ class SleepGraph extends StatelessWidget {
       LineChartData(
         minX: minX.toDouble(), // minX.toDouble()
         maxX: maxX.toDouble(),
-        minY: 2,
-        maxY: 5,
+        minY: 1.5, //2  1.5
+        maxY: 6.5,
         gridData: FlGridData(
           show: true,
-          drawVerticalLine: true,
-          drawHorizontalLine: false, // this one
+          drawVerticalLine: false,
+          drawHorizontalLine: true, // this one
+          getDrawingHorizontalLine: (value) {
+            if (value == 2 || value == 3 || value == 4 || value == 5) {
+              return const FlLine(
+                color: Colors.grey,
+                strokeWidth: 1,
+              );
+            } else {
+              return const FlLine(
+                color: Colors.transparent,
+                strokeWidth: 0,
+              );
+            }
+          },
         ),
         borderData: FlBorderData(
           show: false,
@@ -157,18 +155,28 @@ class SleepGraph extends StatelessWidget {
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
-              showTitles: false,
-              reservedSize: 30, //30
-              interval: 1,        
-             // getTitlesWidget: (values, meta) => bottomTitleWidgets(values,meta)
+              showTitles: true,
+              reservedSize: 18, //30
+              getTitlesWidget: (value,meta) {
+                const style = TextStyle(fontWeight: FontWeight.bold);
+                if(value == minX){
+                  return Text(DateFormat('HH:mm a').format(DateTime.fromMillisecondsSinceEpoch(minX.toInt())), style: style);
+                } else if (value == maxX){
+                   return 
+                   Container(padding: const EdgeInsets.only(right: 25),child:
+                    Text(DateFormat('HH:mm a').format(DateTime.fromMillisecondsSinceEpoch(maxX.toInt())), style:style));
+                } else {
+                  return Container(); 
+                }
+              }
             ),
           ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               interval: 1,
-              getTitlesWidget: (value, meta) => leftTitleWidgets(value, meta),
-              //reservedSize: 45, ///42
+              getTitlesWidget: (value, meta) => asleepSession == true ?  leftTitleAsleep(value, meta):leftTitleWidgets(value, meta),
+              reservedSize: 37, ///42
             ),
           ),
         ),
@@ -176,13 +184,12 @@ class SleepGraph extends StatelessWidget {
         lineBarsData: [
           LineChartBarData(
             spots: _generateDataPoints(),
-            // color: spots.map((spot) => getColorForY(spot.y)).toList(),
             isStepLineChart: false,
             isCurved: true,
-            curveSmoothness: 0.079,
-            color: Colors.green,
+            curveSmoothness: 0.030,
+            color: Colors.blue,
             belowBarData: BarAreaData(
-              show: false,
+              show: true,
             ),
             barWidth: 1,
             dotData: const FlDotData(

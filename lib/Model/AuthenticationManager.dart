@@ -7,7 +7,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get_it/get_it.dart';
-import 'package:sleeptrackerapp/Model/DataManager/SleepDataManager.dart';
 import 'package:sleeptrackerapp/Model/DataManager/UserDataManager.dart';
 
 import 'dart:developer';

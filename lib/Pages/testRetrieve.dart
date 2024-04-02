@@ -1,13 +1,11 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:health/health.dart';
 import 'package:intl/intl.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Widgets/bar_graph/bar_graph_week.dart';
 import 'package:sleeptrackerapp/Widgets/bar_graph/bar_graph_month.dart';
-import 'package:sleeptrackerapp/Model/healthConnect.dart';
 
 class testRetrieve extends StatefulWidget{
   const testRetrieve({super.key, required this.title});
@@ -24,7 +22,6 @@ class testRetrieveState extends State<testRetrieve>{
   String weekLabel = "1/1 - 1/7";
   var f = NumberFormat("#0.0#", "en_US");
 
-  HealthConnect e = GetIt.instance<HealthConnect>();
   List<HealthDataType> list = [HealthDataType.SLEEP_SESSION];
   List<double> weeklyHours = [0,0,0,0,0,0,0];
   HashMap mapWeeks = HashMap<DateTime,List<double>>();

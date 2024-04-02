@@ -30,7 +30,7 @@ class TipsPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 13.0),
-                Container(
+                Container(  //
                   width: 100.0,
                   height: 100.0,
                   child: const Stack(
@@ -42,7 +42,7 @@ class TipsPage extends StatelessWidget {
                         child: CircularProgressIndicator(
                           value: 0.85, // Dummy sleep score value (85%)
                           backgroundColor: Colors.white,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                           strokeWidth: 20.0,
                         ),
                       ),
@@ -56,7 +56,7 @@ class TipsPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
+                ), //
               ],
             ),
           ),

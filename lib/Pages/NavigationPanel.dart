@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:sleeptrackerapp/Pages/Main/MainPage.dart';
 import 'package:sleeptrackerapp/Pages/Settings/SettingsPage.dart';
 import 'package:sleeptrackerapp/Pages/Sleep/SleepPage.dart';
-import 'package:sleeptrackerapp/Pages/Statistics/StatisticsPage.dart';
 import 'package:sleeptrackerapp/Pages/Journal/JournalPage.dart';
 import 'package:sleeptrackerapp/Pages/Statistics/TestFitPage.dart';
 import 'package:sleeptrackerapp/Pages/testRetrieve.dart';
