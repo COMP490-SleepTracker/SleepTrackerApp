@@ -68,7 +68,7 @@ class _TestFitPageState extends State<TestFitPage> {
         children: [
           Center(
               child: Padding(
-            padding: const EdgeInsets.only(top: 3, bottom: 10, right: 90),
+            padding: const EdgeInsets.only(top: 3, bottom: 10, right: 90),  //test single child scroll widget
             child: TextField(
               controller: date,
               decoration: const InputDecoration(

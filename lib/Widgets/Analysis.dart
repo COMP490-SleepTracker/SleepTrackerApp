@@ -7,8 +7,8 @@ class Analysis extends StatelessWidget {
   final double steps;
   final double awake;
   final double asleep;
-  final double light; 
-  
+  final double light;
+
   Analysis(
     this.light,
     this.awake,
@@ -19,9 +19,16 @@ class Analysis extends StatelessWidget {
     this.session,
   );
 
+  String durationToString(int minutes) {
+    var d = Duration(minutes: minutes);
+    List<String> parts = d.toString().split(':');
+    return '${parts[0].padLeft(2, '0')} hr ${parts[1].padLeft(2, '0')} min';
+  }
+
   Widget CircleThingy(double type, String typeString) {
-    return 
-     Column(
+    if (type != 0) {
+      print('$typeString = $type   === ${durationToString(type.toInt())}');
+      return Column(
         children: [
           Container(
             //
@@ -34,7 +41,7 @@ class Analysis extends StatelessWidget {
                   width: 30.0, // Size of the circular progress indicator
                   height: 30.0,
                   child: CircularProgressIndicator(
-                    value: (type/session), // Dummy sleep score value (85%)
+                    value: (type / session), // Dummy sleep score value (85%)
                     backgroundColor: Colors.white,
                     valueColor:
                         const AlwaysStoppedAnimation<Color>(Colors.green),
@@ -42,7 +49,8 @@ class Analysis extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  type.toStringAsFixed(1), // Dummy sleep score value
+                  ((type / session) * 10).toStringAsFixed(1) +
+                      '%', // Dummy sleep score value
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
@@ -54,6 +62,9 @@ class Analysis extends StatelessWidget {
           ),
         ],
       );
+    } else {
+      return Container();
+    }
   }
 
   @override
@@ -63,25 +74,20 @@ class Analysis extends StatelessWidget {
       children: <Widget>[
         Padding(
             padding: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 5.0),
-            child: CircleThingy(awake,'awake')
-            ),
-            Padding(
+            child: CircleThingy(awake, 'awake')),
+        Padding(
             padding: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 5.0),
-            child: CircleThingy(rem,'rem')
-            ),
-            Padding(
+            child: CircleThingy(rem, 'rem')),
+        Padding(
             padding: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 5.0),
-            child:  CircleThingy(light, 'light')
-            ),
-            Padding(
+            child: CircleThingy(light, 'light')),
+        Padding(
             padding: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 5.0),
-            child:  CircleThingy(deep,'deep')
-            ),
-            Padding(
+            child: CircleThingy(deep, 'deep')),
+        Padding(
             padding: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 5.0),
-            child:  CircleThingy(asleep,'asleep')
-            ),
-             ],
+            child: CircleThingy(asleep, 'asleep')),
+      ],
     );
   }
 }
