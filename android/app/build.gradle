@@ -51,6 +51,7 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -71,3 +72,4 @@ dependencies {
    implementation "androidx.health.connect:connect-client:1.1.0-alpha02"
 
 }
+
