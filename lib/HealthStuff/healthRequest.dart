@@ -53,8 +53,8 @@ class HealthRequest {
   }
 
   Future<List<HealthDataPoint>> readSleep(String selectedDate) async { 
-    rem = score = awake = light = deep = asleep = session = min = max = Steps = 0; 
-    final permissions = sleep.map((e) => HealthDataAccess.READ_WRITE).toList();
+      rem = score = awake = light = deep = asleep = session = min = max = Steps = 0; 
+      final permissions = sleep.map((e) => HealthDataAccess.READ_WRITE).toList();
       final DateTime selected = DateTime.parse(selectedDate);
       final DateTime midnightSelected = DateTime(selected.year, selected.month, selected.day);
 

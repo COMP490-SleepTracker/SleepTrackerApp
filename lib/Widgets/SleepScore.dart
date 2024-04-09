@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 
 class SleepScore extends StatelessWidget {
-  final double session;
-  final double deep;
-  final double rem;
-  final double steps;
+
   final double score; 
 
-  SleepScore(this.session, this.deep, this.rem, this.steps, this.score);
+  SleepScore(this.score);
 
 ///To check if sleep works 
   // String durationToString(int minutes) {
@@ -64,7 +61,7 @@ class SleepScore extends StatelessWidget {
                   ),
                 ),
                 Text(
-                     (score).toStringAsFixed(1), // Dummy sleep score value
+                     ((score / 110) * 100).toStringAsFixed(1), // Dummy sleep score value
                   style: TextStyle(
                     fontSize: 38.0,
                     fontWeight: FontWeight.bold,

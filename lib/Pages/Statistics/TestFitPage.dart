@@ -11,8 +11,6 @@ import 'package:sleeptrackerapp/HealthStuff/healthRequest.dart';
 import 'package:sleeptrackerapp/Widgets/SleepScore.dart';
 import 'package:sleeptrackerapp/Widgets/Analysis.dart';
 
-
-
 class TestFitPage extends StatefulWidget {
   const TestFitPage({super.key, required this.title});
   final String title;
@@ -57,6 +55,7 @@ class _TestFitPageState extends State<TestFitPage> {
         });
       } else {}
     }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -64,11 +63,14 @@ class _TestFitPageState extends State<TestFitPage> {
       ),
       drawer: const NavigationPanel(),
       body: Column(
-           crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Center(
               child: Padding(
-            padding: const EdgeInsets.only(top: 3, bottom: 10, right: 90),  //test single child scroll widget
+            padding: const EdgeInsets.only(
+                top: 3,
+                bottom: 10,
+                right: 90), //test single child scroll widget
             child: TextField(
               controller: date,
               decoration: const InputDecoration(
@@ -87,24 +89,42 @@ class _TestFitPageState extends State<TestFitPage> {
               future: request.readSleep(getDate()),
               builder:
                   (context, AsyncSnapshot<List<HealthDataPoint>> snapshot) {
-                if (snapshot.hasData) {
+                //Widget child;
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                      child: CircularProgressIndicator(color: Colors.white));
+                } else if (snapshot.hasData) {
                   List<HealthDataPoint>? data = snapshot.data;
-                  return 
-                  //Expanded(
-                     // child: 
-                    Column(children: <Widget>[
-                    SleepScore(request.session, request.deep, request.rem, request.Steps,request.score),  ///add a list type view below this one 
-                    Analysis(request.light,request.awake,request.asleep,request.deep,request.rem,request.Steps,request.session),
-                    SleepGraph(data, request.max, request.min,
-                            request.asleepSession),
-                  ]);
+                  return
+                      Expanded(
+                      child:
+                      Column(children: <Widget>[
+                    SleepScore(request.score),
+                    ///add a list type view below this one
+                     SizedBox(height: 10),
+                    Expanded(
+                      child: ListView(children: <Widget> [
+                         Analysis(
+                        request.light,
+                        request.awake,
+                        request.asleep,
+                        request.deep,
+                        request.rem,
+                        request.Steps,
+                        request.session),
+                    SleepGraph(
+                        data, request.max, request.min, request.asleepSession),
+                  ] )),
+
+                      
+                    ]) );
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
                   return const Center(
                       child: CircularProgressIndicator(color: Colors.white));
                 }
-              })
+           })
         ],
       ),
     );
