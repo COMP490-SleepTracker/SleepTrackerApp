@@ -50,6 +50,7 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   alarm: ^2.1.1
   intl: ^0.18.1
+  url_launcher: ^6.0.9
 
 dev_dependencies:
   flutter_test:
