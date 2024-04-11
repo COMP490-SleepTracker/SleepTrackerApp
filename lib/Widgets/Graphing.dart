@@ -70,7 +70,6 @@ class LineChartWidget extends StatelessWidget {
                 lineTouchData: LineTouchData(
                   touchTooltipData: LineTouchTooltipData(
                     maxContentWidth: 100,
-                    tooltipBgColor: Colors.black,
                     getTooltipItems: (touchedSpots) {
                       return touchedSpots.map((LineBarSpot touchedSpot) {
                         final textStyle = TextStyle(
