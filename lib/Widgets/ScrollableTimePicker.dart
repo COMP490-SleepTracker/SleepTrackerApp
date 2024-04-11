@@ -10,8 +10,10 @@ class ScrollableTimePicker extends StatefulWidget {
   this.showBorder = true, 
   this.borderColor = Colors.white,
   this.borderWidth = 2.5,
-  this.timeColor = Colors.white});
+  this.timeColor = Colors.white,
+  this.defaultTime});
 
+  final DateTime? defaultTime;
   final double scale;
   final bool showBorder;
   final Color borderColor;
@@ -25,9 +27,20 @@ class ScrollableTimePicker extends StatefulWidget {
 
 class ScrollableTimePickerState extends State<ScrollableTimePicker> {
   DateTime today = DateTime.now();
-  static int hour = 8;
-  static int minute = 0;
-  static int amPm = 0;
+  int hour = 0;
+  int minute = 0;
+  int amPm = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    if(widget.defaultTime != null){
+      hour = widget.defaultTime!.hour > 12 ? widget.defaultTime!.hour - 12 : widget.defaultTime!.hour;
+      minute = widget.defaultTime!.minute;
+      amPm = widget.defaultTime!.hour > 12 ? 12 : 0;
+    }
+  }
+
   NumberFormat minutesFormat = NumberFormat("00");
   
 
@@ -65,7 +78,7 @@ class ScrollableTimePickerState extends State<ScrollableTimePicker> {
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 70 * widget.scale, maxHeight: 140 * widget.scale),
               child: ListWheelScrollView.useDelegate(
-                controller: FixedExtentScrollController(initialItem: 7),
+                controller: FixedExtentScrollController(initialItem: hour - 1),
                   onSelectedItemChanged: (value) {
                     hour = value + 1;
                     widget.onTimeChange(formatTime());
@@ -90,6 +103,7 @@ class ScrollableTimePickerState extends State<ScrollableTimePicker> {
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 70 * widget.scale, maxHeight: 140 * widget.scale),
               child: ListWheelScrollView.useDelegate(
+                  controller: FixedExtentScrollController(initialItem: minute ~/ 5),
                   onSelectedItemChanged: (value) {
                     minute = value * 5;
                     widget.onTimeChange(formatTime());
@@ -106,6 +120,7 @@ class ScrollableTimePickerState extends State<ScrollableTimePicker> {
             ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 70 * widget.scale, maxHeight: 140 * widget.scale),
               child: ListWheelScrollView(
+                  controller: FixedExtentScrollController(initialItem: amPm == 0 ? 0 : 1),
                   overAndUnderCenterOpacity: 0.3,
                   onSelectedItemChanged: (value) {
                     amPm = (value * 12);
