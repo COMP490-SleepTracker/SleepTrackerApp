@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:light/light.dart';
 import 'package:alarm/alarm.dart';
-import 'package:sleeptrackerapp/Model/UserDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/UserDataManager.dart';
 
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 

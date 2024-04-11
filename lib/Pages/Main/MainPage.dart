@@ -3,7 +3,7 @@ import 'package:alarm/model/alarm_settings.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
-import 'package:sleeptrackerapp/Model/UserDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/UserDataManager.dart';
 import 'package:sleeptrackerapp/Model/healthConnect.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Widgets/ScrollableTimePicker.dart';

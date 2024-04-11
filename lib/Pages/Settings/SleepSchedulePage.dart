@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:sleeptrackerapp/Model/UserDataManager.dart';
+import 'package:sleeptrackerapp/Model/DataManager/UserDataManager.dart';
 import 'package:sleeptrackerapp/Widgets/SettingsButton.dart';
 import '../NavigationPanel.dart';
 
