@@ -76,8 +76,6 @@ flutter:
 
   assets:
     - assets/alarm.mp3 
-    - assets/AlarmClock.mp3
-    - assets/Ringtone.mp3
     - assets/download.png
 
 
