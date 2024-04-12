@@ -1,5 +1,6 @@
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import 'package:sleeptrackerapp/Model/DataManager/SecureStorage.dart';
@@ -7,7 +8,6 @@ import 'package:sleeptrackerapp/Model/DataManager/UserDataManager.dart';
 import 'package:sleeptrackerapp/Model/healthConnect.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Widgets/ScrollableTimePicker.dart';
-import 'package:sleeptrackerapp/Model/DataManager/SecureStorage.dart';
 
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MainPage> {
 
 
   DateTime alarmTime = DateTime.now();
+
   late String alarmTone;
   late String alarmVolume;
   late String alarmVibe;
@@ -84,11 +85,11 @@ class _MyHomePageState extends State<MainPage> {
     readAlarmSettings();
     alarmSet = Alarm.hasAlarm();
     alarmTime = getDefaulTime();  
+
   }
 
   @override
   Widget build(BuildContext context) {
-    
     testThis() async {
               final now = DateTime.now();
               final midnight = DateTime(now.year, now.month, now.day);
@@ -120,9 +121,7 @@ class _MyHomePageState extends State<MainPage> {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(title: 'Sleep Tracker+')));
     }
 
-
     // now we need to get the next alarm time
-
 
     return Scaffold(
       appBar: AppBar(
@@ -144,6 +143,7 @@ class _MyHomePageState extends State<MainPage> {
                 defaultTime: alarmTime,
                 ),
                 const SizedBox(height: 100),
+
                 alarmSet ? StopAlarmButton() : SetAlarmButton(),
                   Text(alarmSet ? 'Stop Alarm' : "Sleep", style: const TextStyle(fontSize: 16),)
             ],
@@ -170,6 +170,7 @@ class _MyHomePageState extends State<MainPage> {
                 onPressed: stopAlarm, 
                 child: const Icon(Icons.cancel_rounded, size: 36));
   }
+
 
   void setNotification() async {
 
@@ -212,6 +213,7 @@ class _MyHomePageState extends State<MainPage> {
       volume: (double.parse(alarmVolume)/100),   
       loopAudio: true, 
       vibrate: bool.parse(alarmVibe), 
+
       notificationTitle: 'Sleep Tracker +', 
       notificationBody: 'Time to wake up!',  
       fadeDuration: 3.0);
@@ -219,6 +221,7 @@ class _MyHomePageState extends State<MainPage> {
       // show a notification that the alarm has been set
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Alarm has been set')));
     await Alarm.set(alarmSettings: alarmSettings);
+
     setState(() {alarmSet = true;});
   }
   
