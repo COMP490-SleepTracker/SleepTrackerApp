@@ -2,6 +2,7 @@ import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
+import 'package:sleeptrackerapp/Model/DataManager/SecureStorage.dart';
 import 'package:sleeptrackerapp/Model/DataManager/UserDataManager.dart';
 import 'package:sleeptrackerapp/Model/healthConnect.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
@@ -34,11 +35,14 @@ class MainPage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MainPage> {
-  late DateTime alarmTime;
-  late String alarmFilename;
-  late double alarmVolume;
-  late bool vibrationSetting;
-  late Future<bool> alarmSet;
+
+
+
+  DateTime alarmTime = DateTime.now();
+  late String alarmTone;
+  late String alarmVolume;
+  late String alarmVibe;
+  late bool alarmSet;
 
   DateTime getDefaulTime() 
   {
@@ -72,12 +76,14 @@ class _MyHomePageState extends State<MainPage> {
     return DateTime.now();
   }
 
+
+
   @override
   void initState() {
     super.initState();
-    alarmTime = getDefaulTime();
-    alarmSet = readStorage();   
-
+    readAlarmSettings();
+    alarmSet = Alarm.hasAlarm();
+    alarmTime = getDefaulTime();  
   }
 
   @override
@@ -86,7 +92,7 @@ class _MyHomePageState extends State<MainPage> {
     testThis() async {
               final now = DateTime.now();
               final midnight = DateTime(now.year, now.month, now.day);
-              final yesterday = now.subtract(Duration(hours: 24));
+              final yesterday = now.subtract(const Duration(hours: 24));
               final midnight2 = DateTime(yesterday.year, yesterday.month, yesterday.day);
 
        HealthConnect e = GetIt.instance<HealthConnect>();  
@@ -127,67 +133,47 @@ class _MyHomePageState extends State<MainPage> {
       body: SafeArea(
         child: Align(
           alignment: const AlignmentDirectional(0,0),
-
-          child: FutureBuilder(
-            future: alarmSet,
-            builder: (context,snapshot) {
-              if(snapshot.hasData){
-                bool alarmset = snapshot.data as bool;
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 150),
-                  const Text('Set Alarm Time', style: TextStyle(fontSize: 24)),
-                  ScrollableTimePicker(
-                    borderColor: Colors.deepPurple, 
-                    onTimeChange:(time) => alarmTime = time,
-                    defaultTime: alarmTime,
-                    ),
-                    const SizedBox(height: 100),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(), 
-                        padding: const EdgeInsets.all(24)),
-                      onPressed: !alarmset ? setAlarm : stopAlarm, 
-                      child: !alarmset ? const Icon(Icons.bedtime_outlined, size: 36) : const Icon(Icons.cancel, size: 36)),
-                      Text(!alarmset ? 'Sleep' : 'Stop Alarm', style: const TextStyle(fontSize: 16),),
-                ],
-              );}
-              else{
-                return const CircularProgressIndicator();
-              }
-            }
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 150),
+              const Text('Set Alarm Time', style: TextStyle(fontSize: 24)),
+              ScrollableTimePicker(
+                borderColor: Colors.deepPurple, 
+                onTimeChange:(time) => alarmTime = time,
+                defaultTime: alarmTime,
+                ),
+                const SizedBox(height: 100),
+                alarmSet ? StopAlarmButton() : SetAlarmButton(),
+                  Text(alarmSet ? 'Stop Alarm' : "Sleep", style: const TextStyle(fontSize: 16),)
+            ],
           ),
         )
       )
     );
   }
 
-  void stopAlarm() async {
-    await Alarm.stop(42);
-    setState(() {
-  alarmSet = alarmState(false);
-});
+  ElevatedButton SetAlarmButton() {
+    return ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const CircleBorder(), 
+                  padding: const EdgeInsets.all(24)),
+                onPressed: setAlarm, 
+                child: const Icon(Icons.bedtime_outlined, size: 36));
   }
 
-  void setAlarm() async {
-    await Alarm.init();
-    final alarmSettings = AlarmSettings(
-      id: 42,
-      volume: alarmVolume, 
-      vibrate: vibrationSetting,
-      dateTime: alarmTime, 
-      assetAudioPath: 'assets/$alarmFilename',
-      loopAudio: true,
-      notificationTitle: 'SleepTracker +', 
-      notificationBody: 'Time to wake up!');
-    
-    // show a notification that the alarm has been set
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Alarm has been set')));
+    ElevatedButton StopAlarmButton() {
+    return ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const CircleBorder(), 
+                  padding: const EdgeInsets.all(24)),
+                onPressed: stopAlarm, 
+                child: const Icon(Icons.cancel_rounded, size: 36));
+  }
 
   void setNotification() async {
 
-    NotificationDetails platformChannelSpecifics = NotificationDetails(
+    NotificationDetails platformChannelSpecifics = const NotificationDetails(
       android: AndroidNotificationDetails('alarm_notif', 'alarm_notif' , channelDescription: 'channel for alarm notifications', importance: Importance.max, priority: Priority.high),
       iOS: DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true),
     );
@@ -218,36 +204,33 @@ class _MyHomePageState extends State<MainPage> {
     await FlutterLocalNotificationsPlugin().zonedSchedule(42, 'Sleep Tracker +', 'Time to sleep!', scheduledTime, platformChannelSpecifics, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle);
   }
 
+  void setAlarm() async {
+    AlarmSettings alarmSettings = AlarmSettings(
+      id: 42, 
+      dateTime: alarmTime, 
+      assetAudioPath: "assets/$alarmTone",
+      volume: (double.parse(alarmVolume)/100),   
+      loopAudio: true, 
+      vibrate: bool.parse(alarmVibe), 
+      notificationTitle: 'Sleep Tracker +', 
+      notificationBody: 'Time to wake up!',  
+      fadeDuration: 3.0);
+
+      // show a notification that the alarm has been set
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Alarm has been set')));
     await Alarm.set(alarmSettings: alarmSettings);
-    setState(() {
-  alarmSet = alarmState(true);
-});
-  }
-
-  
-  
-  Future<bool> readStorage() async {
-    alarmFilename = await SecureStorage().readSecureData("Alarm-Choice");
-    if(alarmFilename == "") {
-      alarmFilename = "alarm.mp3";
-      SecureStorage().writeSecureData("Alarm-Choice", "alarm.mp3");
-      }
-    String volumeString = await SecureStorage().readSecureData("Alarm-Volume");
-    if(volumeString == ""){
-      volumeString = "50";
-      SecureStorage().writeSecureData("Alarm-Volume", "50");
-      }
-    if(volumeString == "0"){alarmVolume = 0;}
-    else{alarmVolume = double.parse(volumeString)/100;}
-    String vibrationString = await SecureStorage().readSecureData("Alarm-Vibration");
-    if(vibrationString == ""){vibrationSetting = true; SecureStorage().writeSecureData("Alarm-Vibration", "true");}
-    else{vibrationSetting = bool.parse(vibrationString);}
-
-    return Alarm.hasAlarm() ? true : false;
+    setState(() {alarmSet = true;});
   }
   
-  Future<bool> alarmState(bool bool) async {
-    return bool;
+  void readAlarmSettings() async {
+    alarmTone = await SecureStorage().readSecureData("Alarm-Choice");
+    alarmVolume = await SecureStorage().readSecureData("Alarm-Volume");
+    alarmVibe = await SecureStorage().readSecureData("Alarm-Vibration");
+  }
+  
+  void stopAlarm() {
+    Alarm.stop(42);
+    setState(() {alarmSet = false;});
   }
 }
 

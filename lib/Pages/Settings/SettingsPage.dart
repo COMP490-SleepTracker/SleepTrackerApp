@@ -4,9 +4,8 @@ import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import '../NavigationPanel.dart';
 import 'package:sleeptrackerapp/Widgets/SettingsButton.dart';
-import 'AlarmPage.dart';
-
-import 'SleepSchedulePage.dart';
+import 'package:sleeptrackerapp/Pages/Settings/AlarmPage.dart'
+;import 'SleepSchedulePage.dart';
 import 'package:get_it/get_it.dart';
 
 
@@ -37,6 +36,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   MaterialPageRoute(builder: (context) => const SleepSchedulePage(title: 'Sleep Schedule')),
                 );
               },
+            ),
+              SettingsButton(
+              child: const Text('Alarm Settings'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AlarmPage(title: 'Alarm Settings')),
+                );
+              },
             ), 
             SettingsButton(
               onPressed: () {
@@ -45,14 +53,6 @@ class _SettingsPageState extends State<SettingsPage> {
             }, 
             child: const Text('Sign out of google/firebase'),
           ),
-           SettingsButton(
-              child: const Text('Alarm Settings'),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AlarmPage(title: 'Alarm Settings')),
-                );
-            })
           
             
           ],
