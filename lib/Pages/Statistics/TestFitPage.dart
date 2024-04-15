@@ -10,6 +10,8 @@ import 'package:sleeptrackerapp/Widgets/StepGraph.dart';
 import 'package:sleeptrackerapp/HealthStuff/healthRequest.dart';
 import 'package:sleeptrackerapp/Widgets/SleepScore.dart';
 import 'package:sleeptrackerapp/Widgets/Analysis.dart';
+import 'package:sleeptrackerapp/Widgets/heartRate.dart';
+import 'package:sleeptrackerapp/Widgets/tipsPage.dart';
 
 class TestFitPage extends StatefulWidget {
   const TestFitPage({super.key, required this.title});
@@ -95,36 +97,61 @@ class _TestFitPageState extends State<TestFitPage> {
                       child: CircularProgressIndicator(color: Colors.white));
                 } else if (snapshot.hasData) {
                   List<HealthDataPoint>? data = snapshot.data;
-                  return
-                      Expanded(
-                      child:
-                      Column(children: <Widget>[
-                    SleepScore(request.score),
-                    ///add a list type view below this one
-                     SizedBox(height: 10),
+                  return Expanded(
+                      child: Column(children: <Widget>[
                     Expanded(
-                      child: ListView(children: <Widget> [
-                         Analysis(
-                        request.light,
-                        request.awake,
-                        request.asleep,
-                        request.deep,
-                        request.rem,
-                        request.Steps,
-                        request.session),
-                    SleepGraph(
-                        data, request.max, request.min, request.asleepSession),
-                  ] )),
+                        child: ListView(children: <Widget>[
+                      SleepScore(request.score),
 
-                      
-                    ]) );
+                      ///add a list type view below this one
+                      SizedBox(height: 10),
+                      Analysis(
+                          request.light,
+                          request.awake,
+                          request.asleep,
+                          request.deep,
+                          request.rem,
+                          request.Steps,
+                          request.session,
+                          request.Steps),
+
+                      SleepGraph(data, request.max, request.min,
+                          request.asleepSession),
+
+                      tips(request.score),
+                      /////
+                      FutureBuilder(
+                          future: request.readHeartRate(getDate()),
+                          builder: (context,
+                              AsyncSnapshot<List<HealthDataPoint>> snapshot) {
+                            //Widget child;
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white));
+                            } else if (snapshot.hasData) {
+                              List<HealthDataPoint>? heart = snapshot.data;
+                              return heartRateGraph(heart, request.heartMaxX, request.heartMinX, request.heartMaxY, request.heartMinY,request.heartAvg);
+                            } else if (snapshot.hasError) {
+                              print(snapshot.error);
+                              return Container(); //or text but this is to furfill null req
+                            } else {
+                              return const Center(
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white));
+                            }
+                          })
+                          //////
+                    ])),
+                  ]));
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
                   return const Center(
                       child: CircularProgressIndicator(color: Colors.white));
                 }
-           })
+              })
         ],
       ),
     );

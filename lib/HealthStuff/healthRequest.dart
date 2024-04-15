@@ -1,10 +1,12 @@
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:math' as Math;
 
 
 class HealthRequest {
 
   List<HealthDataPoint> healthDataList = [];
+  List<HealthDataPoint> heartRate = []; 
   HealthFactory health = HealthFactory(useHealthConnectIfAvailable: true);
 
   double rem = 0;
@@ -31,6 +33,12 @@ class HealthRequest {
     ];
 
     final steps = HealthDataType.STEPS; 
+    final ox = [HealthDataType.HEART_RATE]; ////
+    double heartMaxY = 0; 
+    double heartMinY = 0; 
+    double heartMaxX = 0; 
+    double heartMinX = 0; 
+    double heartAvg = 0; 
 
 
     Future<bool> Validate(List<HealthDataType> T, List<HealthDataAccess>? permissions) async {
@@ -105,5 +113,43 @@ class HealthRequest {
       return healthDataList;
     }
   }
+
+  Future<List<HealthDataPoint>> readHeartRate(String selectedDate) async {  
+      final per = ox.map((e) => HealthDataAccess.READ_WRITE).toList();
+      final DateTime selected = DateTime.parse(selectedDate);
+      final DateTime midnightSelected = DateTime(selected.year, selected.month, selected.day);
+    heartAvg = heartMinX = heartMaxX = heartMinY = heartMaxY = 0; 
+    heartRate.clear();
+    if (await Validate(ox, per)) {
+      List<HealthDataPoint> bloodOxygen = await health.getHealthDataFromTypes(midnightSelected, selected, ox);
+      heartRate.addAll((bloodOxygen.length < 300) ? bloodOxygen : bloodOxygen.sublist(0, 300));
+      heartRate = HealthFactory.removeDuplicates(heartRate);
+      heartRate.sort((a, b) => a.dateFrom.compareTo(b.dateFrom));
+      //print('${heartRate[0].dateFrom} and ${heartRate[heartRate.length - 1].dateFrom.millisecondsSinceEpoch.toDouble()}' ); 
+      heartMaxX = heartRate[heartRate.length - 1].dateFrom.millisecondsSinceEpoch.toDouble(); 
+      heartMinX = heartRate[0].dateFrom.millisecondsSinceEpoch.toDouble(); 
+
+      heartMinY = double.parse(heartRate[0].value.toString()).toDouble(); 
+      heartMaxY = double.parse(heartRate[0].value.toString()).toDouble(); 
+      double countMax = 0; 
+      for(var thing in heartRate){
+          // print('date from -> ${thing.dateFrom} value -> ${thing.value} unit ${thing.unit}');
+          countMax += double.parse(thing.value.toString()).toDouble();
+          if(double.parse(thing.value.toString()).toDouble() < heartMinY){
+              heartMinY = double.parse(thing.value.toString()).toDouble(); 
+          } else if(double.parse(thing.value.toString()).toDouble() > heartMaxY){
+              heartMaxY = double.parse(thing.value.toString()).toDouble(); 
+          }
+      }
+      heartAvg = countMax / (heartRate.length); 
+    //  print('minY = ${heartMinY}  && maxY = ${heartMaxY} avg ${heartAvg}');
+      return heartRate;
+    } else {
+      print("You do not have permission and Authorization to access data");
+      return heartRate;
+    }
+  }
+
+
 
 }

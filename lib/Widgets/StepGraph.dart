@@ -37,8 +37,17 @@ class SleepGraph extends StatelessWidget {
     return
         Stack(
       children: <Widget>[
+         const Text(
+                'Your Sleep Session',
+                style: TextStyle(
+                //  color: AppColors.primary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                ),
+                textAlign: TextAlign.center),
         AspectRatio(
-          aspectRatio: 1.30,
+          aspectRatio: 1.3, //1.30 width : height  2.3
           child: Padding(
             padding: const EdgeInsets.only(
              right: 24,//25

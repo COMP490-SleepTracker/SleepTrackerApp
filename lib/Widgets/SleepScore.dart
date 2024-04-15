@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
 
 class SleepScore extends StatelessWidget {
+  final double score;
+  late String sleepQuality = '';
+  late Color progressColor = Colors.green;
 
-  final double score; 
+  SleepScore(this.score) {
+    if (score >= 89) {
+      sleepQuality = 'Great';
+      progressColor = Colors.green;
+    } else if (score >= 68) {
+      sleepQuality = 'Good';
+      progressColor = Colors.yellow;
+    } else if (score >= 47) {
+      sleepQuality = 'Okay';
+      progressColor = Colors.orange;
+    } else {
+      sleepQuality = 'Bad';
+      progressColor = Colors.red;
+    }
+  }
 
-  SleepScore(this.score);
-
-///To check if sleep works 
+  ///To check if sleep works
   // String durationToString(int minutes) {
   //   var d = Duration(minutes: minutes);
   //   List<String> parts = d.toString().split(':');
@@ -24,12 +39,30 @@ class SleepScore extends StatelessWidget {
   //   return score / 100;
   // }
 
+  void determine() {
+    // Determine sleep quality and progress color
+    if (score >= 89) {
+      sleepQuality = 'Great';
+      progressColor = Colors.green;
+    } else if (score >= 68) {
+      sleepQuality = 'Good';
+      progressColor = Colors.yellow;
+    } else if (score >= 47) {
+      sleepQuality = 'Okay';
+      progressColor = Colors.orange;
+    } else {
+      sleepQuality = 'Bad';
+      progressColor = Colors.red;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       ////Copy n pasted from TipsPage
       color: Colors.deepPurple,
-      padding: const EdgeInsets.only(top: 30, bottom: 50, right: 100, left: 100),
+      padding:
+          const EdgeInsets.only(top: 30, bottom: 50, right: 100, left: 100),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -53,15 +86,15 @@ class SleepScore extends StatelessWidget {
                   width: 120.0, // Size of the circular progress indicator
                   height: 120.0,
                   child: CircularProgressIndicator(
-                    value: (score) / 110, // Dummy sleep score value (85%)
+                    value: ((score) / 110), // Dummy sleep score value (85%)
                     backgroundColor: Colors.white,
-                    valueColor:
-                        const AlwaysStoppedAnimation<Color>(Colors.green),
+                    valueColor: AlwaysStoppedAnimation<Color>(progressColor),
                     strokeWidth: 20.0,
                   ),
                 ),
                 Text(
-                     ((score / 110) * 100).toStringAsFixed(1), // Dummy sleep score value
+                  ((score / 110) * 100)
+                      .toStringAsFixed(0), // Dummy sleep score value
                   style: TextStyle(
                     fontSize: 38.0,
                     fontWeight: FontWeight.bold,
@@ -69,6 +102,16 @@ class SleepScore extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+          SizedBox(height: 10,),
+          Text(
+            sleepQuality, // Display sleep quality
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              color:
+                  progressColor, // Use the same color as the progress indicator
             ),
           ),
         ],
