@@ -4,7 +4,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import 'package:sleeptrackerapp/Model/DataManager/UserDataManager.dart';
-import 'package:sleeptrackerapp/Model/healthConnect.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Widgets/ScrollableTimePicker.dart';
 
@@ -12,17 +11,12 @@ import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-
-
-// import 'package:firebase_database/firebase_database.dart';
 
 
 class MainPage extends StatefulWidget {
@@ -79,31 +73,6 @@ class _MyHomePageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    testThis() async {
-              final now = DateTime.now();
-              final midnight = DateTime(now.year, now.month, now.day);
-              final yesterday = now.subtract(Duration(hours: 24));
-              final midnight2 = DateTime(yesterday.year, yesterday.month, yesterday.day);
-
-       HealthConnect e = GetIt.instance<HealthConnect>();  
-        List<HealthDataPoint>? test = await e.ReadRawData([HealthDataType.STEPS],midnight, now);
-        print("========================================================================================================");
-        print('now $now');
-        print(' yesterday $yesterday');
-        print('midnight $midnight');
-
-
-        String totalSteps = await e.returnTotal(HealthDataType.STEPS,yesterday,midnight);
-        print("TOTAL STEPS $totalSteps");
-
-        // String avgHeart = await e.returnTotal(HealthDataType.HEART_RATE,midnight,now);
-        // print("avgHeartRate $avgHeart");
-
-        // String totalDeep = await e.returnTotal(HealthDataType.SLEEP_REM,yesterday,now);
-        // print("DEEP $totalDeep");
-  }
-  setNotification();
-
     if(!GetIt.instance<AuthenticationManager>().isAuthenticated)
     {
       // navigate to the login 
