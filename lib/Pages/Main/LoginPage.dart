@@ -4,6 +4,7 @@ import 'package:sleeptrackerapp/Pages/Main/signUp.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:sleeptrackerapp/Pages/Onboard/OnboardPage.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -38,7 +39,7 @@ class _LoginFormState extends State<LoginForm> {
         if(GetIt.instance<AuthenticationManager>().isAuthenticated)
         {
           // navigate to the main page
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')))
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const OnBoardingPage()))
         }
         else
         {
@@ -55,7 +56,7 @@ class _LoginFormState extends State<LoginForm> {
         if(GetIt.instance<AuthenticationManager>().isAuthenticated)
         {
           // navigate to the main page
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')))
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const OnBoardingPage()))
         }
         else
         {
@@ -76,7 +77,7 @@ class _LoginFormState extends State<LoginForm> {
         if(GetIt.instance<AuthenticationManager>().isAuthenticated)
         {
           // navigate to the main page
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage(title: 'Sleep Tracker+')))
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const OnBoardingPage()))
         }
         else
         {

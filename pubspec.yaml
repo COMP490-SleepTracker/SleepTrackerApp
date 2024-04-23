@@ -52,6 +52,7 @@ dependencies:
   intl: ^0.18.1
   flutter_local_notifications: ^17.0.0
   url_launcher: ^6.0.9
+  introduction_screen: ^3.1.14
 
 
 dev_dependencies:
@@ -82,6 +83,10 @@ flutter:
     - assets/Ringtone.mp3 
 
     - assets/download.png
+    - assets/fitbit.jpg
+    - assets/purpleblack.png
+    - assets/sleep1.png
+    - assets/sleep2.jpg
 
 
   # To add assets to your application, add an assets section, like this:
