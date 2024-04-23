@@ -169,11 +169,11 @@ class SleepGraph extends StatelessWidget {
               getTitlesWidget: (value,meta) {
                 const style = TextStyle(fontWeight: FontWeight.bold);
                 if(value == minX){
-                  return Text(DateFormat('HH:mm a').format(DateTime.fromMillisecondsSinceEpoch(minX.toInt())), style: style);
+                  return Text(DateFormat('H:mm a').format(DateTime.fromMillisecondsSinceEpoch(minX.toInt())), style: style);
                 } else if (value == maxX){
                    return 
                    Container(padding: const EdgeInsets.only(right: 25),child:
-                    Text(DateFormat('HH:mm a').format(DateTime.fromMillisecondsSinceEpoch(maxX.toInt())), style:style));
+                    Text(DateFormat('H:mm a').format(DateTime.fromMillisecondsSinceEpoch(maxX.toInt())), style:style));
                 } else {
                   return Container(); 
                 }

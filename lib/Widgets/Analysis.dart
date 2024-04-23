@@ -25,9 +25,15 @@ class Analysis extends StatelessWidget {
     var d = Duration(minutes: minutes);
     List<String> parts = d.toString().split(':');
     var hour = parts[0].padLeft(2, '0');
-    return hour == '00'
-        ? '${parts[1].padLeft(2, '0')} min'
-        : '${parts[0].padLeft(2, '0')} hr ${parts[1].padLeft(2, '0')} min';
+    var min = parts[1].padLeft(2,'0');
+    
+    if(hour == '00'){
+      return '${int.parse(parts[1])} min';
+    } else if (min == '00'){
+      return '${int.parse(parts[0])}} hr';
+    } else {
+     return '${int.parse(parts[0])} hr ${int.parse(parts[1])} min';
+    }
   }
 
   Widget CircleThingy(double type, String typeString) {
