@@ -10,11 +10,11 @@ class BarGraphMonth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BarDataMonth myBarData = BarDataMonth(
-        week1: monthlySummary[0],
-        week2: monthlySummary[1],
-        week3: monthlySummary[2],
-        week4: monthlySummary[3],
-        week5: monthlySummary[4]);
+        week1: monthlySummary[0] / 60,
+        week2: monthlySummary[1] / 60,
+        week3: monthlySummary[2] / 60,
+        week4: monthlySummary[3] / 60,
+        week5: monthlySummary[4] / 60);
 
     myBarData.initializeBarData();
     return BarChart(BarChartData(
@@ -65,7 +65,7 @@ class BarGraphMonth extends StatelessWidget {
     ));
   }
 
-    String tooltipText(double hours){
+  String tooltipText(double hours){
     if(hours == 0) return "0H 0m";
     String hourText = hours.floor().toString();
     double mins = hours % hours.floor();
