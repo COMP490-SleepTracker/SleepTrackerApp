@@ -1,7 +1,5 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 
 // import 'package:get_it/get_it.dart';
 // import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
@@ -31,7 +29,7 @@ class TestSleepDataManagerImpl extends SleepDataManager {
   List<SleepRecord> _sleepRecords = [];
 
   @override
-  Future<void> addSleepRecord(SleepRecord sleepRecord) async {
+  Future<void> addSleepRecord(SleepRecord sleepRecord) async {    
     _sleepRecords.add(sleepRecord);
     notifyListeners();
   }
