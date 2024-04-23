@@ -196,8 +196,11 @@ class _MyHomePageState extends State<MainPage> {
   
   void readAlarmSettings() async {
     alarmTone = await SecureStorage().readSecureData("Alarm-Choice");
+    if(alarmTone == "") alarmTone = "alarm.mp3";
     alarmVolume = await SecureStorage().readSecureData("Alarm-Volume");
+    if(alarmVolume == "") alarmVolume = "50";
     alarmVibe = await SecureStorage().readSecureData("Alarm-Vibration");
+    if(alarmVibe == "") alarmVibe = "true";
   }
   
   void stopAlarm() {
