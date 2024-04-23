@@ -58,6 +58,24 @@ class _TestFitPageState extends State<TestFitPage> {
       } else {}
     }
 
+    Future<void> moveLeft() async {
+      DateTime currentDate = DateTime.parse(date.text);
+      final left = currentDate.subtract(const Duration(days: 1));
+        setState(() {
+        date.text = left.toString().split(' ')[0];
+      });
+
+    }
+
+    
+    Future<void> moveRight() async {
+      DateTime currentDate = DateTime.parse(date.text);
+      final right = currentDate.add(const Duration(days: 1));
+        setState(() {
+        date.text = right.toString().split(' ')[0];
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -69,11 +87,21 @@ class _TestFitPageState extends State<TestFitPage> {
         children: [
           Center(
               child: Padding(
-            padding: const EdgeInsets.only(
+            padding: EdgeInsets.only(
                 top: 3,
                 bottom: 10,
-                right: 90), //test single child scroll widget
-            child: TextField(
+                right: 90,
+                ), //test single child scroll widgetselectedDay.subtract(const Duration(days: 7))
+            child: 
+            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+            IconButton(
+              onPressed: () => moveLeft(), 
+              icon: const Icon(Icons.chevron_left)),
+            Expanded(child:   
+            TextField(
               controller: date,
               decoration: const InputDecoration(
                 // labelText: 'Date',
@@ -85,7 +113,10 @@ class _TestFitPageState extends State<TestFitPage> {
               ),
               readOnly: true,
               onTap: () => calendar(),
+            ), 
             ),
+             IconButton(onPressed: () => moveRight(), icon: const Icon(Icons.chevron_right)),
+            ])
           )),
           FutureBuilder(
               future: request.readSleep(getDate()),

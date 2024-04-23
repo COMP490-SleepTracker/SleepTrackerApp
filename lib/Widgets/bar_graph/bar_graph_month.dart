@@ -48,7 +48,6 @@ class BarGraphMonth extends StatelessWidget {
             tooltipRoundedRadius: 20,
         tooltipPadding: const EdgeInsets.only(right: 5, left: 5, top: 4),
         tooltipMargin: 20,
-        tooltipBgColor: const Color.fromARGB(255, 71, 61, 94),
         getTooltipItem: (group, groupIndex, rod, rodIndex) {
           return BarTooltipItem(
               tooltipText(myBarData.barData[groupIndex].y),

@@ -1,7 +1,5 @@
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:math' as Math;
-
 
 class HealthRequest {
 
@@ -51,18 +49,25 @@ class HealthRequest {
       await Permission.location.request();
     }
 
-    final requested = await health.requestAuthorization(T, permissions: permissions);
+    //final requested = await health.requestAuthorization(T, permissions: permissions);
     final hasPermission = await health.hasPermissions(T);
-    if (requested == true && hasPermission == true) {
+  //  print('${requested} and ${hasPermission}');
+    if (hasPermission == true) {
       return true;
     } else {
+      final requested = await health.requestAuthorization(T, permissions: permissions);
+      if(requested){
+        return true; 
+      } else {
       return false;
+      }
     }
   }
 
   Future<List<HealthDataPoint>> readSleep(String selectedDate) async { 
       rem = score = awake = light = deep = asleep = session = min = max = Steps = 0; 
       final permissions = sleep.map((e) => HealthDataAccess.READ_WRITE).toList();
+      print(permissions);
       final DateTime selected = DateTime.parse(selectedDate);
       final DateTime midnightSelected = DateTime(selected.year, selected.month, selected.day);
 
@@ -72,7 +77,6 @@ class HealthRequest {
       healthDataList.addAll((healthData.length < 300) ? healthData : healthData.sublist(0, 300));
       healthDataList = HealthFactory.removeDuplicates(healthDataList);
       healthDataList.sort((a, b) => a.dateFrom.compareTo(b.dateFrom));
-      //storage.storeData(healthDataList);   
 
       for(var type in healthDataList ){
        // print('${type.dateFrom.minute} to -> ${type.dateTo.minute} and value ${type.value.toString()}'); 
@@ -106,7 +110,6 @@ class HealthRequest {
       Steps = (await health.getTotalStepsInInterval(midnightSelected, selected))!.toDouble();
       score = (Steps * 0.005) + (deep * 0.25) + (rem * 0.25) + (session * 0.05); 
       //print("Sleep Score ${score}: (${Steps} * 0.005) + (${deep} * 0.25) + (${rem} * 0.25) + (${session} * 0.05)");
- 
       return healthDataList;
     } else {
       print("You do not have permission and Authorization to access data");
@@ -149,7 +152,5 @@ class HealthRequest {
       return heartRate;
     }
   }
-
-
 
 }
