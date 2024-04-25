@@ -83,10 +83,10 @@ flutter:
     - assets/Ringtone.mp3 
 
     - assets/download.png
-    - assets/fitbit.jpg
     - assets/purpleblack.png
     - assets/sleep1.png
     - assets/sleep2.jpg
+    - assets/fitbit.jpg
 
 
   # To add assets to your application, add an assets section, like this:

@@ -48,15 +48,18 @@ class OnBoardingPageState extends State<OnBoardingPage> {
       pages: [
         PageViewModel(
           title: "Welcome to Sleep Tracker++",
-          body: "Let's get started!",
+          body: "Discover the secrets to better rest and wake up refreshed. Welcome to a more vibrant life with Sleep Tracker++!",
           image: Padding(
             padding: const EdgeInsets.only(top: 35.0),
             child: SizedBox(
               width: double.infinity,
               height: 350.0,
-              child: Image.asset(
-                'assets/sleep1.png',
-                fit: BoxFit.cover,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50.0), 
+                child: Image.asset(
+                  'assets/sleep1.png',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
@@ -64,31 +67,37 @@ class OnBoardingPageState extends State<OnBoardingPage> {
         ),
         PageViewModel(
           title: "What is Sleep Tracker++?",
-          body: "Sleep Tracker++ blah blah lorem ipsum",
+          body: "Sleep Tracker++ is your ultimate sleep companion! Explore your in-depth sleep statistics and increase your sleep quality with features like sleep statistics, sleep scores, an alarm, and a sleep schedule.",
           image: Padding(
             padding: const EdgeInsets.only(top: 35.0),
             child: SizedBox(
               width: double.infinity,
               height: 350.0,
-              child: Image.asset(
-                'assets/sleep2.jpg',
-                fit: BoxFit.cover,
+              child: ClipRRect(  
+                borderRadius: BorderRadius.circular(50.0),
+                child: Image.asset(
+                  'assets/sleep2.jpg',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "What do you need to use the app?",
-          body: "Fitbit, Health Connect, Google Fit, and the Fitbit App",
+          title: "What do you need?\n",
+          body: "A Fitbit - Inspire model preferred\n\nThe Fitbit App - Fitbit connection\n\nHealth Connect - Android connection \n\nGoogle Fit - Halth Data connection",
           image: Padding(
             padding: const EdgeInsets.only(top: 35.0),
             child: SizedBox(
               width: double.infinity,
               height: 350.0,
-              child: Image.asset(
-                'assets/fitbit.jpg',
-                fit: BoxFit.cover,
+              child: ClipRRect(  
+                borderRadius: BorderRadius.circular(50.0),
+                child: Image.asset(
+                  'assets/fitbit.jpg',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
@@ -96,7 +105,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
         ),
       PageViewModel(
         title: "Are you ready to transform your sleep?",
-        body: "Press 'Done' to go to the app!\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id euismod lectus, non tempor felis. Nam rutrum rhoncus est ac venenatis.",
+        body: "Let's dive in and make tonight the first of many well-rested nights ahead. Welcome to Sleep Tracker++!\n\nGo ahead and press 'Done' when you're ready.",
         image: _buildFullscreenImage(),
         decoration: pageDecoration.copyWith(
           contentMargin: const EdgeInsets.symmetric(horizontal: 16),
@@ -116,9 +125,9 @@ class OnBoardingPageState extends State<OnBoardingPage> {
       showBackButton: false,
       //rtl: true, // Display as right-to-left
       back: const Icon(Icons.arrow_back),
-      skip: const Text('Skip', style: TextStyle(fontWeight: FontWeight.w600)),
+      skip: const Text('Skip'),
       next: const Icon(Icons.arrow_forward),
-      done: const Text('Done', style: TextStyle(fontWeight: FontWeight.w600)),
+      done: const Text('Done'),
       curve: Curves.fastLinearToSlowEaseIn,
       controlsMargin: const EdgeInsets.all(16),
       controlsPadding: kIsWeb
