@@ -79,8 +79,10 @@ class heartRateGraph extends StatelessWidget {
               // (value,meta) {
               //   const style = TextStyle(fontWeight: FontWeight.bold);
               //   if(value == minX){
+              //     print('min heart ${DateFormat('HH:mm a').format(DateTime.fromMillisecondsSinceEpoch(minX.toInt()))}');
               //     return Text(DateFormat('HH:mm a').format(DateTime.fromMillisecondsSinceEpoch(minX.toInt())), style: style);
               //   } else if (value == maxX){
+              //     print('max heart ${DateFormat('HH:mm a').format(DateTime.fromMillisecondsSinceEpoch(maxX.toInt()))}');
               //      return 
               //      Container(padding: const EdgeInsets.only(right: 25),child:
               //       Text(DateFormat('HH:mm a').format(DateTime.fromMillisecondsSinceEpoch(maxX.toInt())), style:style));

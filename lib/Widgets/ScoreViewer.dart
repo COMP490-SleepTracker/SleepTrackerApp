@@ -7,6 +7,7 @@ class ScoreViewWidget extends StatelessWidget {
     required this.sunday,
     required this.startTimes,
     required this.endTimes,
+    //required this.sleepDisplay,
     super.key,
   });
 
@@ -14,9 +15,10 @@ class ScoreViewWidget extends StatelessWidget {
   DateTime sunday;
   List<DateTime> startTimes;
   List<DateTime> endTimes;
+  //List<Widget> sleepDisplay; 
 
-  late final List<Widget> scoreViews = [
-    ScoreCard(score: weekScores[0], startTime: startTimes[0], endTime: endTimes[0], title: "Sunday", date: sunday), 
+  late final List<Widget> scoreViews = [          //snippet to add sleep chart : sleep: sleepDisplay[0]
+    ScoreCard(score: weekScores[0], startTime: startTimes[0], endTime: endTimes[0], title: "Sunday",date: sunday), 
     ScoreCard(score: weekScores[1], startTime: startTimes[1], endTime: endTimes[1], title: "Monday", date: sunday.add(const Duration(days: 1))),
     ScoreCard(score: weekScores[2], startTime: startTimes[2], endTime: endTimes[2], title: "Tuesday", date: sunday.add(const Duration(days: 2))), 
     ScoreCard(score: weekScores[3], startTime: startTimes[3], endTime: endTimes[3], title: "Wednesday", date: sunday.add(const Duration(days: 3))),
@@ -42,6 +44,7 @@ class ScoreCard extends StatelessWidget {
     required this.date,
     required this.startTime,
     required this.endTime,
+   // required this.sleep,
     super.key, 
   });
 
@@ -54,6 +57,7 @@ class ScoreCard extends StatelessWidget {
   final DateTime date;
   final DateFormat Md = DateFormat.Md();
   final DateFormat jm = DateFormat.jm();
+  //final Widget sleep; 
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +87,10 @@ class ScoreCard extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 60),
-                      child: Text("${jm.format(startTime)} - ${jm.format(endTime)}", style: TextStyle(fontSize: 20, ),),
+                      child: 
+                      // SafeArea(child:sleep)
+                      
+                      Text("${jm.format(startTime)} - ${jm.format(endTime)}", style: TextStyle(fontSize: 20, ),),
                     ),
                     ]),
               ),
@@ -94,3 +101,4 @@ class ScoreCard extends StatelessWidget {
     
   }
 }
+//healthdata

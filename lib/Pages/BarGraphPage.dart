@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
+import 'package:health/health.dart';
 import 'package:intl/intl.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
 import 'package:sleeptrackerapp/Widgets/bar_graph/bar_graph_week.dart';
@@ -28,12 +29,14 @@ class BarGraphPageState extends State<BarGraphPage>{
   List<double> weeklyHours = [0,0,0,0,0,0,0];
   List<double> monthlySummary = [0,0,0,0,0];
   List<double> scoresWeek = [0,0,0,0,0,0,0];
+  List<Widget> sleepChart = [Container(),Container(),Container(),Container(),Container(),Container(),Container()];
   List<DateTime> startTimes = List.filled(7, DateTime(0));
   List<DateTime> endTimes = List.filled(7, DateTime(0));
 
   double avgSlept = 0.0;
   double sleepDebt = 0.0;
   double sleepDebtTemp = 0.0;
+  
 
   bool weekEnabled = true;
   bool monthEnabled = false; 
@@ -104,7 +107,7 @@ class BarGraphPageState extends State<BarGraphPage>{
             const Divider(),
             SizedBox( width: 300,height: 100, 
               child: SleepDebt(weeklyHours: weeklyHours, sleepDebtTemp: sleepDebtTemp),
-            ),
+            ),   //snippet for sleep chart in score: sleepDisplay: sleepChart
             weekEnabled ? ScoreViewWidget(weekScores: scoresWeek, sunday: selectedDay, startTimes: startTimes, endTimes: endTimes) 
             : const SizedBox()
         ],),
@@ -138,7 +141,7 @@ class BarGraphPageState extends State<BarGraphPage>{
   void setChartWeek() async {
     weekLabel = "${df.format(selectedDay)} - ${df.format(selectedDay.add(const Duration(days: 6)))}";
     if(!await request.tryReadStorage(selectedDay)){
-      setState(() {ready = false; weeklyHours = [0,0,0,0,0,0,0]; scoresWeek = [0,0,0,0,0,0,0]; avgSlept = 0;});
+      setState(() {ready = false; weeklyHours = [0,0,0,0,0,0,0]; scoresWeek = [0,0,0,0,0,0,0]; sleepChart = [Container(),Container(),Container(),Container(),Container(),Container(),Container()]; avgSlept = 0;});
       await request.weekSleepData(selectedDay);
     }
     weeklyHours = request.weekHours;
@@ -147,6 +150,7 @@ class BarGraphPageState extends State<BarGraphPage>{
     startTimes = request.startTimes;
     endTimes = request.endTimes;
     sleepDebtTemp = request.sleepDebtTemp;
+    sleepChart = request.sleepCharts; 
     setState(() {ready = true;});
   }
 

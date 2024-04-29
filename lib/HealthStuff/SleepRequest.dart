@@ -1,5 +1,8 @@
+import 'package:flutter/widgets.dart';
 import 'package:health/health.dart';
 import 'package:sleeptrackerapp/Model/DataManager/SecureStorage.dart';
+import 'package:sleeptrackerapp/Widgets/StepGraph.dart';
+
 
 class SleepRequest{
   List<HealthDataType> datatypes = [
@@ -23,6 +26,7 @@ class SleepRequest{
   double sleepDebtTemp = 0.0;
   DateTime today = DateTime.now();
   bool loaded = false;
+  List<Widget> sleepCharts = [Container(), Container(), Container(), Container(), Container(), Container(), Container()];
 
 
   //initialize healthdata for a specific week (Must be called first)
@@ -142,6 +146,8 @@ class SleepRequest{
     for(int i = 0; i < 7; i++){
       if(startTimes[i] == DateTime(0)) continue;
       double awake= 0, light = 0, rem = 0, deep = 0, asleep = 0, session = 0;
+      // double min = 0, max = 0; 
+      // bool asleepS = false; 
       DateTime end = endTimes[i];
       var toRemove = [];
 
@@ -165,9 +171,12 @@ class SleepRequest{
           break;
         case "SLEEP_ASLEEP":
           asleep += value;
+         // asleepS = true; 
           break;
         case "SLEEP_SESSION":
           session += value;
+          // min = point.dateFrom.millisecondsSinceEpoch.toDouble();
+          // max = point.dateTo.millisecondsSinceEpoch.toDouble();
           break;
       }
       toRemove.add(point);
@@ -175,6 +184,7 @@ class SleepRequest{
       healthdata.removeWhere((element) => toRemove.contains(element));
       _setDataPoints(i,session, awake, rem, deep, light);
       weekScores[i] = _calculateScore(session, awake, rem, deep, light);
+      //sleepCharts[i] = SleepGraph(healthdata, max, min, asleepS);
     }
     weekAvg = _getAvg(sunday);
     _storeDataPoints(sunday);

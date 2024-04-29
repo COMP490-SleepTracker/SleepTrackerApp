@@ -67,7 +67,6 @@ class _TestFitPageState extends State<TestFitPage> {
 
     }
 
-    
     Future<void> moveRight() async {
       DateTime currentDate = DateTime.parse(date.text);
       final right = currentDate.add(const Duration(days: 1));
@@ -84,14 +83,14 @@ class _TestFitPageState extends State<TestFitPage> {
       drawer: const NavigationPanel(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+     //   mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
               child: Padding(
             padding: EdgeInsets.only(
                 top: 3,
                 bottom: 10,
-                right: 90,
-                ), //test single child scroll widgetselectedDay.subtract(const Duration(days: 7))
+                ),
             child: 
             
             Row(

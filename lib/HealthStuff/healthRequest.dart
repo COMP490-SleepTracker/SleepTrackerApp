@@ -30,6 +30,8 @@ class HealthRequest {
       HealthDataType.SLEEP_LIGHT,
     ];
 
+
+    final sleepSession = [HealthDataType.SLEEP_SESSION];
     final steps = HealthDataType.STEPS; 
     final ox = [HealthDataType.HEART_RATE]; ////
     double heartMaxY = 0; 
@@ -66,6 +68,7 @@ class HealthRequest {
 
   Future<List<HealthDataPoint>> readSleep(String selectedDate) async { 
       rem = score = awake = light = deep = asleep = session = min = max = Steps = 0; 
+      asleepSession = false; 
       final permissions = sleep.map((e) => HealthDataAccess.READ_WRITE).toList();
       print(permissions);
       final DateTime selected = DateTime.parse(selectedDate);
@@ -123,14 +126,18 @@ class HealthRequest {
       final DateTime midnightSelected = DateTime(selected.year, selected.month, selected.day);
     heartAvg = heartMinX = heartMaxX = heartMinY = heartMaxY = 0; 
     heartRate.clear();
-    if (await Validate(ox, per)) {
+    if (await Validate(ox, per)) {  //&& await Validate(sleepSession, temp)
+    //  tempSession = await health.getHealthDataFromTypes(midnightSelected, selected, sleepSession);
+       print('Selected $selected && $midnightSelected');
+      // print('first.date  ${tempSession.first.dateFrom} - ${tempSession.first.dateTo}');
       List<HealthDataPoint> bloodOxygen = await health.getHealthDataFromTypes(midnightSelected, selected, ox);
       heartRate.addAll((bloodOxygen.length < 300) ? bloodOxygen : bloodOxygen.sublist(0, 300));
       heartRate = HealthFactory.removeDuplicates(heartRate);
       heartRate.sort((a, b) => a.dateFrom.compareTo(b.dateFrom));
-      //print('${heartRate[0].dateFrom} and ${heartRate[heartRate.length - 1].dateFrom.millisecondsSinceEpoch.toDouble()}' ); 
+      print('EART MAX AND MIN ${heartRate[0].dateFrom} and ${heartRate[heartRate.length - 1].dateFrom.millisecondsSinceEpoch.toDouble()}' ); 
       heartMaxX = heartRate[heartRate.length - 1].dateFrom.millisecondsSinceEpoch.toDouble(); 
       heartMinX = heartRate[0].dateFrom.millisecondsSinceEpoch.toDouble(); 
+     // print('HEART MAX X == #{}');
 
       heartMinY = double.parse(heartRate[0].value.toString()).toDouble(); 
       heartMaxY = double.parse(heartRate[0].value.toString()).toDouble(); 
