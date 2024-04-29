@@ -143,8 +143,7 @@ class _TestFitPageState extends State<TestFitPage> {
                           request.deep,
                           request.rem,
                           request.Steps,
-                          request.session,
-                          request.Steps),
+                          request.session),
 
                       SleepGraph(data, request.max, request.min,
                           request.asleepSession),
