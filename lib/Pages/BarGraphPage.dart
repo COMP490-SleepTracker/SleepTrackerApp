@@ -44,6 +44,10 @@ class BarGraphPageState extends State<BarGraphPage>{
   bool monthEnabled = false; 
   bool ready = false;
 
+  TextStyle tabs = const TextStyle(color: Colors.white,fontSize: 20, fontWeight: FontWeight.w600);
+  TextStyle tabs2 = const TextStyle(color: Colors.grey,fontSize: 16,);
+  BoxDecoration bottomBorder = const BoxDecoration(border: BorderDirectional(bottom: BorderSide(width: 2.5, color: Colors.deepPurpleAccent)));
+
   @override
   void initState(){
     // SecureStorage().deleteAll();
@@ -78,31 +82,22 @@ class BarGraphPageState extends State<BarGraphPage>{
             body: SingleChildScrollView(
               child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 10,),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                 Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                    ElevatedButton(
-                      onPressed: monthEnabled ? buttonChange : null,
-                      style: weekEnabled? const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(Colors.deepPurple)) : null, 
-                      child: const Text("Week", style: TextStyle(color: Colors.white),)),
-                    ElevatedButton(
-                      onPressed: weekEnabled ? buttonChange : null,
-                      style: monthEnabled? const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(Colors.deepPurple)) : null, 
-                      child: const Text("5 Week", style: TextStyle(color: Colors.white),),),
-                ],),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      InkWell(onTap: weekEnabled ? null : buttonChange, 
+                      child: Container(decoration: weekEnabled ? bottomBorder : null, 
+                        height: 50, width: 205, child: Center(child: Text("Week", style: weekEnabled ? tabs : tabs2)))),
+                      InkWell(onTap: weekEnabled ? buttonChange :null, 
+                      child: Container(decoration: weekEnabled ? null : bottomBorder,
+                        height: 50, width: 205, child: Center(child: Text("Month",style: weekEnabled ? tabs2 : tabs)))),
+                    ]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                  weekEnabled ? IconButton(onPressed: leftArrow, icon: const Icon(Icons.chevron_left)) : const SizedBox(height: 48,),
-                  Text(weekEnabled ? weekLabel : "Weekly Sleep Average", style: const TextStyle(fontSize: 24),),
-                  weekEnabled ? IconButton(onPressed: selectedDay != today ? rightArrow : null, icon: const Icon(Icons.chevron_right)) 
-                  : const SizedBox()
-              ],),
+                    weekEnabled ? IconButton(onPressed: leftArrow, icon: const Icon(Icons.chevron_left, size: 35,),) : const SizedBox(height: 48,),
+                    Text(weekEnabled ? weekLabel : "Weekly Sleep Average", style: const TextStyle(fontSize: 24),),
+                    weekEnabled ? IconButton(onPressed: selectedDay != today ? rightArrow : null, icon: const Icon(Icons.chevron_right, size: 35,)) 
+                    : const SizedBox()
+                  ]),
                 Text("Average: ${tooltipText(avgSlept)}"),
                 displayBars(),
                 const Divider(),
