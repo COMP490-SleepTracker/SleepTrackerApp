@@ -34,7 +34,6 @@ class BarGraphPageState extends State<BarGraphPage>{
   List<double> weeklyHours = [0,0,0,0,0,0,0];
   List<double> monthlySummary = [0,0,0,0,0];
   List<double> scoresWeek = [0,0,0,0,0,0,0];
-  List<Widget> sleepChart = [Container(),Container(),Container(),Container(),Container(),Container(),Container()];
   List<DateTime> startTimes = List.filled(7, DateTime(0));
   List<DateTime> endTimes = List.filled(7, DateTime(0));
 
@@ -42,7 +41,7 @@ class BarGraphPageState extends State<BarGraphPage>{
   double sleepDebt = 0.0;
   double sleepDebtTemp = 0.0;
   
-
+  bool stepsReady = false;
   bool weekEnabled = true;
   bool monthEnabled = false; 
   bool ready = false;
@@ -112,7 +111,7 @@ class BarGraphPageState extends State<BarGraphPage>{
                 SizedBox( width: 300,height: 100, 
                   child: SleepDebt(weeklyHours: weeklyHours, sleepDebtTemp: sleepDebtTemp),
                 ), //snippet for sleep chart in score: sleepDisplay: sleepChart
-                (weekEnabled && ready) ? ScoreViewWidget(openStats: openStats,context: context, sunday: selectedDay, request: request,) 
+                (weekEnabled && ready) ? ScoreViewWidget(openStats: openStats,context: context, sunday: selectedDay, request: request, stepsReady: stepsReady) 
                 : const SizedBox()
             ],),
             ),
@@ -143,12 +142,19 @@ class BarGraphPageState extends State<BarGraphPage>{
 
   ///Retrieves Health Connect data for specified week if it is not already in storage
   void setChartWeek() async {
+    setState(() {stepsReady = false;});
     weekLabel = "${df.format(selectedDay)} - ${df.format(selectedDay.add(const Duration(days: 6)))}";
     if(!await request.tryReadStorage(selectedDay)){
-      setState(() {ready = false; weeklyHours = [0,0,0,0,0,0,0]; scoresWeek = [0,0,0,0,0,0,0]; sleepChart = [Container(),Container(),Container(),Container(),Container(),Container(),Container()]; avgSlept = 0;});
+      setState(() {ready = false; weeklyHours = [0,0,0,0,0,0,0]; scoresWeek = [0,0,0,0,0,0,0]; avgSlept = 0;});
       await request.weekSleepData(selectedDay);
-    }
+    }else{
+      setValues();
+      await request.stepGraphData(selectedDay);
+      }
     setValues();
+    setState(() {
+      stepsReady = true;
+    });
   }
 
   void setValues() {
@@ -158,7 +164,6 @@ class BarGraphPageState extends State<BarGraphPage>{
     startTimes = request.startTimes;
     endTimes = request.endTimes;
     sleepDebtTemp = request.sleepDebtTemp;
-    sleepChart = request.sleepCharts; 
     setState(() {ready = true;});
   }
 

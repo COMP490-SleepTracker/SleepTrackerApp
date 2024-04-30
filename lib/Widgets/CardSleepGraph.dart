@@ -66,7 +66,6 @@ class CardSleepGraph extends StatelessWidget {
 
   List<FlSpot> _generateDataPoints() {
     for (var sleepSession in sleepData!) {
-      print(sleepSession);
       if (sleepSession.typeString != "SLEEP_SESSION" && 
       sleepSession.dateFrom.millisecondsSinceEpoch >=minX && 
       sleepSession.dateTo.millisecondsSinceEpoch <= maxX) {
