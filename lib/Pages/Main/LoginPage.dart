@@ -237,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Welcome to Sleep Tracker-'),
+            Text('Welcome to Sleep Tracker+'),
             LoginForm(),
           ],
         ),
