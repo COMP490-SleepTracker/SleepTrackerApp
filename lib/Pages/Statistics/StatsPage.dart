@@ -2,7 +2,6 @@
 // ignore_for_file: camel_case_types
 
 import 'package:flutter/material.dart';
-import 'package:health/health.dart';
 import 'package:intl/intl.dart';
 import 'package:sleeptrackerapp/HealthStuff/SleepRequest.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
