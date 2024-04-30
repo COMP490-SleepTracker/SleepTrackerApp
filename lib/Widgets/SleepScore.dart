@@ -66,13 +66,24 @@ class SleepScore extends StatelessWidget {
       child: (score != 0) ? Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
-            'Your Sleep Score:',
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+           const Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              SizedBox(width: 20,),
+               Text('Your Sleep Score:',style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Tooltip(
+                enableTapToDismiss: true,
+                showDuration: Duration(seconds: 10),
+                triggerMode: TooltipTriggerMode.tap,
+                decoration: BoxDecoration(color: Color.fromARGB(255, 62, 62, 62), borderRadius: BorderRadius.all(Radius.circular(5))),
+                verticalOffset: -60,
+                richMessage: TextSpan(text: "Sleep Score is calculated using sleep\nduration and time spent in each sleep phase", style: TextStyle(color: Colors.white)), 
+                child: Icon(Icons.info_outline_rounded, color: Colors.grey,),)
+            ],
           ),
           const SizedBox(height: 13.0),
           Container(
