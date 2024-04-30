@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +7,12 @@ import 'package:sleeptrackerapp/Widgets/bar_graph/bar_graph_month.dart';
 import 'package:sleeptrackerapp/Widgets/SleepDebt.dart';
 import 'package:sleeptrackerapp/HealthStuff/SleepRequest.dart';
 import 'package:sleeptrackerapp/Widgets/ScoreViewer.dart';
+
+import 'Statistics/StatsPage.dart';
+
+typedef OpenStats = void Function(int);
+
+
 
 class BarGraphPage extends StatefulWidget{
   const BarGraphPage({super.key, required this.title});
@@ -42,10 +47,9 @@ class BarGraphPageState extends State<BarGraphPage>{
   bool monthEnabled = false; 
   bool ready = false;
 
-  
-
   @override
   void initState(){
+    // SecureStorage().deleteAll();
     request.setSleepDebt();
     setChartWeek();
     super.initState();
@@ -67,53 +71,53 @@ class BarGraphPageState extends State<BarGraphPage>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      drawer: const NavigationPanel(),
-      body: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 10,),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                ElevatedButton(
-                  onPressed: monthEnabled ? buttonChange : null,
-                  style: weekEnabled? const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.deepPurple)) : null, 
-                  child: const Text("Week", style: TextStyle(color: Colors.white),)),
-                ElevatedButton(
-                  onPressed: weekEnabled ? buttonChange : null,
-                  style: monthEnabled? const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.deepPurple)) : null, 
-                  child: const Text("5 Week", style: TextStyle(color: Colors.white),),),
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: Text(widget.title),
+          ),
+          drawer: const NavigationPanel(),
+          body: Scaffold(
+            body: SingleChildScrollView(
+              child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10,),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                    ElevatedButton(
+                      onPressed: monthEnabled ? buttonChange : null,
+                      style: weekEnabled? const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(Colors.deepPurple)) : null, 
+                      child: const Text("Week", style: TextStyle(color: Colors.white),)),
+                    ElevatedButton(
+                      onPressed: weekEnabled ? buttonChange : null,
+                      style: monthEnabled? const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(Colors.deepPurple)) : null, 
+                      child: const Text("5 Week", style: TextStyle(color: Colors.white),),),
+                ],),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                  weekEnabled ? IconButton(onPressed: leftArrow, icon: const Icon(Icons.chevron_left)) : const SizedBox(height: 48,),
+                  Text(weekEnabled ? weekLabel : "Weekly Sleep Average", style: const TextStyle(fontSize: 24),),
+                  weekEnabled ? IconButton(onPressed: selectedDay != today ? rightArrow : null, icon: const Icon(Icons.chevron_right)) 
+                  : const SizedBox()
+              ],),
+                Text("Average: ${tooltipText(avgSlept)}"),
+                displayBars(),
+                const Divider(),
+                SizedBox( width: 300,height: 100, 
+                  child: SleepDebt(weeklyHours: weeklyHours, sleepDebtTemp: sleepDebtTemp),
+                ), //snippet for sleep chart in score: sleepDisplay: sleepChart
+                (weekEnabled && ready) ? ScoreViewWidget(openStats: openStats,context: context, sunday: selectedDay, request: request,) 
+                : const SizedBox()
             ],),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-              weekEnabled ? IconButton(onPressed: leftArrow, icon: const Icon(Icons.chevron_left)) : const SizedBox(height: 48,),
-              Text(weekEnabled ? weekLabel : "Weekly Sleep Average", style: const TextStyle(fontSize: 24),),
-              weekEnabled ? IconButton(onPressed: selectedDay != today ? rightArrow : null, icon: const Icon(Icons.chevron_right)) 
-              : const SizedBox()
-          ],),
-            Text("Average: ${tooltipText(avgSlept)}"),
-            displayBars(),
-            const Divider(),
-            SizedBox( width: 300,height: 100, 
-              child: SleepDebt(weeklyHours: weeklyHours, sleepDebtTemp: sleepDebtTemp),
-            ),   //snippet for sleep chart in score: sleepDisplay: sleepChart
-            weekEnabled ? ScoreViewWidget(weekScores: scoresWeek, sunday: selectedDay, startTimes: startTimes, endTimes: endTimes) 
-            : const SizedBox()
-        ],),
-        ),
-      ),
-    );
+          ),
+        );
   }
 
   ///Returns container with conditional widgets which can change from 1 Week Graph to 5 Week Graph
@@ -144,6 +148,10 @@ class BarGraphPageState extends State<BarGraphPage>{
       setState(() {ready = false; weeklyHours = [0,0,0,0,0,0,0]; scoresWeek = [0,0,0,0,0,0,0]; sleepChart = [Container(),Container(),Container(),Container(),Container(),Container(),Container()]; avgSlept = 0;});
       await request.weekSleepData(selectedDay);
     }
+    setValues();
+  }
+
+  void setValues() {
     weeklyHours = request.weekHours;
     scoresWeek = request.weekScores;
     avgSlept = request.weekAvg;
@@ -196,4 +204,20 @@ class BarGraphPageState extends State<BarGraphPage>{
     selectedDay = selectedDay.add(const Duration(days: 7));
     setState(() {setChartWeek();});
   }
+
+    Future<void> openStats(int weekday) async {
+      final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => 
+      tempStatsPage(
+        title: "Statistics",
+        sunday: selectedDay,
+        weekday: weekday,
+        request: request,
+        )));
+
+        if(!context.mounted) {
+          return;
+        } else if(result != selectedDay) {
+          setState(() {selectedDay = result[0]; setChartWeek(); request.sleepPoints = result[1];});
+        }
+    }
 }

@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:health/health.dart';
 import 'package:intl/intl.dart';
 
-class SleepGraph extends StatelessWidget {
+class CardSleepGraph extends StatelessWidget {
   final List<HealthDataPoint>? sleepData;
   final double maxX;
   final double minX;
@@ -12,7 +12,7 @@ class SleepGraph extends StatelessWidget {
   String typeLabel="TYPE";
   String timeLabel="TIME-TIME";
 
-  SleepGraph(this.sleepData, this.maxX, this.minX, this.asleepSession);
+  CardSleepGraph(this.sleepData, this.maxX, this.minX, this.asleepSession);
 
   final double padding = 10.0;
   final List<FlSpot> dataPoints = [];
@@ -48,19 +48,14 @@ class SleepGraph extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        const Text('  Your Sleep Session',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            )),
         AspectRatio(
-          aspectRatio: 1.3, //1.30 width : height  2.3
+          aspectRatio: 3.3, //1.30 width : height  2.3
           child: Padding(
             padding: const EdgeInsets.only(
-              right: 24, //25
+              // right: 24, //25
               left: 6, //12 6
-               //24  10
-              bottom: 30, //12
+              //  //24  10
+              // bottom: 30, //12
             ),
             child: main(),
           ),
@@ -223,7 +218,7 @@ class SleepGraph extends StatelessWidget {
           ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
-              showTitles: true,
+              showTitles: false,
               interval: 1,
               getTitlesWidget: (value, meta) => asleepSession == true
                   ? leftTitleAsleep(value, meta)

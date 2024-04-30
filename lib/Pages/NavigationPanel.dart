@@ -5,6 +5,7 @@ import 'package:sleeptrackerapp/Pages/Settings/SettingsPage.dart';
 import 'package:sleeptrackerapp/Pages/Sleep/SleepPage.dart';
 import 'package:sleeptrackerapp/Pages/Journal/JournalPage.dart';
 import 'package:sleeptrackerapp/Pages/Statistics/TestFitPage.dart';
+import 'package:sleeptrackerapp/Pages/Statistics/StatsPage.dart';
 import 'package:sleeptrackerapp/Pages/BarGraphPage.dart';
 
 
@@ -13,8 +14,8 @@ class NavigationPanel extends Drawer
   const NavigationPanel({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    List<Widget> pages = [const MainPage(title: 'Sleep Tracker+'), const SleepPage(title: 'Sleep'), const TestFitPage(title: 'Statistics'), const JournalPage(title: 'Journal'), const SettingsPage(title: 'Settings'), const BarGraphPage(title: 'Graphs')];
+  Widget build(BuildContext context) {           // TestFitPage tempStatsPage
+    List<Widget> pages = [const MainPage(title: 'Sleep Tracker+'), const SleepPage(title: 'Sleep'), const tempStatsPage(title: 'Statistics'), const JournalPage(title: 'Journal'), const SettingsPage(title: 'Settings'), const BarGraphPage(title: 'Graphs')];
     List<String> titles = ['Sleep Tracker+', 'Sleep', 'Sleep Analysis', 'Journal', 'Settings','Graphs'];
     List<Icon> icons = [const Icon(Icons.home), const Icon(Icons.bedtime), const Icon(Icons.bar_chart), const Icon(Icons.book), const Icon(Icons.settings), const Icon(Icons.lightbulb), const Icon(Icons.analytics_outlined)];
     List<Widget> navigationTiles = [];

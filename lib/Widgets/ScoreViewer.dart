@@ -1,30 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sleeptrackerapp/HealthStuff/SleepRequest.dart';
+import 'package:sleeptrackerapp/Widgets/StepGraph.dart';
+import 'package:sleeptrackerapp/Widgets/CardSleepGraph.dart';
+
+
+typedef OpenStats = void Function(int);
 
 class ScoreViewWidget extends StatelessWidget {
   ScoreViewWidget({
-    required this.weekScores,
     required this.sunday,
-    required this.startTimes,
-    required this.endTimes,
+    required this.context,
+    required this.request,
+    required this.openStats,
     //required this.sleepDisplay,
     super.key,
   });
 
-  List<double> weekScores;
-  DateTime sunday;
-  List<DateTime> startTimes;
-  List<DateTime> endTimes;
-  //List<Widget> sleepDisplay; 
+  final DateTime sunday;
+  final OpenStats openStats;
+  final BuildContext context;
+  final SleepRequest request;
+    //List<Widget> sleepDisplay; 
 
-  late final List<Widget> scoreViews = [          //snippet to add sleep chart : sleep: sleepDisplay[0]
-    ScoreCard(score: weekScores[0], startTime: startTimes[0], endTime: endTimes[0], title: "Sunday",date: sunday), 
-    ScoreCard(score: weekScores[1], startTime: startTimes[1], endTime: endTimes[1], title: "Monday", date: sunday.add(const Duration(days: 1))),
-    ScoreCard(score: weekScores[2], startTime: startTimes[2], endTime: endTimes[2], title: "Tuesday", date: sunday.add(const Duration(days: 2))), 
-    ScoreCard(score: weekScores[3], startTime: startTimes[3], endTime: endTimes[3], title: "Wednesday", date: sunday.add(const Duration(days: 3))),
-    ScoreCard(score: weekScores[4], startTime: startTimes[4], endTime: endTimes[4], title: "Thursday", date: sunday.add(const Duration(days: 4))), 
-    ScoreCard(score: weekScores[5], startTime: startTimes[5], endTime: endTimes[5], title: "Friday", date: sunday.add(const Duration(days: 5))),
-    ScoreCard(score: weekScores[6], startTime: startTimes[6], endTime: endTimes[6], title: "Saturday", date: sunday.add(const Duration(days: 6))),
+
+  late final List<Widget> scoreViews = [  //snippet to add sleep chart : sleep: sleepDisplay[0]
+    ScoreCard(request: request, title: "Sunday", date: sunday, openStats: openStats, weekday: 0), 
+    ScoreCard(request: request, title: "Monday", date: sunday.add(const Duration(days: 1)), openStats: openStats, weekday: 1),
+    ScoreCard(request: request, title: "Tuesday", date: sunday.add(const Duration(days: 2)), openStats: openStats, weekday: 2), 
+    ScoreCard(request: request, title: "Wednesday", date: sunday.add(const Duration(days: 3)), openStats: openStats, weekday: 3),
+    ScoreCard(request: request, title: "Thursday", date: sunday.add(const Duration(days: 4)), openStats: openStats, weekday: 4), 
+    ScoreCard(request: request, title: "Friday", date: sunday.add(const Duration(days: 5)), openStats: openStats, weekday: 5),
+    ScoreCard(request: request, title: "Saturday", date: sunday.add(const Duration(days: 6)), openStats: openStats, weekday: 6),
     ];
 
 
@@ -40,28 +47,30 @@ class ScoreCard extends StatelessWidget {
 
     ScoreCard({
     required this.title,
-    required this.score,
     required this.date,
-    required this.startTime,
-    required this.endTime,
-   // required this.sleep,
+    required this.openStats,
+    required this.weekday,
+    required this.request,
+    // required this.sleep,
     super.key, 
   });
 
   final Color lav = const Color.fromARGB(255, 160, 109, 186);
 
-  final DateTime startTime;
-  final DateTime endTime;
-  final double score;
   final String title;
   final DateTime date;
   final DateFormat Md = DateFormat.Md();
   final DateFormat jm = DateFormat.jm();
-  //final Widget sleep; 
-
+    //final Widget sleep; 
+  final OpenStats openStats;
+  final int weekday;
+  final SleepRequest request;
+  
+  
   @override
   Widget build(BuildContext context) {
     String scoreText;
+    double score = request.weekScores[weekday];
       if(score == -1){scoreText = 'NA';}
       else{scoreText = score.round().toString();}
       return ((score != 0) && (!score.isNaN)) ? Column(
@@ -72,25 +81,29 @@ class ScoreCard extends StatelessWidget {
         ),),
         Center(
           child: Ink( 
-            height: 80, 
+            height: 90, 
             child: InkWell(
-              onTap: () { /* ... */ },
+              onTap: (){openStats(weekday);},
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
                   children: [
-                  Container(
-                    width: 50,
-                    height: 50, 
-                    decoration: const BoxDecoration(color: Colors.deepPurple, shape: BoxShape.circle), 
-                    child: Center(child: Text(scoreText, style: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),)),
-                    ),
+                    Stack(
+                      alignment: AlignmentDirectional.center, 
+                      children: [
+                        CircularProgressIndicator(value: score/100, backgroundColor: Colors.black, valueColor: const AlwaysStoppedAnimation<Color>(Colors.deepPurple), strokeWidth: 7.5,), 
+                        Text(scoreText, style: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),)],),
+                  // Container(
+                  //   width: 50,
+                  //   height: 50, 
+                  //   decoration: const BoxDecoration(color: Colors.deepPurple, shape: BoxShape.circle), 
+                  //   child: Center(child: Text(scoreText, style: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),)),
+                  //   ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 60),
-                      child: 
-                      // SafeArea(child:sleep)
-                      
-                      Text("${jm.format(startTime)} - ${jm.format(endTime)}", style: TextStyle(fontSize: 20, ),),
+                      padding: const EdgeInsets.only(left: 30, bottom: 5),
+                       // child: SafeArea(child:  request.sleepCharts[weekday])
+                        child:  SafeArea(child: CardSleepGraph(request.sleepPoints, request.maxs[weekday], request.mins[weekday], false))
+                      //child: Text("${jm.format(request.startTimes[weekday])} - ${jm.format(request.endTimes[weekday])}", style: TextStyle(fontSize: 20, ),),
                     ),
                     ]),
               ),

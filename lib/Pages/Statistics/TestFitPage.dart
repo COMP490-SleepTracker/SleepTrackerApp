@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:health/health.dart';
+import 'package:intl/intl.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
@@ -114,6 +115,13 @@ class _TestFitPageState extends State<TestFitPage> {
               onTap: () => calendar(),
             ), 
             ),
+            //  InkWell(onTap: calendar, child: SizedBox(height: 60, width: 250, child: Center(
+            //       child: Column(mainAxisAlignment: MainAxisAlignment.center,
+            //         children: [
+            //           Text(DateFormat('EEEE').format(date.text[0]), style: TextStyle( fontSize: 16, fontWeight: FontWeight.bold),),
+            //           Text(yMd.format(selectedDay), style: dateStyle),
+            //         ],
+            //       )),)),
              IconButton(onPressed: () => moveRight(), icon: const Icon(Icons.chevron_right)),
             ])
           )),
@@ -142,8 +150,7 @@ class _TestFitPageState extends State<TestFitPage> {
                           request.deep,
                           request.rem,
                           request.Steps,
-                          request.session,
-                          request.Steps),
+                          request.session),
 
                       SleepGraph(data, request.max, request.min,
                           request.asleepSession),

@@ -2,9 +2,11 @@ import 'package:flutter/widgets.dart';
 import 'package:health/health.dart';
 import 'package:sleeptrackerapp/Model/DataManager/SecureStorage.dart';
 import 'package:sleeptrackerapp/Widgets/StepGraph.dart';
+import 'package:sleeptrackerapp/Widgets/CardSleepGraph.dart';
 
 
 class SleepRequest{
+  HealthFactory health = HealthFactory(useHealthConnectIfAvailable: true);
   List<HealthDataType> datatypes = [
     HealthDataType.SLEEP_SESSION, 
     HealthDataType.SLEEP_ASLEEP,
@@ -13,14 +15,20 @@ class SleepRequest{
     HealthDataType.SLEEP_LIGHT,
     HealthDataType.SLEEP_REM];
 
+
   var startTimes = List<DateTime>.filled(7, DateTime(0));
   var endTimes = List<DateTime>.filled(7, DateTime(0));
-  List<HealthDataPoint> healthdata = List.empty();
+  List<HealthDataPoint> sleepdata = List.empty();
+  List<HealthDataPoint> sleepPoints = List.empty();
+  List<HealthDataPoint> heartData = List.empty();
   List<double> weekHours = [0,0,0,0,0,0,0];
   List<double> weekScores = [0,0,0,0,0,0,0];
   List<double> sessions = [0,0,0,0,0,0,0]; List<double> rems = [0,0,0,0,0,0,0];
   List<double> deeps = [0,0,0,0,0,0,0]; List<double> lights = [0,0,0,0,0,0,0];
-  List<double> awakes = [0,0,0,0,0,0,0];
+  List<double> awakes = [0,0,0,0,0,0,0]; List<double> asleeps = [0,0,0,0,0,0,0];
+  List<double> mins = [0,0,0,0,0,0,0]; List<double> maxs = [0,0,0,0,0,0,0];
+  List<int> steps = [0,0,0,0,0,0,0];
+  double heartMinY = 0, heartMaxY = 0, heartAvg = 0;
   double weekAvg = 0.0;
   double sleepDebt = 0.0;
   double sleepDebtTemp = 0.0;
@@ -29,19 +37,63 @@ class SleepRequest{
   List<Widget> sleepCharts = [Container(), Container(), Container(), Container(), Container(), Container(), Container()];
 
 
+  List<HealthDataPoint> sleepSessions = List.empty();
+  _getSteps(DateTime sunday)async{
+    for(int i = 0; i < 7; i++){
+      steps[i]  = (await health.getTotalStepsInInterval(sunday, sunday.add(const Duration(days: 1))) ?? 0);
+      sunday = sunday.add(const Duration(days: 1));
+    }
+  }
+
+  Future<void> getHeartRate(int index)async {
+    if(mins[index]==0) {heartAvg = heartMinY = heartMaxY = 0; return;}
+    List<HealthDataType> heartType = [HealthDataType.HEART_RATE];
+    if(await health.hasPermissions(heartType) == false){
+      await health.requestAuthorization(heartType);
+    }
+    heartData = await health.getHealthDataFromTypes(
+      DateTime.fromMillisecondsSinceEpoch(mins[index].toInt()), 
+      DateTime.fromMillisecondsSinceEpoch(maxs[index].toInt()), 
+      heartType);
+    if(heartData.isEmpty) return;
+
+    heartMinY = heartMaxY = double.parse(heartData[0].value.toString());
+    double countMax = 0;
+
+    for(var point in heartData){
+      double value = double.parse(point.value.toString());
+      countMax += value;
+      if(value < heartMinY){heartMinY = value;} 
+      else if(value > heartMaxY){heartMaxY = value;}
+    }
+    heartAvg = countMax / heartData.length;
+  }
+
   //initialize healthdata for a specific week (Must be called first)
   Future<void> weekSleepData(DateTime sunday) async {
-    HealthFactory health = HealthFactory(useHealthConnectIfAvailable: true);
-    await health.requestAuthorization(datatypes);
+     if(await health.hasPermissions(datatypes) == false){
+      await health.requestAuthorization(datatypes);
+     }
+
+    sleepdata = await health.getHealthDataFromTypes(sunday, sunday.add(const Duration(days: 8)), datatypes);
+    sleepdata.sort((a,b) => a.dateFrom.compareTo(b.dateFrom));
     loaded = true;
 
-    healthdata = await health.getHealthDataFromTypes(sunday, sunday.add(const Duration(days: 8)), datatypes);
-    healthdata.sort((a,b) => a.dateFrom.compareTo(b.dateFrom));
+    await _getSteps(sunday);
     _sleepHours(sunday);
     _sleepScores(sunday);
   }
 
+  Future<void> stepGraphData(DateTime sunday) async{
+    if(await health.hasPermissions(datatypes) == false){
+      await health.requestAuthorization(datatypes);
+    }
+    sleepPoints = await health.getHealthDataFromTypes(sunday, sunday.add(const Duration(days: 8)), datatypes);
+    sleepPoints.sort((a,b) => a.dateFrom.compareTo(b.dateFrom));
+  }
+
   Future<bool> tryReadStorage(DateTime sunday) async {
+    sleepPoints = List.empty();
     String hours = await SecureStorage().readSecureData("Week - $sunday");
     
     if(hours.isNotEmpty && (today.isAfter(sunday.add(const Duration(days: 7))) || loaded)){
@@ -54,6 +106,10 @@ class SleepRequest{
       String rms = await SecureStorage().readSecureData("Rems - $sunday");
       String deep = await SecureStorage().readSecureData("Deeps - $sunday");
       String lghts = await SecureStorage().readSecureData("Lights - $sunday");
+      String asleep = await SecureStorage().readSecureData("Asleeps - $sunday");
+      String min = await SecureStorage().readSecureData("Mins - $sunday");
+      String max = await SecureStorage().readSecureData("Maxs - $sunday");
+      String step = await SecureStorage().readSecureData("Steps - $sunday");
 
       weekHours = parseDoubleList(hours);
       weekAvg = double.parse(avg);
@@ -65,6 +121,10 @@ class SleepRequest{
       rems = parseDoubleList(rms);
       deeps = parseDoubleList(deep);
       lights = parseDoubleList(lghts);
+      asleeps = parseDoubleList(asleep);
+      mins = parseDoubleList(min);
+      maxs = parseDoubleList(max);
+      steps = parseIntList(step);
       return true;
     }
     return false;
@@ -75,13 +135,14 @@ class SleepRequest{
     weekHours = [0,0,0,0,0,0,0];
     startTimes = List<DateTime>.filled(7, DateTime(0));
     endTimes = List<DateTime>.filled(7, DateTime(0));
-    var sleepSessions = healthdata.where((element) => element.type == HealthDataType.SLEEP_SESSION).toList();
+    sleepSessions = sleepdata.where((element) => element.type == HealthDataType.SLEEP_SESSION).toList();
     sleepSessions = _trimEnds(sleepSessions, sunday);
     if(sleepSessions.isEmpty) {return;}
-    healthdata.removeWhere((element) => 
+    sleepdata.removeWhere((element) => 
     element.dateFrom.isBefore(sleepSessions.first.dateFrom) || 
     element.dateTo.isAfter(sleepSessions.last.dateTo));
 
+    sleepPoints = sleepdata.where((element) => element.type != HealthDataType.SLEEP_SESSION).toList();
     _setDayHours(sleepSessions, sunday);
   }
 
@@ -143,15 +204,17 @@ class SleepRequest{
     weekScores = [0,0,0,0,0,0,0]; awakes = [0,0,0,0,0,0,0];
     lights = [0,0,0,0,0,0,0]; rems = [0,0,0,0,0,0,0];
     deeps = [0,0,0,0,0,0,0]; sessions = [0,0,0,0,0,0,0];
+    sleepCharts = [Container(),Container(),Container(),Container(),Container(),Container(),Container()];
     for(int i = 0; i < 7; i++){
       if(startTimes[i] == DateTime(0)) continue;
-      double awake= 0, light = 0, rem = 0, deep = 0, asleep = 0, session = 0;
+      double awake = 0, light = 0, rem = 0, deep = 0, asleep = 0, session = 0, min = 0, max = 0;
+      
       // double min = 0, max = 0; 
-      // bool asleepS = false; 
+       bool asleepS = false; 
       DateTime end = endTimes[i];
       var toRemove = [];
 
-      for(var point in healthdata){
+      for(var point in sleepdata){
         if(point.dateFrom.isAfter(end)){
           break;
         }
@@ -171,20 +234,23 @@ class SleepRequest{
           break;
         case "SLEEP_ASLEEP":
           asleep += value;
-         // asleepS = true; 
+          asleepS = true; 
           break;
         case "SLEEP_SESSION":
           session += value;
           // min = point.dateFrom.millisecondsSinceEpoch.toDouble();
           // max = point.dateTo.millisecondsSinceEpoch.toDouble();
+          if(value > 90){
+            min = point.dateFrom.millisecondsSinceEpoch.toDouble();
+            max = point.dateTo.millisecondsSinceEpoch.toDouble();}
           break;
       }
       toRemove.add(point);
       }
-      healthdata.removeWhere((element) => toRemove.contains(element));
-      _setDataPoints(i,session, awake, rem, deep, light);
+      sleepdata.removeWhere((element) => toRemove.contains(element));
+      _setDataPoints(i,session, awake, rem, deep, light, asleep, min, max);
       weekScores[i] = _calculateScore(session, awake, rem, deep, light);
-      //sleepCharts[i] = SleepGraph(healthdata, max, min, asleepS);
+      sleepCharts[i] = CardSleepGraph(sleepdata, max, min, asleepS);
     }
     weekAvg = _getAvg(sunday);
     _storeDataPoints(sunday);
@@ -216,12 +282,15 @@ class SleepRequest{
       return score.roundToDouble();
   }
 
-  void _setDataPoints(int i, double session, double awake, double rem, double deep, double light) {
+  void _setDataPoints(int i, double session, double awake, double rem, double deep, double light, double asleep, double min, double max) {
     sessions[i] = session;
     awakes[i] = awake;
     rems[i] = rem;
     deeps[i] = deep;
     lights[i] = light;
+    asleeps[i] = asleep;
+    mins[i] = min;
+    maxs[i] = max;
   }
   
   void _storeDataPoints(DateTime sunday) {
@@ -234,6 +303,10 @@ class SleepRequest{
       SecureStorage().writeSecureData("Rems - $sunday", "$rems");
       SecureStorage().writeSecureData("Deeps - $sunday", "$deeps");
       SecureStorage().writeSecureData("Lights - $sunday", "$lights");
+      SecureStorage().writeSecureData("Asleeps - $sunday", "$asleeps");
+      SecureStorage().writeSecureData("Mins - $sunday", "$mins");
+      SecureStorage().writeSecureData("Maxs - $sunday", "$maxs");
+      SecureStorage().writeSecureData("Steps - $sunday", "$steps");
 
       SecureStorage().writeSecureData("StartTimes - $sunday", "$startTimes");
       SecureStorage().writeSecureData("EndTimes - $sunday", "$endTimes");
@@ -245,6 +318,13 @@ class SleepRequest{
    List<String> list = value.split(',');
    List<double> list2 = list.map(double.parse).toList();
    return list2;
+  }
+
+  List<int> parseIntList(String value) {
+    value = value.replaceAll(RegExp(r'[[\]]'), '');
+    List<String> list = value.split(',');
+    List<int> list2 = list.map(int.parse).toList();
+    return list2;
   }
 
   List<DateTime> parseDateList(String value) {
