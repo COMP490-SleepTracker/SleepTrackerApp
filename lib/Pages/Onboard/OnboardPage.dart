@@ -47,8 +47,8 @@ class OnBoardingPageState extends State<OnBoardingPage> {
 
       pages: [
         PageViewModel(
-          title: "Welcome to Sleep Tracker++",
-          body: "Discover the secrets to better rest and wake up refreshed. Welcome to a more vibrant life with Sleep Tracker++!",
+          title: "Welcome to Sleep Tracker+",
+          body: "Discover the secrets to better rest and wake up refreshed. Welcome to a more vibrant life with Sleep Tracker+!",
           image: Padding(
             padding: const EdgeInsets.only(top: 35.0),
             child: SizedBox(
@@ -66,8 +66,8 @@ class OnBoardingPageState extends State<OnBoardingPage> {
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "What is Sleep Tracker++?",
-          body: "Sleep Tracker++ is your ultimate sleep companion! Explore your in-depth sleep statistics and increase your sleep quality with features like sleep statistics, sleep scores, an alarm, and a sleep schedule.",
+          title: "\n\nWhat is Sleep Tracker+?",
+          body: "Sleep Tracker+ is your ultimate sleep companion! Explore your in-depth sleep statistics and increase your sleep quality with features like sleep statistics, sleep scores, an alarm, and a sleep schedule.",
           image: Padding(
             padding: const EdgeInsets.only(top: 35.0),
             child: SizedBox(
@@ -83,10 +83,11 @@ class OnBoardingPageState extends State<OnBoardingPage> {
             ),
           ),
           decoration: pageDecoration,
+          reverse: true,
         ),
         PageViewModel(
           title: "What do you need?\n",
-          body: "A Fitbit - Inspire model preferred\n\nThe Fitbit App - Fitbit connection\n\nHealth Connect - Android connection \n\nGoogle Fit - Halth Data connection",
+          body: "A Fitbit - Inspire model preferred\n\nThe Fitbit App - Fitbit connection\n\nHealth Connect - Android connection \n\nGoogle Fit - Health Data connection",
           image: Padding(
             padding: const EdgeInsets.only(top: 35.0),
             child: SizedBox(
@@ -105,7 +106,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
         ),
       PageViewModel(
         title: "Are you ready to transform your sleep?",
-        body: "Let's dive in and make tonight the first of many well-rested nights ahead. Welcome to Sleep Tracker++!\n\nGo ahead and press 'Done' when you're ready.",
+        body: "Let's dive in and make tonight the first of many well-rested nights ahead. Welcome to Sleep Tracker+!\n\nGo ahead and press 'Done' when you're ready.",
         image: _buildFullscreenImage(),
         decoration: pageDecoration.copyWith(
           contentMargin: const EdgeInsets.symmetric(horizontal: 16),
