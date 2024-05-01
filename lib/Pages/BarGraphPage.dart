@@ -6,6 +6,7 @@ import 'package:sleeptrackerapp/Widgets/bar_graph/bar_graph_month.dart';
 import 'package:sleeptrackerapp/Widgets/SleepDebt.dart';
 import 'package:sleeptrackerapp/HealthStuff/SleepRequest.dart';
 import 'package:sleeptrackerapp/Widgets/ScoreViewer.dart';
+import 'package:collection/collection.dart';
 
 import 'Statistics/StatsPage.dart';
 
@@ -36,12 +37,14 @@ class BarGraphPageState extends State<BarGraphPage>{
   List<DateTime> startTimes = List.filled(7, DateTime(0));
   List<DateTime> endTimes = List.filled(7, DateTime(0));
 
+  double avgScore = 0;
   double avgSlept = 0.0;
   double sleepDebt = 0.0;
   double sleepDebtTemp = 0.0;
 
   bool weekEnabled = true;
   bool monthEnabled = false; 
+  bool durationsEnabled = true;
   bool ready = false;
 
   TextStyle tabs = const TextStyle(color: Colors.white,fontSize: 20, fontWeight: FontWeight.w600);
@@ -84,22 +87,32 @@ class BarGraphPageState extends State<BarGraphPage>{
               children: [
                  Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      InkWell(onTap: weekEnabled ? null : buttonChange, 
+                      InkWell(onTap: weekEnabled ? null : timeScaleChange, 
                       child: Container(decoration: weekEnabled ? bottomBorder : null, 
                         height: 50, width: 205, child: Center(child: Text("Week", style: weekEnabled ? tabs : tabs2)))),
-                      InkWell(onTap: weekEnabled ? buttonChange :null, 
+                      InkWell(onTap: weekEnabled ? timeScaleChange :null, 
                       child: Container(decoration: weekEnabled ? null : bottomBorder,
                         height: 50, width: 205, child: Center(child: Text("Month",style: weekEnabled ? tabs2 : tabs)))),
                     ]),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     weekEnabled ? IconButton(onPressed: leftArrow, icon: const Icon(Icons.chevron_left, size: 35,),) : const SizedBox(height: 48,),
-                    Text(weekEnabled ? weekLabel : "Weekly Sleep Average", style: const TextStyle(fontSize: 24),),
+                    Text(weekEnabled ? weekLabel : "Weekly Sleep Average", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),),
                     weekEnabled ? IconButton(onPressed: selectedDay != today ? rightArrow : null, icon: const Icon(Icons.chevron_right, size: 35,)) 
                     : const SizedBox()
                   ]),
-                Text("Average: ${tooltipText(avgSlept)}"),
+                Text("Average: ${durationsEnabled ? tooltipText(avgSlept) : avgScore.toInt()}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
                 displayBars(),
+                
+                Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                  ElevatedButton(onPressed: durationsEnabled ? null : barTypeChange, 
+                  style: durationsEnabled ? const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(Colors.deepPurpleAccent)): null, child: const Text("Durations", style: TextStyle(color: Colors.white),)),
+                  ElevatedButton(onPressed: durationsEnabled ? barTypeChange : null, style: !durationsEnabled ? const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(Colors.indigo)): null,
+                  child: const Text("Scores",style: TextStyle(color: Colors.white),)),
+                  ],),
                 const Divider(),
                 SizedBox( width: 300,height: 100, 
                   child: SleepDebt(weeklyHours: weeklyHours, sleepDebtTemp: sleepDebtTemp),
@@ -119,18 +132,24 @@ class BarGraphPageState extends State<BarGraphPage>{
       margin: const EdgeInsets.only(right: 20),
       padding: const EdgeInsets.only(top: 35,bottom: 10), 
       child: Stack(children: [
-        weekEnabled ? BarGraphWeek(weeklySummary: weeklyHours) : 
-        BarGraphMonth(monthlySummary: monthlySummary),
+        weekEnabled ? BarGraphWeek(weeklySummary: durationsEnabled ? weeklyHours : scoresWeek, durationsEnabled: durationsEnabled,) : 
+        BarGraphMonth(monthlySummary: monthlySummary, durationsEnabled: durationsEnabled,),
         Align(alignment: Alignment.center,child: ready ? null: const CircularProgressIndicator())],)
     );
   }
 
   ///Toggles 1 Week Graph and 5 Week Graph
-  void buttonChange() {
+  void timeScaleChange() {
     weekEnabled = !weekEnabled;
     monthEnabled = !monthEnabled;
     if(weekEnabled){setChartWeek();}
     else{setChartMonth();}
+  }
+
+  void barTypeChange(){
+    durationsEnabled = !durationsEnabled;
+    if(monthEnabled){setChartMonth();}
+    else{setState(() {});}
   }
 
   ///Retrieves Health Connect data for specified week if it is not already in storage
@@ -141,6 +160,11 @@ class BarGraphPageState extends State<BarGraphPage>{
       await request.weekSleepData(selectedDay);
     }
     setValues();
+    if(!durationsEnabled){
+      int days = 0; 
+      for(var x in scoresWeek){if(x>0)days++;}
+      if (days == 0) {avgScore = 0;}
+      else{avgScore = scoresWeek.sum / days;}}
   }
 
   void setValues() {
@@ -155,14 +179,18 @@ class BarGraphPageState extends State<BarGraphPage>{
 
   ///Retrieves Health Connect data for last 5 weeks if they are not already in storage
   void setChartMonth() async {
-    setState(() {});
+    // setState(() {monthlySummary = [0,0,0,0,0,0,0];});
     DateTime curr = today;
     for(int i = 4; i >= 0; i-- ){
       if (!await request.tryReadStorage(curr)){
         setState(() {ready = false;});
         await request.weekSleepData(curr);
       }
-      monthlySummary[i] = request.weekAvg;
+      if(durationsEnabled){monthlySummary[i] = request.weekAvg;}
+      else{int days = 0;
+        for (var element in request.weekScores) {if(element != 0) days++;}
+        if(days == 0) continue;
+        monthlySummary[i] = request.weekScores.sum / days;}
       curr = curr.subtract(const Duration(days: 7));
   }
   setState(() {
@@ -173,7 +201,10 @@ class BarGraphPageState extends State<BarGraphPage>{
       total += monthlySummary[i];
       daysRecorded++;
     }
-    if(daysRecorded > 0) {avgSlept = total/daysRecorded;}
+    if(daysRecorded > 0) {
+      if(durationsEnabled) {avgSlept = total/daysRecorded;}
+      else{avgScore = total/daysRecorded;}
+    }
     ready = true;
   });
   }
