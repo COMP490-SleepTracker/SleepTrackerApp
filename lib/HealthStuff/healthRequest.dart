@@ -19,7 +19,7 @@ class HealthRequest {
 
   double min = 0;
   double max = 0;
-  double Steps = 0; 
+  int Steps = 0; 
 
     final sleep = [
       HealthDataType.SLEEP_SESSION,
@@ -65,7 +65,7 @@ class HealthRequest {
   }
 
   Future<List<HealthDataPoint>> readSleep(String selectedDate) async { 
-      rem = score = awake = light = deep = asleep = session = min = max = Steps = 0; 
+      rem = score = awake = light = deep = asleep = session = min = max = 0; 
       final permissions = sleep.map((e) => HealthDataAccess.READ_WRITE).toList();
       print(permissions);
       final DateTime selected = DateTime.parse(selectedDate);
@@ -107,7 +107,7 @@ class HealthRequest {
       }
     }
 
-      Steps = (await health.getTotalStepsInInterval(midnightSelected, selected))!.toDouble();
+      Steps = (await health.getTotalStepsInInterval(midnightSelected, selected))!;
       score = (Steps * 0.005) + (deep * 0.25) + (rem * 0.25) + (session * 0.05); 
       //print("Sleep Score ${score}: (${Steps} * 0.005) + (${deep} * 0.25) + (${rem} * 0.25) + (${session} * 0.05)");
       return healthDataList;
