@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:health/health.dart';
+import 'package:intl/intl.dart';
 import 'package:sleeptrackerapp/Model/AuthenticationManager.dart';
 import 'package:sleeptrackerapp/Pages/Main/LoginPage.dart';
 import 'package:sleeptrackerapp/Pages/NavigationPanel.dart';
@@ -67,7 +68,6 @@ class _TestFitPageState extends State<TestFitPage> {
 
     }
 
-    
     Future<void> moveRight() async {
       DateTime currentDate = DateTime.parse(date.text);
       final right = currentDate.add(const Duration(days: 1));
@@ -84,14 +84,14 @@ class _TestFitPageState extends State<TestFitPage> {
       drawer: const NavigationPanel(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+     //   mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
               child: Padding(
             padding: EdgeInsets.only(
                 top: 3,
                 bottom: 10,
-                right: 90,
-                ), //test single child scroll widgetselectedDay.subtract(const Duration(days: 7))
+                ),
             child: 
             
             Row(
@@ -115,6 +115,13 @@ class _TestFitPageState extends State<TestFitPage> {
               onTap: () => calendar(),
             ), 
             ),
+            //  InkWell(onTap: calendar, child: SizedBox(height: 60, width: 250, child: Center(
+            //       child: Column(mainAxisAlignment: MainAxisAlignment.center,
+            //         children: [
+            //           Text(DateFormat('EEEE').format(date.text[0]), style: TextStyle( fontSize: 16, fontWeight: FontWeight.bold),),
+            //           Text(yMd.format(selectedDay), style: dateStyle),
+            //         ],
+            //       )),)),
              IconButton(onPressed: () => moveRight(), icon: const Icon(Icons.chevron_right)),
             ])
           )),

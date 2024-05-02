@@ -1,5 +1,9 @@
+import 'package:flutter/widgets.dart';
 import 'package:health/health.dart';
 import 'package:sleeptrackerapp/Model/DataManager/SecureStorage.dart';
+import 'package:sleeptrackerapp/Widgets/StepGraph.dart';
+import 'package:sleeptrackerapp/Widgets/CardSleepGraph.dart';
+
 
 class SleepRequest{
   HealthFactory health = HealthFactory(useHealthConnectIfAvailable: true);
@@ -30,9 +34,10 @@ class SleepRequest{
   double sleepDebtTemp = 0.0;
   DateTime today = DateTime.now();
   bool loaded = false;
+  List<Widget> sleepCharts = [Container(), Container(), Container(), Container(), Container(), Container(), Container()];
+
+
   List<HealthDataPoint> sleepSessions = List.empty();
-
-
   _getSteps(DateTime sunday)async{
     for(int i = 0; i < 7; i++){
       steps[i]  = (await health.getTotalStepsInInterval(sunday, sunday.add(const Duration(days: 1))) ?? 0);
@@ -199,9 +204,13 @@ class SleepRequest{
     weekScores = [0,0,0,0,0,0,0]; awakes = [0,0,0,0,0,0,0];
     lights = [0,0,0,0,0,0,0]; rems = [0,0,0,0,0,0,0];
     deeps = [0,0,0,0,0,0,0]; sessions = [0,0,0,0,0,0,0];
+    sleepCharts = [Container(),Container(),Container(),Container(),Container(),Container(),Container()];
     for(int i = 0; i < 7; i++){
       if(startTimes[i] == DateTime(0)) continue;
       double awake = 0, light = 0, rem = 0, deep = 0, asleep = 0, session = 0, min = 0, max = 0;
+      
+      // double min = 0, max = 0; 
+       bool asleepS = false; 
       DateTime end = endTimes[i];
       var toRemove = [];
 
@@ -225,9 +234,12 @@ class SleepRequest{
           break;
         case "SLEEP_ASLEEP":
           asleep += value;
+          asleepS = true; 
           break;
         case "SLEEP_SESSION":
           session += value;
+          // min = point.dateFrom.millisecondsSinceEpoch.toDouble();
+          // max = point.dateTo.millisecondsSinceEpoch.toDouble();
           if(value > 90){
             min = point.dateFrom.millisecondsSinceEpoch.toDouble();
             max = point.dateTo.millisecondsSinceEpoch.toDouble();}
@@ -238,6 +250,7 @@ class SleepRequest{
       sleepdata.removeWhere((element) => toRemove.contains(element));
       _setDataPoints(i,session, awake, rem, deep, light, asleep, min, max);
       weekScores[i] = _calculateScore(session, awake, rem, deep, light);
+      sleepCharts[i] = CardSleepGraph(sleepdata, max, min, asleepS);
     }
     weekAvg = _getAvg(sunday);
     _storeDataPoints(sunday);

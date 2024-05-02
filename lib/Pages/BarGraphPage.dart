@@ -41,7 +41,8 @@ class BarGraphPageState extends State<BarGraphPage>{
   double avgSlept = 0.0;
   double sleepDebt = 0.0;
   double sleepDebtTemp = 0.0;
-
+  
+  bool stepsReady = false;
   bool weekEnabled = true;
   bool monthEnabled = false; 
   bool durationsEnabled = true;
@@ -116,8 +117,8 @@ class BarGraphPageState extends State<BarGraphPage>{
                 const Divider(),
                 SizedBox( width: 300,height: 100, 
                   child: SleepDebt(weeklyHours: weeklyHours, sleepDebtTemp: sleepDebtTemp),
-                ),
-                (weekEnabled && ready) ? ScoreViewWidget(openStats: openStats,context: context, sunday: selectedDay, request: request,) 
+                ), //snippet for sleep chart in score: sleepDisplay: sleepChart
+                (weekEnabled && ready) ? ScoreViewWidget(openStats: openStats,context: context, sunday: selectedDay, request: request, stepsReady: stepsReady) 
                 : const SizedBox()
             ],),
             ),
@@ -154,17 +155,24 @@ class BarGraphPageState extends State<BarGraphPage>{
 
   ///Retrieves Health Connect data for specified week if it is not already in storage
   void setChartWeek() async {
+    setState(() {stepsReady = false;});
     weekLabel = "${df.format(selectedDay)} - ${df.format(selectedDay.add(const Duration(days: 6)))}";
     if(!await request.tryReadStorage(selectedDay)){
       setState(() {ready = false; weeklyHours = [0,0,0,0,0,0,0]; scoresWeek = [0,0,0,0,0,0,0]; avgSlept = 0;});
       await request.weekSleepData(selectedDay);
-    }
+    }else{
+      setValues();
+      await request.stepGraphData(selectedDay);
+      }
     setValues();
     if(!durationsEnabled){
       int days = 0; 
       for(var x in scoresWeek){if(x>0)days++;}
       if (days == 0) {avgScore = 0;}
       else{avgScore = scoresWeek.sum / days;}}
+    setState(() {
+      stepsReady = true;
+    });
   }
 
   void setValues() {

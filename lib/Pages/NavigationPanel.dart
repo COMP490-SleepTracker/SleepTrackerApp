@@ -14,9 +14,9 @@ class NavigationPanel extends Drawer
   const NavigationPanel({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {           // TestFitPage tempStatsPage
     List<Widget> pages = [const MainPage(title: 'Sleep Tracker+'), const SleepPage(title: 'Sleep'), const tempStatsPage(title: 'Statistics'), const JournalPage(title: 'Journal'), const SettingsPage(title: 'Settings'), const BarGraphPage(title: 'Graphs')];
-    List<String> titles = ['Sleep Tracker+', 'Sleep', 'Statistics', 'Journal', 'Settings','Graphs'];
+    List<String> titles = ['Sleep Tracker+', 'Sleep', 'Sleep Analysis', 'Journal', 'Settings','Graphs'];
     List<Icon> icons = [const Icon(Icons.home), const Icon(Icons.bedtime), const Icon(Icons.bar_chart), const Icon(Icons.book), const Icon(Icons.settings), const Icon(Icons.lightbulb), const Icon(Icons.analytics_outlined)];
     List<Widget> navigationTiles = [];
     for (int i = 0; i < pages.length; i++)

@@ -61,8 +61,18 @@ class SleepScore extends StatelessWidget {
     return Container(
       width: double.infinity,
       ////Copy n pasted from TipsPage
-      color: Colors.deepPurple,
-      padding: const EdgeInsets.only(top: 5, bottom: 10),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+               colors: [Color.fromARGB(224, 167, 224, 233), Color.fromARGB(255, 225, 139, 241)],  
+              begin: Alignment.bottomLeft, 
+               end: Alignment.topRight,
+          ),  
+        ),
+     // color: Colors.deepPurple,
+     //color: Color.fromARGB(255, 198, 119, 212),
+     padding: const EdgeInsets.only(top: 5, bottom: 20),
+
+     // padding: const EdgeInsets.only(top: 30, bottom: 50, right: 100, left: 100),
       child: (score != 0) ? Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
