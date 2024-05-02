@@ -9,6 +9,7 @@ import 'package:sleeptrackerapp/Widgets/Analysis.dart';
 import 'package:sleeptrackerapp/Widgets/SleepScore.dart';
 import 'package:sleeptrackerapp/Widgets/StepGraph.dart';
 import 'package:sleeptrackerapp/Widgets/heartRate.dart';
+import 'package:sleeptrackerapp/Widgets/heartRatefeedback.dart';
 import 'package:sleeptrackerapp/Widgets/tipsPage.dart';
 
 class tempStatsPage extends StatefulWidget {
@@ -167,10 +168,11 @@ class tempStatsPageState extends State<tempStatsPage>{
                 IconButton(onPressed: rightArrow, icon: const Icon(Icons.chevron_right, size: 35))
               ],),
               SizedBox(height: 5),
-            SleepScore(scores[index]),
+            //SleepScore(scores[index]),
           ],),
-          Expanded(child: (scores[index] != 0) ? ListView(
+          Expanded(child: (scores[index] != 0) ? ListView(           
             children: [ 
+              SleepScore(scores[index]),
               Analysis(
                 request.lights[index], 
                 request.awakes[index],
@@ -185,7 +187,8 @@ class tempStatsPageState extends State<tempStatsPage>{
               tips(request.weekScores[index]),
               heartGraphReady ? heartRateGraph(request.heartData, request.maxs[index], request.mins[index], request.heartMaxY, request.heartMinY, request.heartAvg) 
               : const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()),),
-            ],) : const SizedBox()),
+              heartGraphReady ? heartRateFeedback(request.heartAvg) : const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()),),
+            ],) : SleepScore(scores[index])),
         ],
       )
          

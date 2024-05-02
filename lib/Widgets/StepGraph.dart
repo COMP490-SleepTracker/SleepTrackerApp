@@ -136,15 +136,22 @@ class SleepGraph extends StatelessWidget {
   LineChart main() {
     return LineChart(
       LineChartData(
-        lineTouchData: LineTouchData(touchTooltipData: LineTouchTooltipData(getTooltipItems: (touchedSpots) {
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(getTooltipItems: (touchedSpots) {
           List<LineTooltipItem> names =List.empty(growable: true);
           for (var element in touchedSpots) {names.add(LineTooltipItem("${intToSleepType(element.y.toInt())}\n${jm.format(DateTime.fromMillisecondsSinceEpoch(element.x.toInt()))}", const TextStyle(fontSize: 12))); }
           return names;
-        },)),
+        },
+        
+        )
+        
+        ),
+        
         minX: minX.toDouble(), // minX.toDouble()
         maxX: maxX.toDouble(),
         minY: 1.8, //2  1.5
         maxY: 6,
+        
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
