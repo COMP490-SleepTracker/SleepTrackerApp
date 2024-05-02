@@ -91,6 +91,9 @@ class _MyHomePageState extends State<MainPage> {
     }
 
     // now we need to get the next alarm time
+    const Weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const Months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
 
     return Scaffold(
       appBar: AppBar(
@@ -101,7 +104,14 @@ class _MyHomePageState extends State<MainPage> {
       body: SafeArea(
         child: Align(
           alignment: const AlignmentDirectional(0,0),
+
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children : [
+              // say the current day, in "Monday, 1 January 2022" format
+              Text('${Weekdays[DateTime.now().weekday - 1]}, ${Months[DateTime.now().month - 1]} ${DateTime.now().day}, ${DateTime.now().year}', style: const TextStyle(fontSize: 24)),
+
+              Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 150),
@@ -116,8 +126,8 @@ class _MyHomePageState extends State<MainPage> {
                 alarmSet ? StopAlarmButton() : SetAlarmButton(),
                   Text(alarmSet ? 'Stop Alarm' : "Sleep", style: const TextStyle(fontSize: 16),)
             ],
-          ),
-        )
+          )],
+        ))
       )
     );
   }
