@@ -3,23 +3,36 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class BarGraphWeek extends StatelessWidget {
-  const BarGraphWeek({super.key, required this.weeklySummary});
+  const BarGraphWeek({super.key, required this.weeklySummary, required this.durationsEnabled});
   final List weeklySummary;
+  final bool durationsEnabled;
 
   @override
   Widget build(BuildContext context) {
     BarDataWeek myBarData = BarDataWeek(
-        sunAmount: weeklySummary[0],
-        monAmount: weeklySummary[1],
-        tueAmount: weeklySummary[2],
-        wedAmount: weeklySummary[3],
-        thuAmount: weeklySummary[4],
-        friAmount: weeklySummary[5],
-        satAmount: weeklySummary[6]);
+        sunAmount: durationsEnabled ? weeklySummary[0] : weeklySummary[0]*60,
+        monAmount: durationsEnabled ? weeklySummary[1] : weeklySummary[1]*60,
+        tueAmount: durationsEnabled ? weeklySummary[2] : weeklySummary[2]*60,
+        wedAmount: durationsEnabled ? weeklySummary[3] : weeklySummary[3]*60,
+        thuAmount: durationsEnabled ? weeklySummary[4] : weeklySummary[4]*60,
+        friAmount: durationsEnabled ? weeklySummary[5] : weeklySummary[5]*60,
+        satAmount: durationsEnabled ? weeklySummary[6] : weeklySummary[6]*60);
+
+    Gradient purpleGradient = const LinearGradient(colors: [
+      Color.fromARGB(163, 40, 40, 40),
+      Colors.deepPurple,
+      Colors.deepPurpleAccent,
+    ], begin: Alignment.bottomCenter, end: Alignment.topCenter);
+
+    Gradient blueGradient = const LinearGradient(colors: [
+      Color.fromARGB(163, 40, 40, 40),
+      Colors.indigo,
+      Colors.indigoAccent,
+    ], begin: Alignment.bottomCenter, end: Alignment.topCenter);
 
     myBarData.initializeBarData();
     return BarChart(BarChartData(
-      maxY: 10,
+      maxY: durationsEnabled ? 10 : 100,
       minY: 0,
       gridData: const FlGridData(show: false),
       borderData: FlBorderData(show: false),
@@ -33,11 +46,7 @@ class BarGraphWeek extends StatelessWidget {
           .map((data) => BarChartGroupData(x: data.x, barRods: [
                 BarChartRodData(
                   toY: data.y,
-                  gradient: const LinearGradient(
-                    colors: [ Color.fromARGB(163, 40, 40, 40),Colors.deepPurple, Colors.deepPurpleAccent, ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter
-                    ),
+                  gradient:  durationsEnabled ? purpleGradient : blueGradient,
                   width: 35,
                   borderRadius: BorderRadius.circular(4),
                 )
@@ -46,19 +55,19 @@ class BarGraphWeek extends StatelessWidget {
       barTouchData: BarTouchData(
         touchTooltipData: BarTouchTooltipData(
           tooltipRoundedRadius: 20,
-          tooltipPadding: const EdgeInsets.only(right: 5, left: 5, top: 4),
+          tooltipPadding:  const EdgeInsets.only(right: 10, left: 10, top: 4),
           tooltipMargin: 20,
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
           return BarTooltipItem(
-            tooltipText(myBarData.barData[groupIndex].y),
+            durationsEnabled ? tooltipText(myBarData.barData[groupIndex].y) : myBarData.barData[groupIndex].y.toInt().toString(),
               textAlign: TextAlign.center,
-              const TextStyle(fontSize: 12,color: Colors.white));
+              const TextStyle(fontSize: 16,color: Colors.white));
         },
       )),
       extraLinesData: ExtraLinesData(
         extraLinesOnTop: false,
         horizontalLines: [
-          HorizontalLine(y: 8, color: const Color.fromARGB(255, 106, 106, 106), strokeWidth: 1.2, dashArray: [10,5])
+          HorizontalLine(y: durationsEnabled ? 8 : 80, color: const Color.fromARGB(255, 106, 106, 106), strokeWidth: 1.2, dashArray: [10,5])
         ]
         )
     ));

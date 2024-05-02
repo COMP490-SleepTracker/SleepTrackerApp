@@ -4,21 +4,35 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class BarGraphMonth extends StatelessWidget {
-  const BarGraphMonth({super.key, required this.monthlySummary});
+  const BarGraphMonth({super.key, required this.monthlySummary, required this.durationsEnabled});
   final List monthlySummary;
+  final bool durationsEnabled;
 
   @override
   Widget build(BuildContext context) {
     BarDataMonth myBarData = BarDataMonth(
-        week1: monthlySummary[0] / 60,
-        week2: monthlySummary[1] / 60,
-        week3: monthlySummary[2] / 60,
-        week4: monthlySummary[3] / 60,
-        week5: monthlySummary[4] / 60);
+        week1: durationsEnabled ? monthlySummary[0] / 60 : monthlySummary[0],
+        week2: durationsEnabled ? monthlySummary[1] / 60 : monthlySummary[1],
+        week3: durationsEnabled ? monthlySummary[2] / 60 : monthlySummary[2],
+        week4: durationsEnabled ? monthlySummary[3] / 60 : monthlySummary[3],
+        week5: durationsEnabled ? monthlySummary[4] / 60 : monthlySummary[4]);
+
+
+Gradient pinkGradient = const LinearGradient(colors: [
+      Color.fromARGB(163, 40, 40, 40),
+      Color.fromARGB(255, 105, 70, 128),
+      Color.fromARGB(255, 179, 121, 249),
+    ], begin: Alignment.bottomCenter, end: Alignment.topCenter);
+
+Gradient blueGradient = const LinearGradient(colors: [
+      Color.fromARGB(163, 40, 40, 40),
+      Colors.blueAccent,
+      Colors.blue,
+    ], begin: Alignment.bottomCenter, end: Alignment.topCenter);
 
     myBarData.initializeBarData();
     return BarChart(BarChartData(
-      maxY: 10,
+      maxY: durationsEnabled ? 10 : 100,
       minY: 0,
       gridData: const FlGridData(show: false),
       borderData: FlBorderData(show: false),
@@ -33,11 +47,7 @@ class BarGraphMonth extends StatelessWidget {
                 BarChartRodData(
                   toY: data.y,
                   
-                  gradient: const LinearGradient(
-                    colors: [ Color.fromARGB(163, 40, 40, 40),Color.fromARGB(255, 105, 70, 128), Color.fromARGB(255, 179, 121, 249), ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter
-                    ),
+                  gradient: durationsEnabled ? pinkGradient : blueGradient,
                   width: 52,
                   borderRadius: BorderRadius.circular(4),
                 )
@@ -46,19 +56,19 @@ class BarGraphMonth extends StatelessWidget {
       barTouchData: BarTouchData(
           touchTooltipData: BarTouchTooltipData(
             tooltipRoundedRadius: 20,
-        tooltipPadding: const EdgeInsets.only(right: 5, left: 5, top: 4),
+        tooltipPadding: const EdgeInsets.only(right: 10, left: 10, top: 4),
         tooltipMargin: 20,
         getTooltipItem: (group, groupIndex, rod, rodIndex) {
           return BarTooltipItem(
-              tooltipText(myBarData.barData[groupIndex].y),
+              durationsEnabled ? tooltipText(myBarData.barData[groupIndex].y) : myBarData.barData[groupIndex].y.toInt().toString(),
               textAlign: TextAlign.center,
-              const TextStyle(color: Colors.white));
+              const TextStyle(fontSize: 16, color: Colors.white));
         },
       )),
       extraLinesData: ExtraLinesData(
         extraLinesOnTop: false,
         horizontalLines: [
-          HorizontalLine(y: 8, color: const Color.fromARGB(255, 106, 106, 106), strokeWidth: 1.2, dashArray: [10,5])
+          HorizontalLine(y: durationsEnabled ? 8: 80, color: const Color.fromARGB(255, 106, 106, 106), strokeWidth: 1.2, dashArray: [10,5])
         ]
         )
     ));
