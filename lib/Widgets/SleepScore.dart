@@ -6,13 +6,13 @@ class SleepScore extends StatelessWidget {
   late Color progressColor = Colors.green;
 
   SleepScore(this.score) {
-    if (score >= 89) {
+    if (score >= 80) {
       sleepQuality = 'Great';
       progressColor = Colors.green;
-    } else if (score >= 68) {
+    } else if (score >= 62) {
       sleepQuality = 'Good';
       progressColor = Colors.yellow;
-    } else if (score >= 47) {
+    } else if (score >= 45) {
       sleepQuality = 'Okay';
       progressColor = Colors.orange;
     } else {
@@ -41,13 +41,13 @@ class SleepScore extends StatelessWidget {
 
   void determine() {
     // Determine sleep quality and progress color
-    if (score >= 89) {
+    if (score >= 80) {
       sleepQuality = 'Great';
       progressColor = Colors.green;
-    } else if (score >= 68) {
+    } else if (score >= 65) {
       sleepQuality = 'Good';
       progressColor = Colors.yellow;
-    } else if (score >= 47) {
+    } else if (score >= 50) {
       sleepQuality = 'Okay';
       progressColor = Colors.orange;
     } else {
@@ -59,20 +59,31 @@ class SleepScore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       ////Copy n pasted from TipsPage
       color: Colors.deepPurple,
-      padding:
-          const EdgeInsets.only(top: 30, bottom: 50, right: 100, left: 100),
-      child: Column(
+      padding: const EdgeInsets.only(top: 5, bottom: 10),
+      child: (score != 0) ? Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
-            'Your Sleep Score:',
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+           const Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              SizedBox(width: 20,),
+               Text('Your Sleep Score:',style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Tooltip(
+                enableTapToDismiss: true,
+                showDuration: Duration(seconds: 10),
+                triggerMode: TooltipTriggerMode.tap,
+                decoration: BoxDecoration(color: Color.fromARGB(255, 62, 62, 62), borderRadius: BorderRadius.all(Radius.circular(5))),
+                verticalOffset: -60,
+                richMessage: TextSpan(text: "Sleep Score is calculated using sleep\nduration and time spent in each sleep phase", style: TextStyle(color: Colors.white)), 
+                child: Icon(Icons.info_outline_rounded, color: Colors.grey,),)
+            ],
           ),
           const SizedBox(height: 13.0),
           Container(
@@ -86,25 +97,25 @@ class SleepScore extends StatelessWidget {
                   width: 120.0, // Size of the circular progress indicator
                   height: 120.0,
                   child: CircularProgressIndicator(
-                    value: ((score) / 110), // Dummy sleep score value (85%)
+                    value: ((score) / 100), // Dummy sleep score value (85%)
                     backgroundColor: Colors.white,
                     valueColor: AlwaysStoppedAnimation<Color>(progressColor),
                     strokeWidth: 20.0,
                   ),
                 ),
                 Text(
-                  ((score / 110) * 100)
+                  (score)
                       .toStringAsFixed(0), // Dummy sleep score value
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 38.0,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: Colors.white,
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
           Text(
             sleepQuality, // Display sleep quality
             style: TextStyle(
@@ -115,6 +126,11 @@ class SleepScore extends StatelessWidget {
             ),
           ),
         ],
+      ) : const SizedBox(
+        height: 183,
+        child: Center(
+          child: Text("No Sleep Data Found", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+        ),
       ),
     );
   }

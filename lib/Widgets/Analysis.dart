@@ -4,11 +4,10 @@ class Analysis extends StatelessWidget {
   final double session;
   final double deep;
   final double rem;
-  final double steps;
+  final int steps;
   final double awake;
   final double asleep;
   final double light;
-  final double Steps;
 
   Analysis(
     this.light,
@@ -18,7 +17,6 @@ class Analysis extends StatelessWidget {
     this.rem,
     this.steps,
     this.session,
-    this.Steps,
   );
 
   String durationToString(int minutes) {
@@ -26,8 +24,14 @@ class Analysis extends StatelessWidget {
     List<String> parts = d.toString().split(':');
     var hour = parts[0].padLeft(2, '0');
     return hour == '00'
-        ? '${parts[1].padLeft(2, '0')} min'
-        : '${parts[0].padLeft(2, '0')} hr ${parts[1].padLeft(2, '0')} min';
+        ? '${parts[1].padLeft(2, '0')} m'
+        : '${parts[0].padLeft(2, '0')} H ${parts[1].padLeft(2, '0')} m';
+  }
+
+    String tooltipText(double minutes){
+    int hours = (minutes / 60).floor();
+    int mins = (minutes % 60).floor();
+    return "${hours}H ${mins}m";
   }
 
   Widget CircleThingy(double type, String typeString) {
@@ -63,7 +67,7 @@ class Analysis extends StatelessWidget {
                             Text(
                               ((type / session) * 100).toStringAsFixed(1) +
                                   '%', // Dummy sleep score value
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 15.0,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -74,16 +78,17 @@ class Analysis extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(typeString,
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(tooltipText(type))
                     ],
                   ),
-                  const SizedBox(width: 10),
-                  Text(
-                      'You spent a total of ${durationToString(type.toInt())} in $typeString')
+                  // const SizedBox(width: 10),
+                  // Text(
+                  //     'You spent a total of ${durationToString(type.toInt())} in $typeString')
                 ])),
-            Container(
-                width: 300,
-                child: Divider(thickness: 0.5, color: Colors.grey[300])),
+            // Container(
+            //     width: 300,
+            //     child: Divider(thickness: 0.5, color: Colors.grey[300])),
           ]);
     } else {
       return Container();
@@ -100,25 +105,30 @@ class Analysis extends StatelessWidget {
         Row(children: [
           const SizedBox(width: 30),
           Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text('Total Steps:',
+            const Text('Total Steps:',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-            Text('$Steps',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
+            Text('$steps',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
           ]),
           const SizedBox(height: 30, width: 30),
           Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text('Total Sleep Session:',
+            const Text('Total Sleep Session:',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-            Text('${durationToString(session.toInt())}',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
+            Text(tooltipText(session),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
           ]),
         ]),
         Divider(thickness: 2, color: Colors.grey[300]),
-        CircleThingy(awake, 'awake'),
-        CircleThingy(rem, 'rem'),
-        CircleThingy(light, 'light'),
-        CircleThingy(deep, 'deep'),
-        CircleThingy(asleep, 'asleep'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            CircleThingy(awake, 'Awake'),
+            CircleThingy(rem, 'REM'),
+            CircleThingy(light, 'Light'),
+            CircleThingy(deep, 'Deep'),
+            CircleThingy(asleep, 'Asleep'),
+          ],
+        ),
       ],
     );
   }
