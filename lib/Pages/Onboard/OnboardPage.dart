@@ -55,10 +55,8 @@ class OnBoardingPageState extends State<OnBoardingPage> {
               width: double.infinity,
               height: 350.0,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(50.0), 
                 child: Image.asset(
-                  'assets/sleep1.png',
-                  fit: BoxFit.cover,
+                  'assets/sleep.png',
                 ),
               ),
             ),

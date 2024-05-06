@@ -227,18 +227,17 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      //   title: Text(widget.title),
-      // ),
-      // drawer : const NavigationPanel(), disabled for login page
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Welcome to Sleep Tracker+'),
-            LoginForm(),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Image.asset('assets/sleep.png', height: 100),
+            ),
+            const Text('Welcome to Sleep Tracker+'),
+            const LoginForm(),
           ],
         ),
       ),

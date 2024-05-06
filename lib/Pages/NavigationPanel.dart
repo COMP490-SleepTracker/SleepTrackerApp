@@ -34,16 +34,30 @@ class NavigationPanel extends Drawer
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const DrawerHeader(
-            decoration: BoxDecoration(
+          DrawerHeader(
+            decoration: const BoxDecoration(
               color: Colors.deepPurple,
             ),
-            child: Text(
-              'Sleep Tracker+',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [                
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Image.asset('assets/sleep.png', height: 50),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 15.0), 
+                  child: Text(
+                    'Sleep Tracker+',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+
+              ],
             ),
           ),
           ...navigationTiles,
